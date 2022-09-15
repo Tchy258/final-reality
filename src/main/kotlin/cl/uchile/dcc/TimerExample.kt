@@ -88,7 +88,7 @@ fun main() {
             }
         }
     }
-    for (j in 0 until 5) {
+    for (j in 0 until 10) {
         // Ten random enemies are generated
         val enemy = Enemy("Enemy$j", Random.nextInt(1, 10), Random.nextInt(10, 60), Random.nextInt(10, 20), 5, queue)
         enemy.waitTurn()
