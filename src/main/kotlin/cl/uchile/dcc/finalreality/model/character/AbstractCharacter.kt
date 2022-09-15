@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
  *    The queue with the characters waiting for their turn.
  *
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
- * @author ~Your name~
+ * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
 abstract class AbstractCharacter(
     override val name: String,
@@ -36,23 +36,26 @@ abstract class AbstractCharacter(
             field = Require.Stat(value, "Current Hp") inRange 0..maxHp
         }
     override val defense = Require.Stat(defense, "Defense") atLeast 0
-
     override fun waitTurn() {
         scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
+        // Since the delay has to be a Long type and weights can be less than 10,
+        // seconds should not be used (decimals are discarded after Long division),
+        // so milliseconds are used instead.
+        // (weight/10) seconds is the same as (weight/10) * 1000 = weight * 100 milliseconds.
         when (this) {
             is PlayerCharacter -> {
                 scheduledExecutor.schedule(
                     /* command = */ ::addToQueue,
-                    /* delay = */ (this.equippedWeapon.weight / 10).toLong(),
-                    /* unit = */ TimeUnit.SECONDS
+                    /* delay = */ (this.equippedWeapon.weight * 100).toLong(),
+                    /* unit = */ TimeUnit.MILLISECONDS
                 )
             }
 
             is Enemy -> {
                 scheduledExecutor.schedule(
                     /* command = */ ::addToQueue,
-                    /* delay = */ (this.weight / 10).toLong(),
-                    /* unit = */ TimeUnit.SECONDS
+                    /* delay = */ (this.weight * 100).toLong(),
+                    /* unit = */ TimeUnit.MILLISECONDS
                 )
             }
         }
