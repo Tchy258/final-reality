@@ -1,5 +1,5 @@
 /*
- * "Final Reality" (c) by R8V and ~Your name~
+ * "Final Reality" (c) by R8V and Tchy258
  * "Final Reality" is licensed under a
  * Creative Commons Attribution 4.0 International License.
  * You should have received a copy of the license along with this
@@ -9,7 +9,7 @@ package cl.uchile.dcc.finalreality.model.character.player
 
 import cl.uchile.dcc.finalreality.exceptions.Require
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import java.util.*
+import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
@@ -26,7 +26,7 @@ import java.util.concurrent.BlockingQueue
  * @property currentHp The current HP of the character.
  *
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
- * @author ~Your name~
+ * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
 class BlackMage(
     name: String,
@@ -34,32 +34,34 @@ class BlackMage(
     maxMp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
+    KnifeUser,
+    StaffUser {
     val maxMp = Require.Stat(maxMp, "Max MP") atLeast 0
     var currentMp: Int = maxMp
         set(value) {
             field = Require.Stat(value, "Current MP") inRange 0..maxMp
         }
-
     override fun equals(other: Any?) = when {
-        this === other                 -> true
-        other !is BlackMage            -> false
+        this === other -> true
+        other !is BlackMage -> false
         hashCode() != other.hashCode() -> false
-        name != other.name             -> false
-        maxHp != other.maxHp           -> false
-        maxMp != other.maxMp           -> false
-        defense != other.defense       -> false
-        else                           -> true
+        name != other.name -> false
+        maxHp != other.maxHp -> false
+        maxMp != other.maxMp -> false
+        defense != other.defense -> false
+        else -> true
     }
 
     override fun hashCode() =
         Objects.hash(BlackMage::class, name, maxHp, maxMp, defense)
 
     override fun toString() = "BlackMage { " +
-      "name: '$name' " +
-      "maxMp: $maxMp, " +
-      "maxHp: $maxHp, " +
-      "defense: $defense, " +
-      "currentMp: $currentMp, " +
-      "}"
+        "name: '$name' " +
+        "maxHp: $maxHp, " +
+        "maxMp: $maxMp, " +
+        "defense: $defense, " +
+        "currentHp: $currentHp, " +
+        "currentMp: $currentMp " +
+        "}"
 }
