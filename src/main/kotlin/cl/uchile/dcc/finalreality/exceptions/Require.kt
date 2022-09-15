@@ -1,5 +1,5 @@
 /*
- * "Final Reality" (c) by R8V and ~Your name~
+ * "Final Reality" (c) by R8V and Tchy258
  * "Final Reality" is licensed under a
  * Creative Commons Attribution 4.0 International License.
  * You should have received a copy of the license along with this
@@ -13,7 +13,7 @@ package cl.uchile.dcc.finalreality.exceptions
  * If the condition is not met, an exception is thrown.
  *
  * @author <a href="https://github.com/r8vnhill">R8V</a>
- * @author ~Your name~
+ * @author <a href="https://github.com/Tchy258">Tchy258</a>
  */
 object Require {
 
