@@ -14,7 +14,7 @@ package cl.uchile.dcc.finalreality.model.character
  *    The current health points of the character.
  *
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
- * @author ~Your name~
+ * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
 interface GameCharacter {
     val name: String
