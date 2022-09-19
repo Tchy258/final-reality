@@ -1,28 +1,21 @@
 package cl.uchile.dcc.finalreality.model.weapon
 
 import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
-
 /**
- * A class that holds all the information of a weapon.
+ * This represents any generic weapon.
  *
- * @property name String
- *     The name of the weapon.
- * @property damage Int
- *     The base damage done by the weapon.
- * @property weight Int
- *     The weight of the weapon.
+ * @property name the name of the weapon.
+ * @property damage the base damage done by the weapon.
+ * @property weight the weight of the weapon.
  *
- * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @author <a href="https://www.github.com/Tchy258">Tchy258</a>
  */
-abstract class Weapon(
-    val name: String,
-    val damage: Int,
+interface Weapon {
+    val name: String
+    val damage: Int
     val weight: Int
-) {
     /**
-     * Checks whether this weapon can be equipped to a [PlayerCharacter].
-     * This will depend on the weapon's subclass and the interfaces the [PlayerCharacter] implements.
+     * Checks whether this [Weapon] can be equipped to a specific [PlayerCharacter].
      */
-    abstract fun canEquip(aCharacter: PlayerCharacter): Boolean
+    fun canEquip(aCharacter: PlayerCharacter): Boolean
 }
