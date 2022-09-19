@@ -1,11 +1,10 @@
 package cl.uchile.dcc.finalreality.model.weapon
 
 import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
-import cl.uchile.dcc.finalreality.model.character.player.StaffUser
 import java.util.Objects
 /**
  * A class that identifies a [Weapon] as a Staff, and tells whoever tries to equip it
- * whether they can or not, they should be a [StaffUser].
+ * to equip a staff.
  *
  * @param name the name of the weapon.
  * @param damage the base damage done by the weapon.
@@ -21,7 +20,7 @@ class Staff(
     weight: Int,
     val magicDamage: Int
 ) : AbstractWeapon(name, damage, weight) {
-    override fun canEquip(aCharacter: PlayerCharacter): Boolean = aCharacter is StaffUser
+    override fun equipWeapon(aCharacter: PlayerCharacter): Boolean = aCharacter.equipStaff(this)
     override fun hashCode() = Objects.hash(Staff::class, name, damage, weight, magicDamage)
     override fun equals(other: Any?) = when {
         this === other -> true

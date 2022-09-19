@@ -15,7 +15,8 @@ interface Weapon {
     val damage: Int
     val weight: Int
     /**
-     * Checks whether this [Weapon] can be equipped to a specific [PlayerCharacter].
+     * Tells a [PlayerCharacter] which [Weapon] they have to equip
+     * @return true if [aCharacter] can equip this [Weapon].
      */
-    fun canEquip(aCharacter: PlayerCharacter): Boolean
+    fun equipWeapon(aCharacter: PlayerCharacter): Boolean
 }

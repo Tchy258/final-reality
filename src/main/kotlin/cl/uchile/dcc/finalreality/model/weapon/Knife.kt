@@ -1,11 +1,10 @@
 package cl.uchile.dcc.finalreality.model.weapon
 
-import cl.uchile.dcc.finalreality.model.character.player.KnifeUser
 import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
 import java.util.Objects
 /**
  * A class that identifies a [Weapon] as a Knife, and tells whoever tries to equip it
- * whether they can or not, they should be a [KnifeUser].
+ * to equip a knife.
  *
  * @param name the name of the weapon.
  * @param damage the base damage done by the weapon.
@@ -19,7 +18,7 @@ class Knife(
     damage: Int,
     weight: Int
 ) : AbstractWeapon(name, damage, weight) {
-    override fun canEquip(aCharacter: PlayerCharacter): Boolean = aCharacter is KnifeUser
+    override fun equipWeapon(aCharacter: PlayerCharacter): Boolean = aCharacter.equipKnife(this)
     override fun hashCode() = Objects.hash(Knife::class, name, damage, weight)
     override fun equals(other: Any?) = when {
         this === other -> true

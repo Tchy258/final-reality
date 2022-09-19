@@ -47,9 +47,9 @@ fun main() {
             3 -> BlackMage("BlackMage", 10, 10, 5, queue)
             else -> WhiteMage("WhiteMage", 10, 10, 5, queue)
         }
-        character.equip(weapon)
+        val validWeapon: Boolean = character.equip(weapon)
         character.waitTurn()
-        if (weapon.canEquip(character)) {
+        if (validWeapon) {
             turnOrder.add(weapon.weight.toLong())
             i++
         } else {

@@ -8,8 +8,10 @@
 package cl.uchile.dcc.finalreality.model.character.player
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.weapon.Axe
 import cl.uchile.dcc.finalreality.model.weapon.Bow
 import cl.uchile.dcc.finalreality.model.weapon.Knife
+import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Sword
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
@@ -31,11 +33,27 @@ class Thief(
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
-    SwordUser,
-    KnifeUser,
-    BowUser {
-
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
+    override fun equipAxe(axe: Axe): Boolean {
+        println("$name can't equip axes")
+        return false
+    }
+    override fun equipBow(bow: Bow): Boolean {
+        this.setWeapon(bow)
+        return true
+    }
+    override fun equipKnife(knife: Knife): Boolean {
+        this.setWeapon(knife)
+        return true
+    }
+    override fun equipStaff(staff: Staff): Boolean {
+        println("$name can't equip staves")
+        return false
+    }
+    override fun equipSword(sword: Sword): Boolean {
+        this.setWeapon(sword)
+        return true
+    }
     override fun equals(other: Any?) = when {
         this === other -> true
         other !is Thief -> false
