@@ -20,11 +20,11 @@ import java.util.concurrent.BlockingQueue
 /**
  * A White Mage is a type of [PlayerCharacter] that can cast white magic.
  *
- * @param name the character's name
- * @param maxHp the character's maximum health points
- * @param maxMp the character's maximum magic points
- * @param defense the character's defense
- * @param turnsQueue the queue with the characters waiting for their turn
+ * @param name the character's name.
+ * @param maxHp the character's maximum health points.
+ * @param maxMp the character's maximum magic points.
+ * @param defense the character's defense.
+ * @param turnsQueue the queue with the characters waiting for their turn.
  * @property currentMp The current MP of the character.
  * @property currentHp The current HP of the character.
  * @constructor Creates a new Black Mage.
@@ -44,15 +44,12 @@ class WhiteMage(
             field = Require.Stat(value, "Current MP") inRange 0..maxMp
         }
     override fun equipAxe(axe: Axe): Boolean {
-        println("$name can't equip axes")
         return false
     }
     override fun equipBow(bow: Bow): Boolean {
-        println("$name can't equip bows")
         return false
     }
     override fun equipKnife(knife: Knife): Boolean {
-        println("$name can't equip knives")
         return false
     }
     override fun equipStaff(staff: Staff): Boolean {
@@ -60,7 +57,6 @@ class WhiteMage(
         return true
     }
     override fun equipSword(sword: Sword): Boolean {
-        println("$name can't equip swords")
         return false
     }
     override fun equals(other: Any?) = when {

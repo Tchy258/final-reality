@@ -20,10 +20,10 @@ import java.util.concurrent.BlockingQueue
  * A `Knight` is a type of [PlayerCharacter] that can equip a [Sword], an [Axe] or
  * a [Knife].
  *
- * @param name the character's name
- * @param maxHp the character's maximum health points
- * @param defense the character's defense
- * @param turnsQueue the queue with the characters waiting for their turn
+ * @param name the character's name.
+ * @param maxHp the character's maximum health points.
+ * @param defense the character's defense.
+ * @param turnsQueue the queue with the characters waiting for their turn.
  * @property currentHp the current HP of the character.
  * @constructor Creates a new Knight.
  *
@@ -41,15 +41,13 @@ class Knight(
         return true
     }
     override fun equipBow(bow: Bow): Boolean {
-        println("$name can't equip bows")
         return false
     }
     override fun equipKnife(knife: Knife): Boolean {
-        println("$name can't equip knives")
-        return false
+        this.setWeapon(knife)
+        return true
     }
     override fun equipStaff(staff: Staff): Boolean {
-        println("$name can't equip staves")
         return false
     }
     override fun equipSword(sword: Sword): Boolean {
@@ -65,7 +63,6 @@ class Knight(
         defense != other.defense -> false
         else -> true
     }
-
     override fun hashCode() = Objects.hash(Knight::class, name, maxHp, defense)
 
     override fun toString() = "Knight { " +

@@ -19,10 +19,10 @@ import java.util.concurrent.BlockingQueue
 /**
  * A `Thief` is a type of [PlayerCharacter] that can equip a [Sword], a [Knife] or a [Bow].
  *
- * @param name the character's name
- * @param maxHp the character's maximum health points
- * @param defense the character's defense
- * @param turnsQueue the queue with the characters waiting for their turn*
+ * @param name the character's name.
+ * @param maxHp the character's maximum health points.
+ * @param defense the character's defense.
+ * @param turnsQueue the queue with the characters waiting for their turn.
  * @property currentHp the current HP of the character.
  * @constructor Creates a new Thief.
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
@@ -35,7 +35,6 @@ class Thief(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
     override fun equipAxe(axe: Axe): Boolean {
-        println("$name can't equip axes")
         return false
     }
     override fun equipBow(bow: Bow): Boolean {
@@ -47,7 +46,6 @@ class Thief(
         return true
     }
     override fun equipStaff(staff: Staff): Boolean {
-        println("$name can't equip staves")
         return false
     }
     override fun equipSword(sword: Sword): Boolean {
