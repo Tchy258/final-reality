@@ -8,9 +8,9 @@ import java.util.Objects
  * A class that identifies a [Weapon] as a Sword, and tells whoever tries to equip it
  * whether they can or not, they should be a [SwordUser].
  *
- * @param name      the name of the weapon.
- * @param damage    the base damage done by the weapon.
- * @param weight    the weight of the weapon.
+ * @param name the name of the weapon.
+ * @param damage the base damage done by the weapon.
+ * @param weight the weight of the weapon.
  *
  * @constructor Creates a new sword.
  * @author <a href="https://www.github.com/Tchy258">Tchy258</a>
