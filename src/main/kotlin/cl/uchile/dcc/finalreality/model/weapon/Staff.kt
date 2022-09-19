@@ -7,13 +7,12 @@ import java.util.Objects
  * A class that identifies a [Weapon] as a Staff, and tells whoever tries to equip it
  * whether they can or not, they should be a [StaffUser].
  *
- * @param name      the name of the weapon.
- * @param damage    the base damage done by the weapon.
- * @param weight    the weight of the weapon.
+ * @param name the name of the weapon.
+ * @param damage the base damage done by the weapon.
+ * @param weight the weight of the weapon.
+ * @property magicDamage the magicDamage of the staff.
  *
- * @property magicDamage Int
- *     The magicDamage of the staff.
- *
+ * @constructor Creates a new staff.
  * @author <a href="https://www.github.com/Tchy258">Tchy258</a>
  */
 class Staff(
@@ -21,7 +20,7 @@ class Staff(
     damage: Int,
     weight: Int,
     val magicDamage: Int
-) : Weapon(name, damage, weight) {
+) : AbstractWeapon(name, damage, weight) {
     override fun canEquip(aCharacter: PlayerCharacter): Boolean = aCharacter is StaffUser
     override fun hashCode() = Objects.hash(Staff::class, name, damage, weight, magicDamage)
     override fun equals(other: Any?) = when {

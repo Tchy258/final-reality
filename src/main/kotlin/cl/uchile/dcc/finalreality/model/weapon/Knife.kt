@@ -6,16 +6,19 @@ import java.util.Objects
 /**
  * A class that identifies a [Weapon] as a Knife, and tells whoever tries to equip it
  * whether they can or not, they should be a [KnifeUser].
- * @param name      the name of the weapon.
- * @param damage    the base damage done by the weapon.
- * @param weight    the weight of the weapon.
+ *
+ * @param name the name of the weapon.
+ * @param damage the base damage done by the weapon.
+ * @param weight the weight of the weapon.
+ *
+ * @constructor Creates a new knife.
  * @author <a href="https://www.github.com/Tchy258">Tchy258</a>
  */
 class Knife(
     name: String,
     damage: Int,
     weight: Int
-) : Weapon(name, damage, weight) {
+) : AbstractWeapon(name, damage, weight) {
     override fun canEquip(aCharacter: PlayerCharacter): Boolean = aCharacter is KnifeUser
     override fun hashCode() = Objects.hash(Knife::class, name, damage, weight)
     override fun equals(other: Any?) = when {

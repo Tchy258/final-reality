@@ -5,20 +5,20 @@ import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
 import java.util.Objects
 /**
  * A class that identifies a [Weapon] as an Axe, and tells whoever tries to equip it
- * whether they can or not, they should be a [AxeUser]
+ * whether they can or not, they should be an [AxeUser]
  *
- * @param name      the name of the weapon.
- * @param damage    the base damage done by the weapon.
- * @param weight    the weight of the weapon.
+ * @param name the name of the weapon.
+ * @param damage the base damage done by the weapon.
+ * @param weight the weight of the weapon.
  *
- * @constructor Creates a new Axe.
+ * @constructor Creates a new axe.
  * @author <a href="https://www.github.com/Tchy258">Tchy258</a>
  */
 class Axe(
     name: String,
     damage: Int,
     weight: Int
-) : Weapon(name, damage, weight) {
+) : AbstractWeapon(name, damage, weight) {
     override fun canEquip(aCharacter: PlayerCharacter): Boolean = aCharacter is AxeUser
     override fun hashCode() = Objects.hash(Axe::class, name, damage, weight)
     override fun equals(other: Any?) = when {
