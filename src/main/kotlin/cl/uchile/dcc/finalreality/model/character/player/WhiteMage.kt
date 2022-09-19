@@ -15,16 +15,14 @@ import java.util.concurrent.BlockingQueue
 /**
  * A White Mage is a type of [PlayerCharacter] that can cast white magic.
  *
- * @param name        the character's name
- * @param maxHp       the character's maximum health points
- * @param maxMp       the character's maximum magic points
- * @param defense     the character's defense
- * @param turnsQueue  the queue with the characters waiting for their turn
- * @constructor Creates a new Black Mage.
- *
+ * @param name the character's name
+ * @param maxHp the character's maximum health points
+ * @param maxMp the character's maximum magic points
+ * @param defense the character's defense
+ * @param turnsQueue the queue with the characters waiting for their turn
  * @property currentMp The current MP of the character.
  * @property currentHp The current HP of the character.
- *
+ * @constructor Creates a new Black Mage.
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */

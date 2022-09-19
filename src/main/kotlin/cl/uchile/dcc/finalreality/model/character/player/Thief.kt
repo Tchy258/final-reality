@@ -8,20 +8,21 @@
 package cl.uchile.dcc.finalreality.model.character.player
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.weapon.Bow
+import cl.uchile.dcc.finalreality.model.weapon.Knife
+import cl.uchile.dcc.finalreality.model.weapon.Sword
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * A `Thief` is a type of [PlayerCharacter] that can equip `Sword`s, `Knife`s and `Bow`s.
+ * A `Thief` is a type of [PlayerCharacter] that can equip a [Sword], a [Knife] or a [Bow].
  *
- * @param name        the character's name
- * @param maxHp       the character's maximum health points
- * @param defense     the character's defense
- * @param turnsQueue  the queue with the characters waiting for their turn
+ * @param name the character's name
+ * @param maxHp the character's maximum health points
+ * @param defense the character's defense
+ * @param turnsQueue the queue with the characters waiting for their turn*
+ * @property currentHp the current HP of the character.
  * @constructor Creates a new Thief.
- *
- * @property currentHp The current HP of the character.
- *
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
@@ -44,9 +45,7 @@ class Thief(
         defense != other.defense -> false
         else -> true
     }
-
     override fun hashCode() = Objects.hash(Thief::class, name, maxHp, defense)
-
     override fun toString() = "Thief { " +
         "name: '$name', " +
         "maxHp: $maxHp, " +

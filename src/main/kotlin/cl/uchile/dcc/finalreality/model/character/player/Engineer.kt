@@ -17,13 +17,12 @@ import java.util.concurrent.BlockingQueue
  * An `Engineer` is a type of [PlayerCharacter] that can equip an [Axe] or
  * a [Bow].
  *
- * @param name        the character's name
- * @param maxHp       the character's maximum health points
- * @param defense     the character's defense
- * @param turnsQueue  the queue with the characters waiting for their turn
- * @constructor Creates a new Engineer.
- *
+ * @param name the character's name
+ * @param maxHp the character's maximum health points
+ * @param defense the character's defense
+ * @param turnsQueue the queue with the characters waiting for their turn
  * @property currentHp The current HP of the character.
+ * @constructor Creates a new Engineer.
  *
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
