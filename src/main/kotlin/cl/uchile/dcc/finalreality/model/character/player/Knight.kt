@@ -8,11 +8,12 @@
 package cl.uchile.dcc.finalreality.model.character.player
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.weapon.Axe
-import cl.uchile.dcc.finalreality.model.weapon.Bow
-import cl.uchile.dcc.finalreality.model.weapon.Knife
-import cl.uchile.dcc.finalreality.model.weapon.Staff
-import cl.uchile.dcc.finalreality.model.weapon.Sword
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.AxeWielder
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.KnifeWielder
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.SwordWielder
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
@@ -30,29 +31,24 @@ import java.util.concurrent.BlockingQueue
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
+
 class Knight(
     name: String,
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
-    override fun equipAxe(axe: Axe): Boolean {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
+    AxeWielder,
+    KnifeWielder,
+    SwordWielder {
+    override fun equipAxe(axe: Axe) {
         this.setWeapon(axe)
-        return true
     }
-    override fun equipBow(bow: Bow): Boolean {
-        return false
-    }
-    override fun equipKnife(knife: Knife): Boolean {
+    override fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
-        return true
     }
-    override fun equipStaff(staff: Staff): Boolean {
-        return false
-    }
-    override fun equipSword(sword: Sword): Boolean {
+    override fun equipSword(sword: Sword) {
         this.setWeapon(sword)
-        return true
     }
     override fun equals(other: Any?) = when {
         this === other -> true

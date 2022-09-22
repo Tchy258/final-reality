@@ -8,11 +8,10 @@
 package cl.uchile.dcc.finalreality.model.character.player
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.weapon.Axe
-import cl.uchile.dcc.finalreality.model.weapon.Bow
-import cl.uchile.dcc.finalreality.model.weapon.Knife
-import cl.uchile.dcc.finalreality.model.weapon.Staff
-import cl.uchile.dcc.finalreality.model.weapon.Sword
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.AxeWielder
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.BowWielder
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
@@ -35,23 +34,14 @@ class Engineer(
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
-    override fun equipAxe(axe: Axe): Boolean {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
+    AxeWielder,
+    BowWielder {
+    override fun equipAxe(axe: Axe) {
         this.setWeapon(axe)
-        return true
     }
-    override fun equipBow(bow: Bow): Boolean {
+    override fun equipBow(bow: Bow) {
         this.setWeapon(bow)
-        return true
-    }
-    override fun equipKnife(knife: Knife): Boolean {
-        return false
-    }
-    override fun equipStaff(staff: Staff): Boolean {
-        return false
-    }
-    override fun equipSword(sword: Sword): Boolean {
-        return false
     }
     override fun equals(other: Any?) = when {
         this === other -> true

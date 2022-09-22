@@ -9,16 +9,14 @@ package cl.uchile.dcc.finalreality.model.character.player
 
 import cl.uchile.dcc.finalreality.exceptions.Require
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.weapon.Axe
-import cl.uchile.dcc.finalreality.model.weapon.Bow
-import cl.uchile.dcc.finalreality.model.weapon.Knife
-import cl.uchile.dcc.finalreality.model.weapon.Staff
-import cl.uchile.dcc.finalreality.model.weapon.Sword
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Staff
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.StaffWielder
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
  * A White Mage is a type of [PlayerCharacter] that can cast white magic.
+ * White mages can only use a [Staff] as their weapon.
  *
  * @param name the character's name.
  * @param maxHp the character's maximum health points.
@@ -37,27 +35,15 @@ class WhiteMage(
     maxMp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
+    StaffWielder {
     val maxMp = Require.Stat(maxMp, "Max MP") atLeast 0
     var currentMp: Int = maxMp
         set(value) {
             field = Require.Stat(value, "Current MP") inRange 0..maxMp
         }
-    override fun equipAxe(axe: Axe): Boolean {
-        return false
-    }
-    override fun equipBow(bow: Bow): Boolean {
-        return false
-    }
-    override fun equipKnife(knife: Knife): Boolean {
-        return false
-    }
-    override fun equipStaff(staff: Staff): Boolean {
+    override fun equipStaff(staff: Staff) {
         this.setWeapon(staff)
-        return true
-    }
-    override fun equipSword(sword: Sword): Boolean {
-        return false
     }
     override fun equals(other: Any?) = when {
         this === other -> true

@@ -8,16 +8,17 @@
 package cl.uchile.dcc.finalreality.model.character.player
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.weapon.Axe
-import cl.uchile.dcc.finalreality.model.weapon.Bow
-import cl.uchile.dcc.finalreality.model.weapon.Knife
-import cl.uchile.dcc.finalreality.model.weapon.Staff
-import cl.uchile.dcc.finalreality.model.weapon.Sword
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.BowWielder
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.KnifeWielder
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.SwordWielder
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * A `Thief` is a type of [PlayerCharacter] that can equip a [Sword], a [Knife] or a [Bow].
+ * A [Thief] is a type of [PlayerCharacter] that can equip a [Sword], a [Knife] or a [Bow].
  *
  * @param name the character's name.
  * @param maxHp the character's maximum health points.
@@ -33,24 +34,18 @@ class Thief(
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
-    override fun equipAxe(axe: Axe): Boolean {
-        return false
-    }
-    override fun equipBow(bow: Bow): Boolean {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
+    BowWielder,
+    KnifeWielder,
+    SwordWielder {
+    override fun equipBow(bow: Bow) {
         this.setWeapon(bow)
-        return true
     }
-    override fun equipKnife(knife: Knife): Boolean {
+    override fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
-        return true
     }
-    override fun equipStaff(staff: Staff): Boolean {
-        return false
-    }
-    override fun equipSword(sword: Sword): Boolean {
+    override fun equipSword(sword: Sword) {
         this.setWeapon(sword)
-        return true
     }
     override fun equals(other: Any?) = when {
         this === other -> true
