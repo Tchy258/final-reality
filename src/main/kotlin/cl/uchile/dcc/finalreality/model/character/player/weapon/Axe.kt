@@ -1,7 +1,7 @@
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
-import cl.uchile.dcc.finalreality.model.character.player.AxeUser
-import cl.uchile.dcc.finalreality.model.character.player.WeaponUser
+import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.AxeWielder
 import java.util.Objects
 /**
  * A class that identifies a [Weapon] as an Axe, and tells whoever tries to equip it
@@ -19,7 +19,9 @@ class Axe(
     damage: Int,
     weight: Int
 ) : AbstractWeapon(name, damage, weight) {
-    override fun equipWeapon(aCharacter: WeaponUser): Boolean { aCharacter is AxeUser }
+    override fun equipWeapon(aCharacter: PlayerCharacter) {
+        (aCharacter as AxeWielder).equipAxe(this)
+    }
     override fun hashCode() = Objects.hash(Axe::class, name, damage, weight)
     override fun equals(other: Any?) = when {
         this === other -> true

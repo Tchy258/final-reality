@@ -1,6 +1,7 @@
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
 import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.StaffWielder
 import java.util.Objects
 /**
  * A class that identifies a [Weapon] as a Staff, and tells whoever tries to equip it
@@ -20,7 +21,9 @@ class Staff(
     weight: Int,
     val magicDamage: Int
 ) : AbstractWeapon(name, damage, weight) {
-    override fun equipWeapon(aCharacter: PlayerCharacter): Boolean = aCharacter.equipStaff(this)
+    override fun equipWeapon(aCharacter: PlayerCharacter) {
+        (aCharacter as StaffWielder).equipStaff(this)
+    }
     override fun hashCode() = Objects.hash(Staff::class, name, damage, weight, magicDamage)
     override fun equals(other: Any?) = when {
         this === other -> true

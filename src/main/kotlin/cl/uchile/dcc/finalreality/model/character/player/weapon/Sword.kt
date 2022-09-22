@@ -1,6 +1,7 @@
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
 import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
+import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.SwordWielder
 import java.util.Objects
 
 /**
@@ -19,7 +20,9 @@ class Sword(
     damage: Int,
     weight: Int
 ) : AbstractWeapon(name, damage, weight) {
-    override fun equipWeapon(aCharacter: PlayerCharacter): Boolean = aCharacter.equipSword(this)
+    override fun equipWeapon(aCharacter: PlayerCharacter) {
+        (aCharacter as SwordWielder).equipSword(this)
+    }
     override fun hashCode() = Objects.hash(Sword::class, name, damage, weight)
     override fun equals(other: Any?) = when {
         this === other -> true
