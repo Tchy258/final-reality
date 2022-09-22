@@ -1,4 +1,4 @@
-package cl.uchile.dcc.finalreality.model.weapon
+package cl.uchile.dcc.finalreality.model.character.player.weapon
 
 /**
  * A class that holds all the information of a weapon.

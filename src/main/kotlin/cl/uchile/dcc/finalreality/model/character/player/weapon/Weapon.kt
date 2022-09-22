@@ -1,6 +1,7 @@
-package cl.uchile.dcc.finalreality.model.weapon
+package cl.uchile.dcc.finalreality.model.character.player.weapon
 
-import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
+import cl.uchile.dcc.finalreality.model.character.player.WeaponUser
+
 /**
  * This represents any generic weapon.
  *
@@ -15,8 +16,8 @@ interface Weapon {
     val damage: Int
     val weight: Int
     /**
-     * Tells a [PlayerCharacter] which [Weapon] they have to equip
+     * Tells a [WeaponUser] which [Weapon] they have to equip
      * @return true if [aCharacter] can equip this [Weapon].
      */
-    fun equipWeapon(aCharacter: PlayerCharacter): Boolean
+    fun equipWeapon(aCharacter: WeaponUser): Boolean
 }
