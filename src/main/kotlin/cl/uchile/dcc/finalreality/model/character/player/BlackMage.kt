@@ -39,7 +39,7 @@ class BlackMage(
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
-    val maxMp = Require.Stat(maxMp, "Max MP") atLeast 0
+    val maxMp = Require.Stat(maxMp, "Max MP") atLeast 1
     var currentMp: Int = maxMp
         set(value) {
             field = Require.Stat(value, "Current MP") inRange 0..maxMp
