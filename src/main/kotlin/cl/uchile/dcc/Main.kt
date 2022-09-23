@@ -2,10 +2,10 @@ package cl.uchile.dcc
 
 import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.player.AbstractPlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.Knight
-import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.Thief
 import cl.uchile.dcc.finalreality.model.character.player.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
@@ -364,7 +364,7 @@ fun main() {
         // order
         val queueFront: GameCharacter = queue.poll()
         println(queueFront)
-        if (queueFront is PlayerCharacter) {
+        if (queueFront is AbstractPlayerCharacter) {
             println(queueFront.equippedWeapon)
         }
         println()
