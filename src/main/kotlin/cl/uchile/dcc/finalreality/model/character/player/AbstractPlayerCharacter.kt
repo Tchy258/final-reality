@@ -25,15 +25,10 @@ abstract class AbstractPlayerCharacter(
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractCharacter(name, maxHp, defense, turnsQueue),
-    PlayerCharacter {
+) : AbstractCharacter(name, maxHp, defense, turnsQueue) {
     private lateinit var _equippedWeapon: Weapon
-    override val equippedWeapon: Weapon
+    val equippedWeapon: Weapon
         get() = _equippedWeapon
-
-    override fun equip(weapon: Weapon) {
-        weapon.equipWeapon(this)
-    }
     /**
      * Setter for the [equippedWeapon] once the character knows if it can equip it
      */
