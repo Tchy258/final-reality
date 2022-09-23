@@ -11,14 +11,13 @@ import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.BowWielder
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.KnifeWielder
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.SwordWielder
+import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.ThiefWeapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * A [Thief] is a type of [PlayerCharacter] that can equip a [Sword], a [Knife] or a [Bow].
+ * A [Thief] is a concrete type of [AbstractPlayerCharacter] that can equip
+ * a [Sword], a [Knife] or a [Bow].
  *
  * @param name the character's name.
  * @param maxHp the character's maximum health points.
@@ -34,17 +33,17 @@ class Thief(
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
-    BowWielder,
-    KnifeWielder,
-    SwordWielder {
-    override fun equipBow(bow: Bow) {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
+    fun equip(weapon: ThiefWeapon) {
+        weapon.equipWeapon(this)
+    }
+    fun equipBow(bow: Bow) {
         this.setWeapon(bow)
     }
-    override fun equipKnife(knife: Knife) {
+    fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
     }
-    override fun equipSword(sword: Sword) {
+    fun equipSword(sword: Sword) {
         this.setWeapon(sword)
     }
     override fun equals(other: Any?) = when {

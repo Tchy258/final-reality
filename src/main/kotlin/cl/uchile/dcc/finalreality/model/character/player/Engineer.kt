@@ -10,13 +10,12 @@ package cl.uchile.dcc.finalreality.model.character.player
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.AxeWielder
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.BowWielder
+import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.EngineerWeapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * An `Engineer` is a type of [PlayerCharacter] that can equip an [Axe] or
+ * An [Engineer] is a concrete type of [AbstractPlayerCharacter] that can equip an [Axe] or
  * a [Bow].
  *
  * @param name the character's name.
@@ -34,13 +33,14 @@ class Engineer(
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
-    AxeWielder,
-    BowWielder {
-    override fun equipAxe(axe: Axe) {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
+    fun equip(weapon: EngineerWeapon) {
+        weapon.equipWeapon(this)
+    }
+    fun equipAxe(axe: Axe) {
         this.setWeapon(axe)
     }
-    override fun equipBow(bow: Bow) {
+    fun equipBow(bow: Bow) {
         this.setWeapon(bow)
     }
     override fun equals(other: Any?) = when {

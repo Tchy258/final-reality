@@ -11,8 +11,7 @@ import cl.uchile.dcc.finalreality.exceptions.Require
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Staff
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.KnifeWielder
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.StaffWielder
+import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.BlackMageWeapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
@@ -38,18 +37,19 @@ class BlackMage(
     maxMp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
-    KnifeWielder,
-    StaffWielder {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
     val maxMp = Require.Stat(maxMp, "Max MP") atLeast 1
     var currentMp: Int = maxMp
         set(value) {
             field = Require.Stat(value, "Current MP") inRange 0..maxMp
         }
-    override fun equipKnife(knife: Knife) {
+    fun equip(weapon: BlackMageWeapon) {
+        weapon.equipWeapon(this)
+    }
+    fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
     }
-    override fun equipStaff(staff: Staff) {
+    fun equipStaff(staff: Staff) {
         this.setWeapon(staff)
     }
     override fun equals(other: Any?) = when {

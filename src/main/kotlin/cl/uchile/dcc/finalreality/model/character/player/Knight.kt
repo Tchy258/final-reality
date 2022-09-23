@@ -11,14 +11,12 @@ import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.AxeWielder
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.KnifeWielder
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.SwordWielder
+import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.KnightWeapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * A `Knight` is a type of [PlayerCharacter] that can equip a [Sword], an [Axe] or
+ * A `Knight` is a concrete type of [AbstractPlayerCharacter] that can equip a [Sword], an [Axe] or
  * a [Knife].
  *
  * @param name the character's name.
@@ -37,17 +35,17 @@ class Knight(
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
-    AxeWielder,
-    KnifeWielder,
-    SwordWielder {
-    override fun equipAxe(axe: Axe) {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
+    fun equip(weapon: KnightWeapon) {
+        weapon.equipWeapon(this)
+    }
+    fun equipAxe(axe: Axe) {
         this.setWeapon(axe)
     }
-    override fun equipKnife(knife: Knife) {
+    fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
     }
-    override fun equipSword(sword: Sword) {
+    fun equipSword(sword: Sword) {
         this.setWeapon(sword)
     }
     override fun equals(other: Any?) = when {
