@@ -1,6 +1,5 @@
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
-
 /**
  * This represents any generic weapon.
  *
