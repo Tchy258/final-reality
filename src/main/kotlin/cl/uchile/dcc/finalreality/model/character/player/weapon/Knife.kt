@@ -1,7 +1,11 @@
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
-import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
-import cl.uchile.dcc.finalreality.model.character.player.weapon.wielder.KnifeWielder
+import cl.uchile.dcc.finalreality.model.character.player.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.Knight
+import cl.uchile.dcc.finalreality.model.character.player.Thief
+import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.BlackMageWeapon
+import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.KnightWeapon
+import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.ThiefWeapon
 import java.util.Objects
 /**
  * A class that identifies a [Weapon] as a Knife, and tells whoever tries to equip it
@@ -18,9 +22,18 @@ class Knife(
     name: String,
     damage: Int,
     weight: Int
-) : AbstractWeapon(name, damage, weight) {
-    override fun equipWeapon(aCharacter: PlayerCharacter) {
-        (aCharacter as KnifeWielder).equipKnife(this)
+) : AbstractWeapon(name, damage, weight),
+    ThiefWeapon,
+    KnightWeapon,
+    BlackMageWeapon {
+    override fun equipWeapon(aCharacter: Knight) {
+        aCharacter.equipKnife(this)
+    }
+    override fun equipWeapon(aCharacter: Thief) {
+        aCharacter.equipKnife(this)
+    }
+    override fun equipWeapon(aCharacter: BlackMage) {
+        aCharacter.equipKnife(this)
     }
     override fun hashCode() = Objects.hash(Knife::class, name, damage, weight)
     override fun equals(other: Any?) = when {
