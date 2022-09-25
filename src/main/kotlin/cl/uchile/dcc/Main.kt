@@ -1,11 +1,18 @@
+/*
+ * "Final Reality" (c) by R8V and Tchy258
+ * "Final Reality" is licensed under a
+ * Creative Commons Attribution 4.0 International License.
+ * You should have received a copy of the license along with this
+ * work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
+ */
 package cl.uchile.dcc
 
 import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.player.AbstractPlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.Knight
+import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.Thief
 import cl.uchile.dcc.finalreality.model.character.player.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
@@ -364,7 +371,7 @@ fun main() {
         // order
         val queueFront: GameCharacter = queue.poll()
         println(queueFront)
-        if (queueFront is AbstractPlayerCharacter) {
+        if (queueFront is PlayerCharacter) {
             println(queueFront.equippedWeapon)
         }
         println()
