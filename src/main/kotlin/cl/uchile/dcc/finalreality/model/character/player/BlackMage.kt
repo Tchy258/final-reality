@@ -7,25 +7,24 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player
 
-import cl.uchile.dcc.finalreality.exceptions.Require
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Staff
-import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.BlackMageWeapon
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * A Black Mage is a type of player character that can cast black magic.
+ * A [BlackMage] is a concrete type of [AbstractMage] that can cast black magic.
  * Black Mages can use a [Knife] or a [Staff]
  *
- * @param name the character's name.
- * @param maxHp the character's maximum health points.
- * @param maxMp the character's maximum magic points.
- * @param defense the character's defense.
+ * @param name the mage's name.
+ * @param maxHp the mage's maximum health points.
+ * @param maxMp the mage's maximum magic points.
+ * @param defense the mage's defense.
  * @param turnsQueue the queue with the characters waiting for their turn.
- * @property currentMp the current MP of the character.
- * @property currentHp the current HP of the character.
+ * @property currentMp the current MP of the mage.
+ * @property currentHp the current HP of the mage.
  * @constructor Creates a new Black Mage.
  *
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
@@ -37,14 +36,9 @@ class BlackMage(
     maxMp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
-    val maxMp = Require.Stat(maxMp, "Max MP") atLeast 1
-    var currentMp: Int = maxMp
-        set(value) {
-            field = Require.Stat(value, "Current MP") inRange 0..maxMp
-        }
-    fun equip(weapon: BlackMageWeapon) {
-        weapon.equipWeapon(this)
+) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
+    override fun equip(weapon: Weapon) {
+        weapon.equipTo(this)
     }
     fun equipKnife(knife: Knife) {
         this.setWeapon(knife)

@@ -1,5 +1,5 @@
 /*
- * "Final Reality" (c) by R8V and ~Your name~
+ * "Final Reality" (c) by R8V and Tchy258
  * "Final Reality" is licensed under a
  * Creative Commons Attribution 4.0 International License.
  * You should have received a copy of the license along with this
@@ -7,24 +7,23 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player
 
-import cl.uchile.dcc.finalreality.exceptions.Require
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Staff
-import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.WhiteMageWeapon
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * A White Mage is a concrete type of [AbstractPlayerCharacter] that can cast white magic.
+ * A [WhiteMage] is a concrete type of [AbstractMage] that can cast white magic.
  * White mages can only use a [Staff] as their weapon.
  *
- * @param name the character's name.
- * @param maxHp the character's maximum health points.
- * @param maxMp the character's maximum magic points.
- * @param defense the character's defense.
+ * @param name the mage's name.
+ * @param maxHp the mage's maximum health points.
+ * @param maxMp the mage's maximum magic points.
+ * @param defense the mage's defense.
  * @param turnsQueue the queue with the characters waiting for their turn.
- * @property currentMp The current MP of the character.
- * @property currentHp The current HP of the character.
+ * @property currentMp The current MP of the mage.
+ * @property currentHp The current HP of the mage.
  * @constructor Creates a new Black Mage.
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
@@ -35,14 +34,9 @@ class WhiteMage(
     maxMp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
-    val maxMp = Require.Stat(maxMp, "Max MP") atLeast 0
-    var currentMp: Int = maxMp
-        set(value) {
-            field = Require.Stat(value, "Current MP") inRange 0..maxMp
-        }
-    fun equip(weapon: WhiteMageWeapon) {
-        weapon.equipWeapon(this)
+) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
+    override fun equip(weapon: Weapon) {
+        weapon.equipTo(this)
     }
     fun equipStaff(staff: Staff) {
         this.setWeapon(staff)
