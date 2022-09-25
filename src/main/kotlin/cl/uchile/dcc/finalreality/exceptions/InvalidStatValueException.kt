@@ -11,7 +11,7 @@ package cl.uchile.dcc.finalreality.exceptions
 /**
  * This error is used to represent an invalid stat value.
  *
- * @constructor Creates a new `InvalidStatValueException` with a `description` of the
+ * @constructor Creates a new [InvalidStatValueException] with a `description` of the
  * error.
  *
  * @author <a href="https://github.com/r8vnhill">R8V</a>
