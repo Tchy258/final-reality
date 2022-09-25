@@ -1,3 +1,10 @@
+/*
+ * "Final Reality" (c) by R8V and Tchy258
+ * "Final Reality" is licensed under a
+ * Creative Commons Attribution 4.0 International License.
+ * You should have received a copy of the license along with this
+ * work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
+ */
 package cl.uchile.dcc.finalreality.model.character.player
 
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
@@ -25,9 +32,10 @@ abstract class AbstractPlayerCharacter(
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractCharacter(name, maxHp, defense, turnsQueue) {
+) : AbstractCharacter(name, maxHp, defense, turnsQueue),
+    PlayerCharacter {
     private lateinit var _equippedWeapon: Weapon
-    val equippedWeapon: Weapon
+    override val equippedWeapon: Weapon
         get() = _equippedWeapon
     /**
      * Setter for the [equippedWeapon] once the character knows if it can equip it
