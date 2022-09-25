@@ -10,7 +10,7 @@ package cl.uchile.dcc.finalreality.model.character.player
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
-import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.EngineerWeapon
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
@@ -34,8 +34,8 @@ class Engineer(
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
-    fun equip(weapon: EngineerWeapon) {
-        weapon.equipWeapon(this)
+    override fun equip(weapon: Weapon) {
+        weapon.equipTo(this)
     }
     fun equipAxe(axe: Axe) {
         this.setWeapon(axe)

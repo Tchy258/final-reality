@@ -1,9 +1,14 @@
+/*
+ * "Final Reality" (c) by R8V and Tchy258
+ * "Final Reality" is licensed under a
+ * Creative Commons Attribution 4.0 International License.
+ * You should have received a copy of the license along with this
+ * work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
+ */
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
 import cl.uchile.dcc.finalreality.model.character.player.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.WhiteMage
-import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.BlackMageWeapon
-import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.WhiteMageWeapon
 import java.util.Objects
 /**
  * A class that identifies a [Weapon] as a Staff, and tells whoever tries to equip it
@@ -22,15 +27,12 @@ class Staff(
     damage: Int,
     weight: Int,
     val magicDamage: Int
-) : AbstractWeapon(name, damage, weight),
-    BlackMageWeapon,
-    WhiteMageWeapon {
-    override fun equipWeapon(aCharacter: BlackMage) {
-        aCharacter.equipStaff(this)
+) : AbstractWeapon(name, damage, weight) {
+    override fun equipTo(character: BlackMage) {
+        character.equipStaff(this)
     }
-
-    override fun equipWeapon(aCharacter: WhiteMage) {
-        aCharacter.equipStaff(this)
+    override fun equipTo(character: WhiteMage) {
+        character.equipStaff(this)
     }
     override fun hashCode() = Objects.hash(Staff::class, name, damage, weight, magicDamage)
     override fun equals(other: Any?) = when {

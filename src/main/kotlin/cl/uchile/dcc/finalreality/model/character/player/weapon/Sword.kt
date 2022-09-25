@@ -1,9 +1,14 @@
+/*
+ * "Final Reality" (c) by R8V and Tchy258
+ * "Final Reality" is licensed under a
+ * Creative Commons Attribution 4.0 International License.
+ * You should have received a copy of the license along with this
+ * work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
+ */
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
 import cl.uchile.dcc.finalreality.model.character.player.Knight
 import cl.uchile.dcc.finalreality.model.character.player.Thief
-import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.KnightWeapon
-import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.ThiefWeapon
 import java.util.Objects
 
 /**
@@ -21,14 +26,12 @@ class Sword(
     name: String,
     damage: Int,
     weight: Int
-) : AbstractWeapon(name, damage, weight),
-    KnightWeapon,
-    ThiefWeapon {
-    override fun equipWeapon(aCharacter: Knight) {
-        aCharacter.equipSword(this)
+) : AbstractWeapon(name, damage, weight) {
+    override fun equipTo(character: Knight) {
+        character.equipSword(this)
     }
-    override fun equipWeapon(aCharacter: Thief) {
-        aCharacter.equipSword(this)
+    override fun equipTo(character: Thief) {
+        character.equipSword(this)
     }
     override fun hashCode() = Objects.hash(Sword::class, name, damage, weight)
     override fun equals(other: Any?) = when {

@@ -1,5 +1,5 @@
 /*
- * "Final Reality" (c) by R8V and ~Your name~
+ * "Final Reality" (c) by R8V and Tchy258
  * "Final Reality" is licensed under a
  * Creative Commons Attribution 4.0 International License.
  * You should have received a copy of the license along with this
@@ -11,12 +11,12 @@ import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
-import cl.uchile.dcc.finalreality.model.character.player.weapon.usability.KnightWeapon
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * A `Knight` is a concrete type of [AbstractPlayerCharacter] that can equip a [Sword], an [Axe] or
+ * A [Knight] is a concrete type of [AbstractPlayerCharacter] that can equip a [Sword], an [Axe] or
  * a [Knife].
  *
  * @param name the character's name.
@@ -36,8 +36,8 @@ class Knight(
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
-    fun equip(weapon: KnightWeapon) {
-        weapon.equipWeapon(this)
+    override fun equip(weapon: Weapon) {
+        weapon.equipTo(this)
     }
     fun equipAxe(axe: Axe) {
         this.setWeapon(axe)
