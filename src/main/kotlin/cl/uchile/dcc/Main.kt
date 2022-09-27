@@ -301,7 +301,7 @@ fun main() {
     // ----------------------------------Exception handling------------------------------------
     println("Trying to generate a character with invalid stats")
     try {
-        val invalidCharacter = Knight("Nope",-1,-1,exampleQueue)
+        val invalidCharacter = Knight("Nope", -1, -1, exampleQueue)
     } catch (e: InvalidStatValueException) {
         println("Exception caught, character not created")
     }
