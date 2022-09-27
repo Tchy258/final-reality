@@ -7,6 +7,9 @@
  */
 package cl.uchile.dcc
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
+import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
+import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.BlackMage
@@ -295,7 +298,33 @@ fun main() {
     println("Equipped Staff: ${exampleBlackMage.equippedWeapon} ")
     println()
     Thread.sleep(3000)
-
+    // ----------------------------------Exception handling------------------------------------
+    println("Trying to generate a character with invalid stats")
+    try {
+        val invalidCharacter = Knight("Nope",-1,-1,exampleQueue)
+    } catch (e: InvalidStatValueException) {
+        println("Exception caught, character not created")
+    }
+    println()
+    println("Trying to an equip an invalid weapon to a knight")
+    println("Knight's current weapon: ${exampleKnight.equippedWeapon}")
+    println("Unusable weapon: $exampleStaff")
+    try {
+        exampleKnight.equip(exampleStaff)
+    } catch (e: InvalidWeaponException) {
+        println("Exception caught, weapon not equipped")
+    }
+    println("Weapon after catching exception: ${exampleKnight.equippedWeapon}")
+    println()
+    println("Trying to add to the queue an unarmed character")
+    try {
+        sameKnight.waitTurn()
+    } catch (e: NoWeaponEquippedException) {
+        println("Exception caught, knight not on turn queue")
+        println("Queue size: ${exampleQueue.size}")
+    }
+    println()
+    Thread.sleep(3000)
     // ----------------------------------Turns and toString() tests with examples-----------------
 
     // The first queue holds the actual turn queue
