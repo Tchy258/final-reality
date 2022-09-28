@@ -43,7 +43,7 @@ The reason double dispatch results in a more maintainable and extensible code is
 addition of new weapons or characters without modifying any existing code from the character and weapon class, whereas having to
 ask for a weapon's type property would have required a modification to all equip methods for every character class doing the type checking.
 
-Making new classes for each weapon also helped me notice a missing property as per the project's requirements, a *magicDamage* value on staves.
+Making new classes for each weapon also made more apparent a missing property as per the project's requirements, a *magicDamage* value on staves.
 
 
 Another minor design flaw was the absence of a few basic *toString()* and *equals()* methods on some classes.
