@@ -2,6 +2,7 @@ package cl.uchile.dcc.finalreality.model.character.player.weapon
 
 import io.kotest.core.spec.style.WordSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.property.checkAll
 
 class AxeTest: WordSpec( {
     lateinit var axe1: Axe
@@ -16,6 +17,13 @@ class AxeTest: WordSpec( {
 
     "Two axes with the same parameters" should {
         "Be equal" {
+            checkAll<String, Int, Int> { name, damage, weight ->
+                val axet1 =
+                    Axe(name, damage, weight)
+                val axet2 =
+                    Axe(name, damage, weight)
+                axet1 shouldBe axet2
+            }
             axe1 shouldBe axe2
         }
         "Have the same hashcode" {
