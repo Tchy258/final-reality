@@ -14,7 +14,7 @@ class AxeTest : FunSpec({
         axe2 = Axe("TestAxe", 10, 20)
         axe3 = Axe("TestAxe2", 20, 10)
     }
-    context("Two axes should") {
+    context("Two axes with the same parameters should") {
         test("Be equal") {
             checkAll<String, Int, Int> { name, damage, weight ->
                 val randomAxe1 =
