@@ -35,7 +35,7 @@ class Thief(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
     override fun equip(weapon: Weapon) {
-        weapon.equipTo(this)
+        weapon.equipToThief(this)
     }
     fun equipBow(bow: Bow) {
         this.setWeapon(bow)

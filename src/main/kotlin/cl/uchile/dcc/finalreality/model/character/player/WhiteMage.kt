@@ -36,7 +36,7 @@ class WhiteMage(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
     override fun equip(weapon: Weapon) {
-        weapon.equipTo(this)
+        weapon.equipToWhiteMage(this)
     }
     fun equipStaff(staff: Staff) {
         this.setWeapon(staff)

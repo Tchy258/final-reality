@@ -37,7 +37,7 @@ class Knight(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
     override fun equip(weapon: Weapon) {
-        weapon.equipTo(this)
+        weapon.equipToKnight(this)
     }
     fun equipAxe(axe: Axe) {
         this.setWeapon(axe)

@@ -28,10 +28,10 @@ class Staff(
     weight: Int,
     val magicDamage: Int
 ) : AbstractWeapon(name, damage, weight) {
-    override fun equipTo(character: BlackMage) {
+    override fun equipToBlackMage(character: BlackMage) {
         character.equipStaff(this)
     }
-    override fun equipTo(character: WhiteMage) {
+    override fun equipToWhiteMage(character: WhiteMage) {
         character.equipStaff(this)
     }
     override fun hashCode() = Objects.hash(Staff::class, name, damage, weight, magicDamage)

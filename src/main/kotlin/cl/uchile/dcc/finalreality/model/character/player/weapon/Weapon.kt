@@ -34,33 +34,33 @@ interface Weapon {
      * Only weapons usable by black mages can override this method.
      * @param character the [BlackMage] this [Weapon] will be equipped to
      */
-    fun equipTo(character: BlackMage) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
+    fun equipToBlackMage(character: BlackMage) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
     /**
      * Equips this [Weapon] to an [Engineer].
      * By default, it throws an [InvalidWeaponException].
      * Only weapons usable by engineers can override this method.
      * @param character the [Engineer] this [Weapon] will be equipped to
      */
-    fun equipTo(character: Engineer) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
+    fun equipToEngineer(character: Engineer) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
     /**
      * Equips this [Weapon] to a [Knight].
      * By default, it throws an [InvalidWeaponException].
      * Only weapons usable by knights can override this method.
      * @param character the [Knight] this [Weapon] will be equipped to
      */
-    fun equipTo(character: Knight) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
+    fun equipToKnight(character: Knight) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
     /**
      * Equips this [Weapon] to a [Thief].
      * By default, it throws an [InvalidWeaponException].
      * Only weapons usable by thieves can override this method
      * @param character the [Thief] this [Weapon] will be equipped to
      */
-    fun equipTo(character: Thief) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
+    fun equipToThief(character: Thief) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
     /**
      * Equips this [Weapon] to a [WhiteMage].
      * By default, it throws an [InvalidWeaponException].
      * Only weapons usable by white mages can override this method
      * @param character the [WhiteMage] this [Weapon] will be equipped to
      */
-    fun equipTo(character: WhiteMage) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
+    fun equipToWhiteMage(character: WhiteMage) { throw InvalidWeaponException(character::class.simpleName!!, this::class.simpleName!!) }
 }

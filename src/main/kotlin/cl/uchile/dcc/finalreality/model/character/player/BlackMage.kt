@@ -38,7 +38,7 @@ class BlackMage(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
     override fun equip(weapon: Weapon) {
-        weapon.equipTo(this)
+        weapon.equipToBlackMage(this)
     }
     fun equipKnife(knife: Knife) {
         this.setWeapon(knife)

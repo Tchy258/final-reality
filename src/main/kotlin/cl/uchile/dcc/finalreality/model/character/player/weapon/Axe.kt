@@ -26,10 +26,10 @@ class Axe(
     damage: Int,
     weight: Int
 ) : AbstractWeapon(name, damage, weight) {
-    override fun equipTo(character: Engineer) {
+    override fun equipToEngineer(character: Engineer) {
         character.equipAxe(this)
     }
-    override fun equipTo(character: Knight) {
+    override fun equipToKnight(character: Knight) {
         character.equipAxe(this)
     }
     override fun hashCode() = Objects.hash(Axe::class, name, damage, weight)
