@@ -16,5 +16,5 @@ import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
  * @constructor Creates a new [InvalidWeaponException] with the [PlayerCharacter]
  * that tried to equip a [Weapon] it shouldn't
  */
-class InvalidWeaponException(character: PlayerCharacter, weapon: Weapon) :
-    Exception("Attempted to equip a ${weapon::class.simpleName} to a ${character::class.simpleName}")
+class InvalidWeaponException(character: String, weapon: String) :
+    Exception("Attempted to equip a $weapon to a $character")

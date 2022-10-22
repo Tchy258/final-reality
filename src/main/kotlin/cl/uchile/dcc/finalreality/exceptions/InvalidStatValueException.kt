@@ -18,4 +18,4 @@ package cl.uchile.dcc.finalreality.exceptions
  * @author <a href="https://github.com/Tchy258">Tchy258</a>
  */
 class InvalidStatValueException(description: String) :
-    Exception("The required condition is not met. $description")
+    Exception("The provided value is not a valid stat value. $description")
