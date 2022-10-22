@@ -7,6 +7,8 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
+import cl.uchile.dcc.finalreality.exceptions.Require
+
 /**
  * A class that holds all the information of a weapon.
  *
@@ -19,6 +21,9 @@ package cl.uchile.dcc.finalreality.model.character.player.weapon
  */
 abstract class AbstractWeapon(
     override val name: String,
-    override val damage: Int,
-    override val weight: Int
-) : Weapon
+    damage: Int,
+    weight: Int
+) : Weapon {
+    override val damage: Int = Require.Stat(damage,"Damage ") atLeast 0
+    override val weight: Int = Require.Stat(weight,"Weight ") atLeast 1
+}
