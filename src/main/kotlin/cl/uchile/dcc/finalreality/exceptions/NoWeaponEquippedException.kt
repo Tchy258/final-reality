@@ -18,5 +18,5 @@ import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
  * @author <a href="https://github.com/Tchy258">Tchy258</a>
  */
 
-class NoWeaponEquippedException(aCharacter: PlayerCharacter) :
-    Exception("Attempted to join turn queue unarmed. ${aCharacter.name} has no weapon equipped")
+class NoWeaponEquippedException(aCharacter: String) :
+    Exception("Attempted to join turn queue unarmed. $aCharacter has no weapon equipped")

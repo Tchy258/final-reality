@@ -52,7 +52,7 @@ abstract class AbstractPlayerCharacter(
                 /* unit = */ TimeUnit.MILLISECONDS
             )
         } else {
-            throw NoWeaponEquippedException(this)
+            throw NoWeaponEquippedException(this.name)
         }
     }
 }
