@@ -5,67 +5,62 @@
  * You should have received a copy of the license along with this
  * work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
  */
-package cl.uchile.dcc.finalreality.model.character.player
+package cl.uchile.dcc.finalreality.model.character.player.classes.physical
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.player.classes.AbstractPlayerCharacter
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Staff
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * A [BlackMage] is a concrete type of [AbstractMage] that can cast black magic.
- * Black Mages can use a [Knife] or a [Staff]
+ * A [Thief] is a concrete type of [AbstractPlayerCharacter] that can equip
+ * a [Sword], a [Knife] or a [Bow].
  *
- * @param name the mage's name.
- * @param maxHp the mage's maximum health points.
- * @param maxMp the mage's maximum magic points.
- * @param defense the mage's defense.
+ * @param name the character's name.
+ * @param maxHp the character's maximum health points.
+ * @param defense the character's defense.
  * @param turnsQueue the queue with the characters waiting for their turn.
- * @property currentMp the current MP of the mage.
- * @property currentHp the current HP of the mage.
- * @constructor Creates a new Black Mage.
- *
+ * @property currentHp the current HP of the character.
+ * @constructor Creates a new Thief.
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-class BlackMage(
+class Thief(
     name: String,
     maxHp: Int,
-    maxMp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
     override fun equip(weapon: Weapon) {
-        weapon.equipToBlackMage(this)
+        weapon.equipToThief(this)
+    }
+    fun equipBow(bow: Bow) {
+        this.setWeapon(bow)
     }
     fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
     }
-    fun equipStaff(staff: Staff) {
-        this.setWeapon(staff)
+    fun equipSword(sword: Sword) {
+        this.setWeapon(sword)
     }
     override fun equals(other: Any?) = when {
         this === other -> true
-        other !is BlackMage -> false
+        other !is Thief -> false
         hashCode() != other.hashCode() -> false
         name != other.name -> false
         maxHp != other.maxHp -> false
-        maxMp != other.maxMp -> false
         defense != other.defense -> false
         else -> true
     }
-
-    override fun hashCode() =
-        Objects.hash(BlackMage::class, name, maxHp, maxMp, defense)
-
-    override fun toString() = "BlackMage { " +
-        "name: '$name' " +
+    override fun hashCode() = Objects.hash(Thief::class, name, maxHp, defense)
+    override fun toString() = "Thief { " +
+        "name: '$name', " +
         "maxHp: $maxHp, " +
-        "maxMp: $maxMp, " +
         "defense: $defense, " +
-        "currentHp: $currentHp, " +
-        "currentMp: $currentMp " +
+        "currentHp: $currentHp " +
         "}"
 }

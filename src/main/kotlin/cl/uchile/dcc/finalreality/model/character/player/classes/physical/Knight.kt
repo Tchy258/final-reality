@@ -5,10 +5,11 @@
  * You should have received a copy of the license along with this
  * work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
  */
-package cl.uchile.dcc.finalreality.model.character.player
+package cl.uchile.dcc.finalreality.model.character.player.classes.physical
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
+import cl.uchile.dcc.finalreality.model.character.player.classes.AbstractPlayerCharacter
+import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
@@ -16,29 +17,31 @@ import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
 /**
- * A [Thief] is a concrete type of [AbstractPlayerCharacter] that can equip
- * a [Sword], a [Knife] or a [Bow].
+ * A [Knight] is a concrete type of [AbstractPlayerCharacter] that can equip a [Sword], an [Axe] or
+ * a [Knife].
  *
  * @param name the character's name.
  * @param maxHp the character's maximum health points.
  * @param defense the character's defense.
  * @param turnsQueue the queue with the characters waiting for their turn.
  * @property currentHp the current HP of the character.
- * @constructor Creates a new Thief.
+ * @constructor Creates a new Knight.
+ *
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-class Thief(
+
+class Knight(
     name: String,
     maxHp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
     override fun equip(weapon: Weapon) {
-        weapon.equipToThief(this)
+        weapon.equipToKnight(this)
     }
-    fun equipBow(bow: Bow) {
-        this.setWeapon(bow)
+    fun equipAxe(axe: Axe) {
+        this.setWeapon(axe)
     }
     fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
@@ -48,15 +51,16 @@ class Thief(
     }
     override fun equals(other: Any?) = when {
         this === other -> true
-        other !is Thief -> false
+        other !is Knight -> false
         hashCode() != other.hashCode() -> false
         name != other.name -> false
         maxHp != other.maxHp -> false
         defense != other.defense -> false
         else -> true
     }
-    override fun hashCode() = Objects.hash(Thief::class, name, maxHp, defense)
-    override fun toString() = "Thief { " +
+    override fun hashCode() = Objects.hash(Knight::class, name, maxHp, defense)
+
+    override fun toString() = "Knight { " +
         "name: '$name', " +
         "maxHp: $maxHp, " +
         "defense: $defense, " +

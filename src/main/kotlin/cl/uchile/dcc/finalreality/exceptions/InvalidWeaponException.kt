@@ -7,7 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.exceptions
 
-import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacter
+import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
 
 /**

@@ -8,11 +8,11 @@
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
-import cl.uchile.dcc.finalreality.model.character.player.BlackMage
-import cl.uchile.dcc.finalreality.model.character.player.Engineer
-import cl.uchile.dcc.finalreality.model.character.player.Knight
-import cl.uchile.dcc.finalreality.model.character.player.Thief
-import cl.uchile.dcc.finalreality.model.character.player.WhiteMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 
 /**
  * This represents any generic weapon.

@@ -7,8 +7,8 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
-import cl.uchile.dcc.finalreality.model.character.player.BlackMage
-import cl.uchile.dcc.finalreality.model.character.player.WhiteMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import java.util.Objects
 /**
  * A class that identifies a [Weapon] as a Staff, and tells whoever tries to equip it

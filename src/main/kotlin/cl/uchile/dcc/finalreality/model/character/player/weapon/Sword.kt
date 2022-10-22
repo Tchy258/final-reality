@@ -7,8 +7,8 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
-import cl.uchile.dcc.finalreality.model.character.player.Knight
-import cl.uchile.dcc.finalreality.model.character.player.Thief
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
 import java.util.Objects
 
 /**

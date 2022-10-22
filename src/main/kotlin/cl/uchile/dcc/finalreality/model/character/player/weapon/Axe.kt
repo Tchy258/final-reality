@@ -7,8 +7,8 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
-import cl.uchile.dcc.finalreality.model.character.player.Engineer
-import cl.uchile.dcc.finalreality.model.character.player.Knight
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import java.util.Objects
 /**
  * A class that identifies a [Weapon] as an Axe, and tells whoever tries to equip it
