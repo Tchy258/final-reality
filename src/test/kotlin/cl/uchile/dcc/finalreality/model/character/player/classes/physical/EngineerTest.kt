@@ -120,7 +120,6 @@ class EngineerTest : FunSpec({
                 assertDoesNotThrow {
                     randomEngineer.equip(randomAxe)
                 }
-                randomEngineer.equip(randomAxe)
                 randomEngineer.equippedWeapon shouldBe randomAxe
             }
         }
@@ -138,7 +137,6 @@ class EngineerTest : FunSpec({
                 assertDoesNotThrow {
                     randomEngineer.equip(randomBow)
                 }
-                randomEngineer.equip(randomBow)
                 randomEngineer.equippedWeapon shouldBe randomBow
             }
         }
