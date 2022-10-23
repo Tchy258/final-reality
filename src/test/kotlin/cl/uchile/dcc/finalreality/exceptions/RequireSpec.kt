@@ -1,3 +1,10 @@
+/*
+ * "Final Reality" (c) by R8V and Tchy258
+ * "Final Reality" is licensed under a
+ * Creative Commons Attribution 4.0 International License.
+ * You should have received a copy of the license along with this
+ * work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
+ */
 package cl.uchile.dcc.finalreality.exceptions
 
 import io.kotest.core.spec.style.FunSpec
@@ -7,13 +14,6 @@ import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
-/*
- * "final-reality-kt" (c) by R8V.
- * "final-reality-kt" is licensed under a
- * Creative Commons Attribution 4.0 International License.
- * You should have received a copy of the license along with this
- * work. If not, see <https://creativecommons.org/licenses/by/4.0/>.
- */
 class RequireSpec : FunSpec({
     test("'Require.Stat(...).atLeast' throws an exception when the 'stat' is less than the 'least'.") {
         checkAll<Int, Int, String>( // We generate 3 random values (Int, Int, String)
