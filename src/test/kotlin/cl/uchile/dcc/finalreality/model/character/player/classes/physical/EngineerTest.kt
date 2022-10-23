@@ -203,5 +203,22 @@ class EngineerTest : FunSpec({
                 randomEngineer.currentHp shouldBeGreaterThanOrEqualTo 0
             }
         }
+        test("Be able to join the turns queue with a weapon equipped") {
+            checkAll(
+                genA = Arb.string(),
+                genB = Arb.positiveInt(),
+                genC = Arb.nonNegativeInt(),
+                genD = Arb.string(),
+                genE = Arb.positiveInt(),
+                genF = Arb.positiveInt()
+            ) { charName, maxHp, defense, weapName, damage, weight ->
+                val randomAxe = Axe(weapName, damage, weight)
+                val randomEngineer = Engineer(charName, maxHp, defense, queue)
+                randomEngineer.equip(randomAxe)
+                assertDoesNotThrow {
+                    randomEngineer.waitTurn()
+                }
+            }
+        }
     }
 })

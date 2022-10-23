@@ -203,5 +203,22 @@ class KnightTest : FunSpec({
                 randomKnight.currentHp shouldBeGreaterThanOrEqualTo 0
             }
         }
+        test("Be able to join the turns queue with a weapon equipped") {
+            checkAll(
+                genA = Arb.string(),
+                genB = Arb.positiveInt(),
+                genC = Arb.nonNegativeInt(),
+                genD = Arb.string(),
+                genE = Arb.positiveInt(),
+                genF = Arb.positiveInt()
+            ) { charName, maxHp, defense, weapName, damage, weight ->
+                val randomSword = Sword(weapName, damage, weight)
+                val randomKnight = Knight(charName, maxHp, defense, queue)
+                randomKnight.equip(randomSword)
+                assertDoesNotThrow {
+                    randomKnight.waitTurn()
+                }
+            }
+        }
     }
 })
