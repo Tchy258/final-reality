@@ -24,6 +24,6 @@ abstract class AbstractWeapon(
     damage: Int,
     weight: Int
 ) : Weapon {
-    override val damage: Int = Require.Stat(damage,"Damage ") atLeast 0
-    override val weight: Int = Require.Stat(weight,"Weight ") atLeast 1
+    override val damage: Int = Require.Stat(damage, "Damage ") atLeast 0
+    override val weight: Int = Require.Stat(weight, "Weight ") atLeast 1
 }

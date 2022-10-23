@@ -12,7 +12,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertThrows
 
-
 class NoWeaponEquippedExceptionTest : FunSpec({
     val prefix = "Attempted to join turn queue unarmed. "
     val suffix = " has no weapon equipped"
@@ -21,7 +20,7 @@ class NoWeaponEquippedExceptionTest : FunSpec({
         checkAll<String> {
             name ->
             assertThrows<NoWeaponEquippedException> {
-                    throw NoWeaponEquippedException(name)
+                throw NoWeaponEquippedException(name)
             }.message shouldBe prefix + name + suffix
         }
     }
