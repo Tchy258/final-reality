@@ -60,6 +60,7 @@ class Engineer(
     override fun toString() = "Engineer { " +
         "name: '$name', " +
         "maxHp: $maxHp, " +
-        "defense: $defense " +
+        "defense: $defense, " +
+        "currentHp: $currentHp " +
         "}"
 }
