@@ -61,7 +61,7 @@ class BlackMage(
         Objects.hash(BlackMage::class, name, maxHp, maxMp, defense)
 
     override fun toString() = "BlackMage { " +
-        "name: '$name' " +
+        "name: '$name', " +
         "maxHp: $maxHp, " +
         "maxMp: $maxMp, " +
         "defense: $defense, " +
