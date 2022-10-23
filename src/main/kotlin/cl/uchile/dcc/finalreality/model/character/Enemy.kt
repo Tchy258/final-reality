@@ -57,6 +57,6 @@ class Enemy(
             /* unit = */ TimeUnit.MILLISECONDS
         )
     }
-    override fun hashCode() = Objects.hash(Enemy::class, name, weight, maxHp, defense)
-    override fun toString(): String = "Enemy { name:'$name', weight: $weight, maxHp: $maxHp, defense: $defense }"
+    override fun hashCode() = Objects.hash(Enemy::class, name, damage, weight, maxHp, defense)
+    override fun toString(): String = "Enemy { name:'$name', damage: $damage, weight: $weight, maxHp: $maxHp, defense: $defense, currentHp: $currentHp }"
 }
