@@ -76,9 +76,9 @@ class EngineerTest : FunSpec({
     }
     context("Any Engineer should:") {
         test("Have a string representation") {
-            engineer1.toString() shouldBe "Engineer { name: 'TestEngineer', maxHp: 15, defense: 10 }"
-            engineer2.toString() shouldBe "Engineer { name: 'TestEngineer', maxHp: 15, defense: 10 }"
-            engineer3.toString() shouldBe "Engineer { name: 'TestEngineer2', maxHp: 18, defense: 11 }"
+            engineer1.toString() shouldBe "Engineer { name: 'TestEngineer', maxHp: 15, defense: 10, currentHp: 15 }"
+            engineer2.toString() shouldBe "Engineer { name: 'TestEngineer', maxHp: 15, defense: 10, currentHp: 15 }"
+            engineer3.toString() shouldBe "Engineer { name: 'TestEngineer2', maxHp: 18, defense: 11, currentHp: 18 }"
         }
         test("Not be null") {
             checkAll(
