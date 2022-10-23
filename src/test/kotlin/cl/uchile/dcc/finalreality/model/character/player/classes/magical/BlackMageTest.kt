@@ -13,6 +13,7 @@ import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
+import io.kotest.property.PropTestConfig
 import io.kotest.property.arbitrary.nonNegativeInt
 import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.arbitrary.string
@@ -211,6 +212,23 @@ class BlackMageTest : FunSpec({
                 randomBlackMage.currentHp = Integer.max(0, randomBlackMage.currentHp - randomDamage)
                 randomBlackMage.currentHp shouldNotBe maxHp
                 randomBlackMage.currentHp shouldBeGreaterThanOrEqualTo 0
+            }
+        }
+        test("Be able to have its currentMp changed to non-negative values") {
+            checkAll(
+                PropTestConfig(maxDiscardPercentage = 55),
+                genA = Arb.string(),
+                genB = Arb.positiveInt(),
+                genC = Arb.positiveInt(),
+                genD = Arb.nonNegativeInt(),
+                genE = Arb.positiveInt()
+            ) { name, maxHp, maxMp, defense, randomCost ->
+                assume(randomCost <= maxMp)
+                val randomBlackMage = BlackMage(name, maxHp, maxMp, defense, queue)
+                randomBlackMage.currentMp shouldBe maxMp
+                randomBlackMage.currentMp = Integer.max(0, randomBlackMage.currentMp - randomCost)
+                randomBlackMage.currentMp shouldNotBe maxMp
+                randomBlackMage.currentMp shouldBeGreaterThanOrEqualTo 0
             }
         }
         test("Be able to join the turns queue with a weapon equipped") {
