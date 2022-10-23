@@ -94,7 +94,7 @@ class BowTest : FunSpec({
                 genC = Arb.positiveInt()
             ) { name, damage, weight ->
                 val randomBow = Bow(name, damage, weight)
-                randomBow shouldNotBe randomBow
+                randomBow shouldBe randomBow
             }
             bow1 shouldBe bow1
             bow2 shouldBe bow2

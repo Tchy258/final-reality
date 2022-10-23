@@ -100,7 +100,7 @@ class StaffTest : FunSpec({
                 genD = Arb.positiveInt()
             ) { name, damage, weight, magicDamage ->
                 val randomStaff = Staff(name, damage, weight, magicDamage)
-                randomStaff shouldNotBe randomStaff
+                randomStaff shouldBe randomStaff
             }
             staff1 shouldBe staff1
             staff2 shouldBe staff2
