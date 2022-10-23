@@ -20,36 +20,36 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.concurrent.LinkedBlockingQueue
 
-class BowTest : FunSpec({
-    lateinit var bow1: Bow
-    lateinit var bow2: Bow
-    lateinit var bow3: Bow
+class KnifeTest : FunSpec({
+    lateinit var knife1: Knife
+    lateinit var knife2: Knife
+    lateinit var knife3: Knife
 
     beforeEach {
-        bow1 = Bow("TestBow", 10, 20)
-        bow2 = Bow("TestBow", 10, 20)
-        bow3 = Bow("TestBow2", 20, 10)
+        knife1 = Knife("TestKnife", 10, 20)
+        knife2 = Knife("TestKnife", 10, 20)
+        knife3 = Knife("TestKnife2", 20, 10)
     }
-    context("Two bows with the same parameters should:") {
+    context("Two knifes with the same parameters should:") {
         test("Be equal") {
             checkAll(
                 genA = Arb.string(),
                 genB = Arb.nonNegativeInt(),
                 genC = Arb.positiveInt()
             ) { name, damage, weight ->
-                val randomBow1 =
-                    Bow(name, damage, weight)
-                val randomBow2 =
-                    Bow(name, damage, weight)
-                randomBow1 shouldBe randomBow2
+                val randomKnife1 =
+                    Knife(name, damage, weight)
+                val randomKnife2 =
+                    Knife(name, damage, weight)
+                randomKnife1 shouldBe randomKnife2
             }
-            bow1 shouldBe bow2
+            knife1 shouldBe knife2
         }
         test("Have the same hashcode") {
-            bow1.hashCode() shouldBe bow2.hashCode()
+            knife1.hashCode() shouldBe knife2.hashCode()
         }
     }
-    context("Two bows with different parameters should:") {
+    context("Two knifes with different parameters should:") {
         test("Not be equal") {
             checkAll(
                 genA = Arb.string(),
@@ -64,28 +64,28 @@ class BowTest : FunSpec({
                         damage1 != damage2 ||
                         weight1 != weight2
                 }
-                val randomBow1 =
-                    Bow(name1, damage1, weight1)
-                val randomBow2 =
-                    Bow(name2, damage2, weight2)
-                randomBow1 shouldNotBe randomBow2
+                val randomKnife1 =
+                    Knife(name1, damage1, weight1)
+                val randomKnife2 =
+                    Knife(name2, damage2, weight2)
+                randomKnife1 shouldNotBe randomKnife2
             }
-            bow1 shouldNotBe bow3
+            knife1 shouldNotBe knife3
         }
     }
-    context("Any Bow should:") {
+    context("Any Knife should:") {
         test("Not be null") {
             checkAll(
                 genA = Arb.string(),
                 genB = Arb.nonNegativeInt(),
                 genC = Arb.positiveInt()
             ) { name, damage, weight ->
-                val randomBow = Bow(name, damage, weight)
-                randomBow shouldNotBe null
+                val randomKnife = Knife(name, damage, weight)
+                randomKnife shouldNotBe null
             }
-            bow1 shouldNotBe null
-            bow2 shouldNotBe null
-            bow3 shouldNotBe null
+            knife1 shouldNotBe null
+            knife2 shouldNotBe null
+            knife3 shouldNotBe null
         }
         test("Be equal to itself") {
             checkAll(
@@ -93,19 +93,19 @@ class BowTest : FunSpec({
                 genB = Arb.nonNegativeInt(),
                 genC = Arb.positiveInt()
             ) { name, damage, weight ->
-                val randomBow = Bow(name, damage, weight)
-                randomBow shouldNotBe null
+                val randomKnife = Knife(name, damage, weight)
+                randomKnife shouldNotBe null
             }
-            bow1 shouldBe bow1
-            bow2 shouldBe bow2
+            knife1 shouldBe knife1
+            knife2 shouldBe knife2
         }
         // Tests toString() method
         test("Have a string representation") {
-            bow1.toString() shouldBe "Bow { name: 'TestBow', damage: 10, weight: 20 }"
-            bow3.toString() shouldBe "Bow { name: 'TestBow2', damage: 20, weight: 10 }"
+            knife1.toString() shouldBe "Knife { name: 'TestKnife', damage: 10, weight: 20 }"
+            knife3.toString() shouldBe "Knife { name: 'TestKnife2', damage: 20, weight: 10 }"
         }
         // Tests for equipTo... methods
-        test("Be equippable to an Engineer") {
+        test("Be unequippable to an Engineer") {
             checkAll(
                 genA = Arb.string(),
                 genB = Arb.positiveInt(),
@@ -117,13 +117,13 @@ class BowTest : FunSpec({
                 charName, maxHp, defense, weapName, damage, weight ->
                 // The queue is not relevant to the test so a fresh instance is made each time
                 val testEngineer = Engineer(charName, maxHp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(weapName, damage, weight)
-                assertDoesNotThrow {
-                    testBow.equipToEngineer(testEngineer)
+                val testKnife = Knife(weapName, damage, weight)
+                assertThrows<InvalidWeaponException> {
+                    testKnife.equipToEngineer(testEngineer)
                 }
             }
         }
-        test("Be unequippable to a Knight") {
+        test("Be equippable to a Knight") {
             checkAll(
                 genA = Arb.string(),
                 genB = Arb.positiveInt(),
@@ -133,9 +133,9 @@ class BowTest : FunSpec({
                 genF = Arb.positiveInt()
             ) { charName, maxHp, defense, weapName, damage, weight ->
                 val testKnight = Knight(charName, maxHp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(weapName, damage, weight)
-                assertThrows<InvalidWeaponException> {
-                    testBow.equipToKnight(testKnight)
+                val testKnife = Knife(weapName, damage, weight)
+                assertDoesNotThrow {
+                    testKnife.equipToKnight(testKnight)
                 }
             }
         }
@@ -149,13 +149,13 @@ class BowTest : FunSpec({
                 genF = Arb.positiveInt()
             ) { charName, maxHp, defense, weapName, damage, weight ->
                 val testThief = Thief(charName, maxHp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(weapName, damage, weight)
+                val testKnife = Knife(weapName, damage, weight)
                 assertDoesNotThrow {
-                    testBow.equipToThief(testThief)
+                    testKnife.equipToThief(testThief)
                 }
             }
         }
-        test("Be unequippable to a BlackMage") {
+        test("Be equippable to a BlackMage") {
             checkAll(
                 genA = Arb.string(),
                 genB = Arb.positiveInt(),
@@ -166,9 +166,9 @@ class BowTest : FunSpec({
                 genG = Arb.positiveInt()
             ) { charName, maxHp, maxMp, defense, weapName, damage, weight ->
                 val testBlackMage = BlackMage(charName, maxHp, maxMp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(weapName, damage, weight)
-                assertThrows<InvalidWeaponException> {
-                    testBow.equipToBlackMage(testBlackMage)
+                val testKnife = Knife(weapName, damage, weight)
+                assertDoesNotThrow {
+                    testKnife.equipToBlackMage(testBlackMage)
                 }
             }
         }
@@ -183,9 +183,9 @@ class BowTest : FunSpec({
                 genG = Arb.positiveInt()
             ) { charName, maxHp, maxMp, defense, weapName, damage, weight ->
                 val testWhiteMage = WhiteMage(charName, maxHp, maxMp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(weapName, damage, weight)
+                val testKnife = Knife(weapName, damage, weight)
                 assertThrows<InvalidWeaponException> {
-                    testBow.equipToWhiteMage(testWhiteMage)
+                    testKnife.equipToWhiteMage(testWhiteMage)
                 }
             }
         }
