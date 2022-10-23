@@ -48,10 +48,6 @@ class BowTest : FunSpec({
         test("Have the same hashcode") {
             bow1.hashCode() shouldBe bow2.hashCode()
         }
-        test("Be equal to themselves") {
-            bow1 shouldBe bow1
-            bow2 shouldBe bow2
-        }
     }
     context("Two bows with different parameters should:") {
         test("Not be equal") {
@@ -90,6 +86,18 @@ class BowTest : FunSpec({
             bow1 shouldNotBe null
             bow2 shouldNotBe null
             bow3 shouldNotBe null
+        }
+        test("Be equal to itself") {
+            checkAll(
+                genA = Arb.string(),
+                genB = Arb.nonNegativeInt(),
+                genC = Arb.positiveInt()
+            ) { name, damage, weight ->
+                val randomBow = Bow(name, damage, weight)
+                randomBow shouldNotBe null
+            }
+            bow1 shouldBe bow1
+            bow2 shouldBe bow2
         }
         // Tests toString() method
         test("Have a string representation") {

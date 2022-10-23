@@ -48,10 +48,6 @@ class AxeTest : FunSpec({
         test("Have the same hashcode") {
             axe1.hashCode() shouldBe axe2.hashCode()
         }
-        test("Be equal to themselves") {
-            axe1 shouldBe axe1
-            axe2 shouldBe axe2
-        }
     }
     context("Two axes with different parameters should:") {
         test("Not be equal") {
@@ -90,6 +86,18 @@ class AxeTest : FunSpec({
             axe1 shouldNotBe null
             axe2 shouldNotBe null
             axe3 shouldNotBe null
+        }
+        test("Be equal to itself") {
+            checkAll(
+                genA = Arb.string(),
+                genB = Arb.nonNegativeInt(),
+                genC = Arb.positiveInt()
+            ) { name, damage, weight ->
+                val randomAxe = Axe(name, damage, weight)
+                randomAxe shouldBe randomAxe
+            }
+            axe1 shouldBe axe1
+            axe2 shouldBe axe2
         }
         // Tests toString() method
         test("Have a string representation") {
