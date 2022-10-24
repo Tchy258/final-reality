@@ -18,12 +18,14 @@ class EnemyTest : FunSpec({
     lateinit var enemy1: Enemy
     lateinit var enemy2: Enemy
     lateinit var enemy3: Enemy
+    lateinit var enemy4: Enemy
 
     beforeEach {
         queue = LinkedBlockingQueue<GameCharacter>()
         enemy1 = Enemy("TestEnemy", 15, 10, 12, 5, queue)
         enemy2 = Enemy("TestEnemy", 15, 10, 12, 5, queue)
-        enemy3 = Enemy("TestEnemy2", 18, 11, 7, 2, queue)
+        enemy3 = Enemy("TestEnemy2", 18, 20, 7, 2, queue)
+        enemy4 = Enemy("LightEnemy",5,5,10,1,queue)
     }
     context("Two enemies with the same parameters should:") {
         test("Be equal") {
@@ -70,13 +72,15 @@ class EnemyTest : FunSpec({
                 randomEnemy1 shouldNotBe randomEnemy2
             }
             enemy1 shouldNotBe enemy3
+            enemy2 shouldNotBe enemy4
         }
     }
     context("Any Enemy should:") {
         test("Have a string representation") {
             enemy1.toString() shouldBe "Enemy { name:'TestEnemy', damage: 15, weight: 10, maxHp: 12, defense: 5, currentHp: 12 }"
             enemy2.toString() shouldBe "Enemy { name:'TestEnemy', damage: 15, weight: 10, maxHp: 12, defense: 5, currentHp: 12 }"
-            enemy3.toString() shouldBe "Enemy { name:'TestEnemy2', damage: 18, weight: 11, maxHp: 7, defense: 2, currentHp: 7 }"
+            enemy3.toString() shouldBe "Enemy { name:'TestEnemy2', damage: 18, weight: 20, maxHp: 7, defense: 2, currentHp: 7 }"
+            enemy4.toString() shouldBe "Enemy { name:'LightEnemy', damage: 5, weight: 5, maxHp: 10, defense: 1, currentHp: 10 }"
         }
         test("Not be null") {
             checkAll(
@@ -92,6 +96,7 @@ class EnemyTest : FunSpec({
             enemy1 shouldNotBe null
             enemy2 shouldNotBe null
             enemy3 shouldNotBe null
+            enemy4 shouldNotBe null
         }
         test("Be able to have its currentHp changed to non-negative values") {
             checkAll(
@@ -109,14 +114,20 @@ class EnemyTest : FunSpec({
                 randomEnemy.currentHp shouldBeGreaterThanOrEqualTo 0
             }
         }
-        test("Be able to join the turns queue") {
+        test("Be able to join the turns queue and take its turn when it should") {
             enemy1.waitTurn()
             enemy2.waitTurn()
             enemy3.waitTurn()
+            enemy4.waitTurn()
             eventually {
                 assert(queue.isNotEmpty())
-                queue.size shouldBe 3
+                queue.size shouldBe 4
             }
+            queue.poll() shouldBe enemy4
+            val either1or2: Enemy = queue.poll() as Enemy
+            assert(either1or2 === enemy1 || either1or2 === enemy2)
+            queue.poll() // Take out the other one with the same weight
+            queue.poll() shouldBe enemy3
         }
     }
 })
