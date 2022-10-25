@@ -37,7 +37,7 @@ class PlayerCharacterTurnTest : FunSpec({
             genH = validCharacterGenerator,
             genI = validCharacterGenerator,
             genJ = validCharacterGenerator,
-            iterations = 15 // Or else this test takes 15 minutes
+            iterations = 10 // Or else this test takes 15 minutes
         ) { weight1, weight2, weight3, weight4, weight5,
             character1, character2, character3, character4, character5 ->
             val weapon1 = Axe("an Axe", 5, weight1)
