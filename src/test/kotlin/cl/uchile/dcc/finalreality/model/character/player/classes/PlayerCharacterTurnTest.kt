@@ -43,7 +43,7 @@ class PlayerCharacterTurnTest : FunSpec({
             val weapon1 = Axe("an Axe", 5, weight1)
             val weapon2 = Bow("a Bow", 5, weight2)
             val weapon3 = Knife("a Knife", 5, weight3)
-            val weapon4 = Staff("a Knife", 5, weight4, 5)
+            val weapon4 = Staff("a Staff", 5, weight4, 5)
             val weapon5 = Sword("a Sword", 5, weight5)
             val knight = Knight(character1.name, character1.maxHp, character1.defense, queue)
             val engineer = Engineer(character2.name, character2.maxHp, character2.defense, queue)
