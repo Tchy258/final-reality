@@ -1,7 +1,9 @@
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
@@ -32,15 +34,11 @@ class SwordTest : FunSpec({
     }
     context("Two swords with the same parameters should:") {
         test("Be equal") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.nonNegativeInt(),
-                genC = Arb.positiveInt()
-            ) { name, damage, weight ->
+            checkAll(WeaponData.validWeaponGenerator) { sword ->
                 val randomSword1 =
-                    Sword(name, damage, weight)
+                    Sword(sword.name, sword.damage, sword.weight)
                 val randomSword2 =
-                    Sword(name, damage, weight)
+                    Sword(sword.name, sword.damage, sword.weight)
                 randomSword1 shouldBe randomSword2
             }
             sword1 shouldBe sword2
@@ -52,22 +50,16 @@ class SwordTest : FunSpec({
     context("Two swords with different parameters should:") {
         test("Not be equal") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.nonNegativeInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.string(),
-                genE = Arb.nonNegativeInt(),
-                genF = Arb.positiveInt()
-            ) { name1, damage1, weight1, name2, damage2, weight2 ->
+                genA = WeaponData.validWeaponGenerator,
+                genB = WeaponData.validWeaponGenerator
+            ) { sword1, sword2 ->
                 assume {
-                    name1 != name2 ||
-                        damage1 != damage2 ||
-                        weight1 != weight2
+                    sword1.name != sword2.name ||
+                        sword1.damage != sword2.damage ||
+                        sword1.weight != sword2.weight
                 }
-                val randomSword1 =
-                    Sword(name1, damage1, weight1)
-                val randomSword2 =
-                    Sword(name2, damage2, weight2)
+                val randomSword1 = Sword(sword1.name, sword1.damage, sword1.weight)
+                val randomSword2 = Sword(sword2.name, sword2.damage, sword2.weight)
                 randomSword1 shouldNotBe randomSword2
             }
             sword1 shouldNotBe sword3
@@ -88,16 +80,31 @@ class SwordTest : FunSpec({
             sword3 shouldNotBe null
         }
         test("Be equal to itself") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.nonNegativeInt(),
-                genC = Arb.positiveInt()
-            ) { name, damage, weight ->
-                val randomSword = Sword(name, damage, weight)
+            checkAll(WeaponData.validWeaponGenerator) { sword ->
+                val randomSword = Sword(sword.name, sword.damage, sword.weight)
                 randomSword shouldBe randomSword
             }
             sword1 shouldBe sword1
             sword2 shouldBe sword2
+        }
+        test("Have valid stats") {
+            checkAll(WeaponData.arbitraryWeaponGenerator) { sword ->
+                if (sword.damage < 0 || sword.weight <= 0) {
+                    assertThrows<InvalidStatValueException> {
+                        Sword(sword.name, sword.damage, sword.weight)
+                    }
+                } else {
+                    assertDoesNotThrow {
+                        Sword(sword.name, sword.damage, sword.weight)
+                    }
+                }
+            }
+            assertThrows<InvalidStatValueException> {
+                Sword("", -1, -1)
+            }
+            assertDoesNotThrow {
+                Sword("", 1, 1)
+            }
         }
         // Tests toString() method
         test("Have a string representation") {
@@ -107,17 +114,12 @@ class SwordTest : FunSpec({
         // Tests for equipTo... methods
         test("Be unequippable to an Engineer") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.string(),
-                genE = Arb.nonNegativeInt(),
-                genF = Arb.positiveInt()
-            ) {
-                charName, maxHp, defense, weapName, damage, weight ->
+                genA = WeaponData.validWeaponGenerator,
+                genB = CharacterData.validCharacterGenerator
+            ) { sword, engineer ->
                 // The queue is not relevant to the test so a fresh instance is made each time
-                val testEngineer = Engineer(charName, maxHp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testSword = Sword(weapName, damage, weight)
+                val testEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, LinkedBlockingQueue<GameCharacter>())
+                val testSword = Sword(sword.name, sword.damage, sword.weight)
                 assertThrows<InvalidWeaponException> {
                     testSword.equipToEngineer(testEngineer)
                 }
@@ -125,15 +127,11 @@ class SwordTest : FunSpec({
         }
         test("Be equippable to a Knight") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.string(),
-                genE = Arb.nonNegativeInt(),
-                genF = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight ->
-                val testKnight = Knight(charName, maxHp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testSword = Sword(weapName, damage, weight)
+                genA = WeaponData.validWeaponGenerator,
+                genB = CharacterData.validCharacterGenerator
+            ) { sword, knight ->
+                val testKnight = Knight(knight.name, knight.maxHp, knight.defense, LinkedBlockingQueue<GameCharacter>())
+                val testSword = Sword(sword.name, sword.damage, sword.weight)
                 assertDoesNotThrow {
                     testSword.equipToKnight(testKnight)
                 }
@@ -141,15 +139,11 @@ class SwordTest : FunSpec({
         }
         test("Be equippable to a Thief") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.string(),
-                genE = Arb.nonNegativeInt(),
-                genF = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight ->
-                val testThief = Thief(charName, maxHp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testSword = Sword(weapName, damage, weight)
+                genA = WeaponData.validWeaponGenerator,
+                genB = CharacterData.validCharacterGenerator
+            ) { sword, thief ->
+                val testThief = Thief(thief.name, thief.maxHp, thief.defense, LinkedBlockingQueue<GameCharacter>())
+                val testSword = Sword(sword.name, sword.damage, sword.weight)
                 assertDoesNotThrow {
                     testSword.equipToThief(testThief)
                 }
@@ -157,16 +151,11 @@ class SwordTest : FunSpec({
         }
         test("Be unequippable to a BlackMage") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt(),
-                genE = Arb.string(),
-                genF = Arb.nonNegativeInt(),
-                genG = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight ->
-                val testBlackMage = BlackMage(charName, maxHp, maxMp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testSword = Sword(weapName, damage, weight)
+                genA = WeaponData.validWeaponGenerator,
+                genB = CharacterData.validCharacterGenerator
+            ) { sword, blackMage ->
+                val testBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, LinkedBlockingQueue<GameCharacter>())
+                val testSword = Sword(sword.name, sword.damage, sword.weight)
                 assertThrows<InvalidWeaponException> {
                     testSword.equipToBlackMage(testBlackMage)
                 }
@@ -174,16 +163,11 @@ class SwordTest : FunSpec({
         }
         test("Be unequippable to a WhiteMage") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt(),
-                genE = Arb.string(),
-                genF = Arb.nonNegativeInt(),
-                genG = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight ->
-                val testWhiteMage = WhiteMage(charName, maxHp, maxMp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testSword = Sword(weapName, damage, weight)
+                genA = WeaponData.validWeaponGenerator,
+                genB = CharacterData.validCharacterGenerator
+            ) { sword, whiteMage ->
+                val testWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, LinkedBlockingQueue<GameCharacter>())
+                val testSword = Sword(sword.name, sword.damage, sword.weight)
                 assertThrows<InvalidWeaponException> {
                     testSword.equipToWhiteMage(testWhiteMage)
                 }

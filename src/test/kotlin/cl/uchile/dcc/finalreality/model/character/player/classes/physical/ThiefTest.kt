@@ -1,21 +1,23 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes.physical
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Staff
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
+import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.nonNegativeInt
 import io.kotest.property.arbitrary.positiveInt
-import io.kotest.property.arbitrary.string
 import io.kotest.property.assume
 import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -36,13 +38,9 @@ class ThiefTest : FunSpec({
     }
     context("Two thieves with the same parameters should:") {
         test("Be equal") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt()
-            ) { name, maxHp, defense ->
-                val randomThief1 = Thief(name, maxHp, defense, queue)
-                val randomThief2 = Thief(name, maxHp, defense, queue)
+            checkAll(validCharacterGenerator) { thief1 ->
+                val randomThief1 = Thief(thief1.name, thief1.maxHp, thief1.defense, queue)
+                val randomThief2 = Thief(thief1.name, thief1.maxHp, thief1.defense, queue)
                 randomThief1 shouldBe randomThief2
             }
             thief1 shouldBe thief2
@@ -54,20 +52,17 @@ class ThiefTest : FunSpec({
     context("Two thieves with different parameters should:") {
         test("Not be equal") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt(),
-                genD = Arb.string(),
-                genE = Arb.positiveInt(),
-                genF = Arb.nonNegativeInt()
-            ) { name1, maxHp1, defense1, name2, maxHp2, defense2 ->
+                genA = validCharacterGenerator,
+                genB = validCharacterGenerator
+            ) { thief1, thief2 ->
                 assume(
-                    name1 != name2 ||
-                        maxHp1 != maxHp2 ||
-                        defense1 != defense2
+                    thief1.name != thief2.name ||
+                        thief1.maxHp != thief2.maxHp ||
+                        thief1.maxMp != thief2.maxMp ||
+                        thief1.defense != thief2.defense
                 )
-                val randomThief1 = Thief(name1, maxHp1, defense1, queue)
-                val randomThief2 = Thief(name2, maxHp2, defense2, queue)
+                val randomThief1 = Thief(thief1.name, thief1.maxHp, thief1.defense, queue)
+                val randomThief2 = Thief(thief2.name, thief2.maxHp, thief2.defense, queue)
                 randomThief1 shouldNotBe randomThief2
             }
             thief1 shouldNotBe thief3
@@ -80,42 +75,50 @@ class ThiefTest : FunSpec({
             thief3.toString() shouldBe "Thief { name: 'TestThief2', maxHp: 18, defense: 11, currentHp: 18 }"
         }
         test("Not be null") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt()
-            ) { name, maxHp, defense ->
-                val randomThief1 = Thief(name, maxHp, defense, queue)
-                randomThief1 shouldNotBe null
+            checkAll(validCharacterGenerator) { thief ->
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
+                randomThief shouldNotBe null
             }
             thief1 shouldNotBe null
             thief2 shouldNotBe null
             thief3 shouldNotBe null
         }
+        test("Have valid stats") {
+            checkAll(CharacterData.arbitraryCharacterGenerator) {
+                thief ->
+                if (thief.maxHp <= 0 || thief.defense < 0) {
+                    assertThrows<InvalidStatValueException> {
+                        Thief(thief.name, thief.maxHp, thief.defense, queue)
+                    }
+                } else {
+                    assertDoesNotThrow {
+                        Thief(thief.name, thief.maxHp, thief.defense, queue)
+                    }
+                }
+            }
+            assertThrows<InvalidStatValueException> {
+                Thief("", -1, -1, queue)
+            }
+            assertDoesNotThrow {
+                Thief("", 1, 1, queue)
+            }
+        }
         test("Not be able to wait its turn unarmed") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt()
-            ) { name, maxHp, defense ->
-                val randomThief1 = Thief(name, maxHp, defense, queue)
+            checkAll(validCharacterGenerator) { thief ->
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 assertThrows<NoWeaponEquippedException> {
-                    randomThief1.waitTurn()
+                    randomThief.waitTurn()
                 }
             }
         }
         // These tests use the 'equip<some weapon name>()' methods implicitly
         test("Be unable to equip axes") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt(),
-                genD = Arb.string(),
-                genE = Arb.positiveInt(),
-                genF = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight ->
-                val randomAxe = Axe(weapName, damage, weight)
-                val randomThief = Thief(charName, maxHp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { thief, axe ->
+                val randomAxe = Axe(axe.name, axe.damage, axe.weight)
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 assertThrows<InvalidWeaponException> {
                     randomThief.equip(randomAxe)
                 }
@@ -123,15 +126,11 @@ class ThiefTest : FunSpec({
         }
         test("Be able to equip bows") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt(),
-                genD = Arb.string(),
-                genE = Arb.positiveInt(),
-                genF = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight ->
-                val randomBow = Bow(weapName, damage, weight)
-                val randomThief = Thief(charName, maxHp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { thief, bow ->
+                val randomBow = Bow(bow.name, bow.damage, bow.weight)
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 assertDoesNotThrow {
                     randomThief.equip(randomBow)
                 }
@@ -140,15 +139,11 @@ class ThiefTest : FunSpec({
         }
         test("Be able to equip knives") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt(),
-                genD = Arb.string(),
-                genE = Arb.positiveInt(),
-                genF = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight ->
-                val randomKnife = Knife(weapName, damage, weight)
-                val randomThief = Thief(charName, maxHp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { thief, knife ->
+                val randomKnife = Knife(knife.name, knife.damage, knife.weight)
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 assertDoesNotThrow {
                     randomThief.equip(randomKnife)
                 }
@@ -157,16 +152,11 @@ class ThiefTest : FunSpec({
         }
         test("Be unable to equip staves") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt(),
-                genD = Arb.string(),
-                genE = Arb.positiveInt(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight, magicDamage ->
-                val randomStaff = Staff(weapName, damage, weight, magicDamage)
-                val randomThief = Thief(charName, maxHp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { thief, staff ->
+                val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 assertThrows<InvalidWeaponException> {
                     randomThief.equip(randomStaff)
                 }
@@ -174,15 +164,11 @@ class ThiefTest : FunSpec({
         }
         test("Be able to equip swords") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt(),
-                genD = Arb.string(),
-                genE = Arb.positiveInt(),
-                genF = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight ->
-                val randomSword = Sword(weapName, damage, weight)
-                val randomThief = Thief(charName, maxHp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { thief, sword ->
+                val randomSword = Sword(sword.name, sword.damage, sword.weight)
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 assertDoesNotThrow {
                     randomThief.equip(randomSword)
                 }
@@ -191,29 +177,31 @@ class ThiefTest : FunSpec({
         }
         test("Be able to have its currentHp changed to non-negative values") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt(),
-                genD = Arb.positiveInt()
-            ) { name, maxHp, defense, randomDamage ->
-                val randomThief = Thief(name, maxHp, defense, queue)
-                randomThief.currentHp shouldBe maxHp
-                randomThief.currentHp = Integer.max(0, randomThief.currentHp - randomDamage)
-                randomThief.currentHp shouldNotBe maxHp
-                randomThief.currentHp shouldBeGreaterThanOrEqualTo 0
+                genA = validCharacterGenerator,
+                genB = Arb.positiveInt()
+            ) { thief, randomDamage ->
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
+                randomThief.currentHp shouldBe thief.maxHp
+                if (randomDamage> thief.maxHp) {
+                    assertThrows<InvalidStatValueException> {
+                        randomThief.currentHp -= randomDamage
+                    }
+                } else {
+                    assertDoesNotThrow {
+                        randomThief.currentHp -= randomDamage
+                    }
+                    randomThief.currentHp shouldNotBe thief.maxHp
+                    randomThief.currentHp shouldBeGreaterThanOrEqualTo 0
+                }
             }
         }
         test("Be able to join the turns queue with a weapon equipped") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.nonNegativeInt(),
-                genD = Arb.string(),
-                genE = Arb.positiveInt(),
-                genF = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight ->
-                val randomBow = Bow(weapName, damage, weight)
-                val randomThief = Thief(charName, maxHp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { thief, bow ->
+                val randomBow = Bow(bow.name, bow.damage, bow.weight)
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 randomThief.equip(randomBow)
                 assertDoesNotThrow {
                     randomThief.waitTurn()

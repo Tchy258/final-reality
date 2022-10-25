@@ -1,19 +1,19 @@
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
+import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.arbitraryWeaponGenerator
+import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.kotest.property.Arb
-import io.kotest.property.arbitrary.nonNegativeInt
-import io.kotest.property.arbitrary.positiveInt
-import io.kotest.property.arbitrary.string
 import io.kotest.property.assume
 import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -32,16 +32,11 @@ class StaffTest : FunSpec({
     }
     context("Two staffs with the same parameters should:") {
         test("Be equal") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.nonNegativeInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt()
-            ) { name, damage, weight, magicDamage ->
+            checkAll(validWeaponGenerator) { staff ->
                 val randomStaff1 =
-                    Staff(name, damage, weight, magicDamage)
+                    Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 val randomStaff2 =
-                    Staff(name, damage, weight, magicDamage)
+                    Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 randomStaff1 shouldBe randomStaff2
             }
             staff1 shouldBe staff2
@@ -53,25 +48,16 @@ class StaffTest : FunSpec({
     context("Two staffs with different parameters should:") {
         test("Not be equal") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.nonNegativeInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt(),
-                genE = Arb.string(),
-                genF = Arb.nonNegativeInt(),
-                genG = Arb.positiveInt(),
-                genH = Arb.positiveInt()
-            ) { name1, damage1, weight1, magicDamage1, name2, damage2, weight2, magicDamage2 ->
+                genA = validWeaponGenerator,
+                genB = validWeaponGenerator
+            ) { staff1, staff2 ->
                 assume {
-                    name1 != name2 ||
-                        damage1 != damage2 ||
-                        weight1 != weight2 ||
-                        magicDamage1 != magicDamage2
+                    staff1.name != staff2.name ||
+                        staff1.damage != staff2.damage ||
+                        staff1.weight != staff2.weight
                 }
-                val randomStaff1 =
-                    Staff(name1, damage1, weight1, magicDamage1)
-                val randomStaff2 =
-                    Staff(name2, damage2, weight2, magicDamage2)
+                val randomStaff1 = Staff(staff1.name, staff1.damage, staff1.weight, staff1.magicDamage)
+                val randomStaff2 = Staff(staff2.name, staff2.damage, staff2.weight, staff2.magicDamage)
                 randomStaff1 shouldNotBe randomStaff2
             }
             staff1 shouldNotBe staff3
@@ -79,13 +65,8 @@ class StaffTest : FunSpec({
     }
     context("Any Staff should:") {
         test("Not be null") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.nonNegativeInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt()
-            ) { name, damage, weight, magicDamage ->
-                val randomStaff = Staff(name, damage, weight, magicDamage)
+            checkAll(validWeaponGenerator) { staff ->
+                val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 randomStaff shouldNotBe null
             }
             staff1 shouldNotBe null
@@ -93,17 +74,31 @@ class StaffTest : FunSpec({
             staff3 shouldNotBe null
         }
         test("Be equal to itself") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.nonNegativeInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt()
-            ) { name, damage, weight, magicDamage ->
-                val randomStaff = Staff(name, damage, weight, magicDamage)
+            checkAll(validWeaponGenerator) { staff ->
+                val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 randomStaff shouldBe randomStaff
             }
             staff1 shouldBe staff1
             staff2 shouldBe staff2
+        }
+        test("Have valid stats") {
+            checkAll(arbitraryWeaponGenerator) { staff ->
+                if (staff.damage < 0 || staff.weight <= 0 || staff.magicDamage <0) {
+                    assertThrows<InvalidStatValueException> {
+                        Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
+                    }
+                } else {
+                    assertDoesNotThrow {
+                        Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
+                    }
+                }
+            }
+            assertThrows<InvalidStatValueException> {
+                Staff("", -1, -1, -1)
+            }
+            assertDoesNotThrow {
+                Staff("", 1, 1, 1)
+            }
         }
         // Tests toString() method
         test("Have a string representation") {
@@ -113,18 +108,13 @@ class StaffTest : FunSpec({
         // Tests for equipTo... methods
         test("Be unequippable to an Engineer") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.string(),
-                genE = Arb.nonNegativeInt(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt()
+                genA = validWeaponGenerator,
+                genB = validCharacterGenerator
             ) {
-                charName, maxHp, defense, weapName, damage, weight, magicDamage ->
+                staff, engineer ->
                 // The queue is not relevant to the test so a fresh instance is made each time
-                val testEngineer = Engineer(charName, maxHp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testStaff = Staff(weapName, damage, weight, magicDamage)
+                val testEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, LinkedBlockingQueue<GameCharacter>())
+                val testStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 assertThrows<InvalidWeaponException> {
                     testStaff.equipToEngineer(testEngineer)
                 }
@@ -132,16 +122,11 @@ class StaffTest : FunSpec({
         }
         test("Be unequippable to a Knight") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.string(),
-                genE = Arb.nonNegativeInt(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight, magicDamage ->
-                val testKnight = Knight(charName, maxHp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testStaff = Staff(weapName, damage, weight, magicDamage)
+                genA = validWeaponGenerator,
+                genB = validCharacterGenerator
+            ) { staff, knight ->
+                val testKnight = Knight(knight.name, knight.maxHp, knight.defense, LinkedBlockingQueue<GameCharacter>())
+                val testStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 assertThrows<InvalidWeaponException> {
                     testStaff.equipToKnight(testKnight)
                 }
@@ -149,16 +134,11 @@ class StaffTest : FunSpec({
         }
         test("Be unequippable to a Thief") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.string(),
-                genE = Arb.nonNegativeInt(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt()
-            ) { charName, maxHp, defense, weapName, damage, weight, magicDamage ->
-                val testThief = Thief(charName, maxHp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testStaff = Staff(weapName, damage, weight, magicDamage)
+                genA = validWeaponGenerator,
+                genB = validCharacterGenerator
+            ) { staff, thief ->
+                val testThief = Thief(thief.name, thief.maxHp, thief.defense, LinkedBlockingQueue<GameCharacter>())
+                val testStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 assertThrows<InvalidWeaponException> {
                     testStaff.equipToThief(testThief)
                 }
@@ -166,17 +146,11 @@ class StaffTest : FunSpec({
         }
         test("Be equippable to a BlackMage") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt(),
-                genE = Arb.string(),
-                genF = Arb.nonNegativeInt(),
-                genG = Arb.positiveInt(),
-                genH = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight, magicDamage ->
-                val testBlackMage = BlackMage(charName, maxHp, maxMp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testStaff = Staff(weapName, damage, weight, magicDamage)
+                genA = validWeaponGenerator,
+                genB = validCharacterGenerator
+            ) { staff, blackMage ->
+                val testBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, LinkedBlockingQueue<GameCharacter>())
+                val testStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 assertDoesNotThrow {
                     testStaff.equipToBlackMage(testBlackMage)
                 }
@@ -184,17 +158,11 @@ class StaffTest : FunSpec({
         }
         test("Be equippable to a WhiteMage") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt(),
-                genE = Arb.string(),
-                genF = Arb.nonNegativeInt(),
-                genG = Arb.positiveInt(),
-                genH = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight, magicDamage ->
-                val testWhiteMage = WhiteMage(charName, maxHp, maxMp, defense, LinkedBlockingQueue<GameCharacter>())
-                val testStaff = Staff(weapName, damage, weight, magicDamage)
+                genA = validWeaponGenerator,
+                genB = validCharacterGenerator
+            ) { staff, whiteMage ->
+                val testWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, LinkedBlockingQueue<GameCharacter>())
+                val testStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 assertDoesNotThrow {
                     testStaff.equipToWhiteMage(testWhiteMage)
                 }

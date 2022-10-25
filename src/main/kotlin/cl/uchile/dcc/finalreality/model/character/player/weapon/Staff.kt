@@ -7,6 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.weapon
 
+import cl.uchile.dcc.finalreality.exceptions.Require
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import java.util.Objects
@@ -26,8 +27,9 @@ class Staff(
     name: String,
     damage: Int,
     weight: Int,
-    val magicDamage: Int
+    magicDamage: Int
 ) : AbstractWeapon(name, damage, weight) {
+    val magicDamage: Int = Require.Stat(magicDamage, "Damage ") atLeast 0
     override fun equipToBlackMage(character: BlackMage) {
         character.equipStaff(this)
     }

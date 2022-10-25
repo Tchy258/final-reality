@@ -25,7 +25,7 @@ class EnemyTest : FunSpec({
         enemy1 = Enemy("TestEnemy", 15, 10, 12, 5, queue)
         enemy2 = Enemy("TestEnemy", 15, 10, 12, 5, queue)
         enemy3 = Enemy("TestEnemy2", 18, 20, 7, 2, queue)
-        enemy4 = Enemy("LightEnemy",5,5,10,1,queue)
+        enemy4 = Enemy("LightEnemy", 5, 5, 10, 1, queue)
     }
     context("Two enemies with the same parameters should:") {
         test("Be equal") {

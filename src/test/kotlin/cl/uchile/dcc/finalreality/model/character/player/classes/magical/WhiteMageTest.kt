@@ -1,22 +1,23 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.arbitraryCharacterGenerator
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Staff
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
+import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
-import io.kotest.property.PropTestConfig
-import io.kotest.property.arbitrary.nonNegativeInt
 import io.kotest.property.arbitrary.positiveInt
-import io.kotest.property.arbitrary.string
 import io.kotest.property.assume
 import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -37,14 +38,9 @@ class WhiteMageTest : FunSpec({
     }
     context("Two black mages with the same parameters should:") {
         test("Be equal") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt()
-            ) { name, maxHp, maxMp, defense ->
-                val randomWhiteMage1 = WhiteMage(name, maxHp, maxMp, defense, queue)
-                val randomWhiteMage2 = WhiteMage(name, maxHp, maxMp, defense, queue)
+            checkAll(validCharacterGenerator) { whiteMage1 ->
+                val randomWhiteMage1 = WhiteMage(whiteMage1.name, whiteMage1.maxHp, whiteMage1.maxMp, whiteMage1.defense, queue)
+                val randomWhiteMage2 = WhiteMage(whiteMage1.name, whiteMage1.maxHp, whiteMage1.maxMp, whiteMage1.defense, queue)
                 randomWhiteMage1 shouldBe randomWhiteMage2
             }
             whiteMage1 shouldBe whiteMage2
@@ -56,22 +52,17 @@ class WhiteMageTest : FunSpec({
     context("Two black mages with different parameters should:") {
         test("Not be equal") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt(),
-                genE = Arb.string(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt(),
-                genH = Arb.nonNegativeInt()
-            ) { name1, maxHp1, maxMp1, defense1, name2, maxHp2, maxMp2, defense2 ->
+                genA = validCharacterGenerator,
+                genB = validCharacterGenerator
+            ) { whiteMage1, whiteMage2 ->
                 assume(
-                    name1 != name2 ||
-                        maxHp1 != maxHp2 ||
-                        defense1 != defense2
+                    whiteMage1.name != whiteMage2.name ||
+                        whiteMage1.maxHp != whiteMage2.maxHp ||
+                        whiteMage1.maxMp != whiteMage2.maxMp ||
+                        whiteMage1.defense != whiteMage2.defense
                 )
-                val randomWhiteMage1 = WhiteMage(name1, maxHp1, maxMp1, defense1, queue)
-                val randomWhiteMage2 = WhiteMage(name2, maxHp2, maxMp2, defense2, queue)
+                val randomWhiteMage1 = WhiteMage(whiteMage1.name, whiteMage1.maxHp, whiteMage1.maxMp, whiteMage1.defense, queue)
+                val randomWhiteMage2 = WhiteMage(whiteMage2.name, whiteMage2.maxHp, whiteMage2.maxMp, whiteMage2.defense, queue)
                 randomWhiteMage1 shouldNotBe randomWhiteMage2
             }
             whiteMage1 shouldNotBe whiteMage3
@@ -84,45 +75,50 @@ class WhiteMageTest : FunSpec({
             whiteMage3.toString() shouldBe "WhiteMage { name: 'TestWhiteMage2', maxHp: 18, maxMp: 11, defense: 10, currentHp: 18, currentMp: 11 }"
         }
         test("Not be null") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt()
-            ) { name, maxHp, maxMp, defense ->
-                val randomWhiteMage1 = WhiteMage(name, maxHp, maxMp, defense, queue)
-                randomWhiteMage1 shouldNotBe null
+            checkAll(validCharacterGenerator) { whiteMage ->
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
+                randomWhiteMage shouldNotBe null
             }
             whiteMage1 shouldNotBe null
             whiteMage2 shouldNotBe null
             whiteMage3 shouldNotBe null
         }
+        test("Have valid stats") {
+            checkAll(arbitraryCharacterGenerator) {
+                whiteMage ->
+                if (whiteMage.maxHp <= 0 || whiteMage.maxMp <= 0 || whiteMage.defense < 0) {
+                    assertThrows<InvalidStatValueException> {
+                        WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
+                    }
+                } else {
+                    assertDoesNotThrow {
+                        WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
+                    }
+                }
+            }
+            assertThrows<InvalidStatValueException> {
+                WhiteMage("", -1, -1, -1, queue)
+            }
+            assertDoesNotThrow {
+                WhiteMage("", 1, 1, 1, queue)
+            }
+        }
         test("Not be able to wait its turn unarmed") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt()
-            ) { name, maxHp, maxMp, defense ->
-                val randomWhiteMage1 = WhiteMage(name, maxHp, maxMp, defense, queue)
+            checkAll(validCharacterGenerator) { whiteMage ->
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
                 assertThrows<NoWeaponEquippedException> {
-                    randomWhiteMage1.waitTurn()
+                    randomWhiteMage.waitTurn()
                 }
             }
         }
         // These tests use the 'equip<some weapon name>()' methods implicitly
         test("Be unable to equip axes") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt(),
-                genE = Arb.string(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight ->
-                val randomAxe = Axe(weapName, damage, weight)
-                val randomWhiteMage = WhiteMage(charName, maxHp, maxMp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { whiteMage, axe ->
+                val randomAxe = Axe(axe.name, axe.damage, axe.weight)
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
                 assertThrows<InvalidWeaponException> {
                     randomWhiteMage.equip(randomAxe)
                 }
@@ -130,16 +126,11 @@ class WhiteMageTest : FunSpec({
         }
         test("Be unable to equip bows") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt(),
-                genE = Arb.string(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight ->
-                val randomBow = Bow(weapName, damage, weight)
-                val randomWhiteMage = WhiteMage(charName, maxHp, maxMp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { whiteMage, bow ->
+                val randomBow = Bow(bow.name, bow.damage, bow.weight)
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
                 assertThrows<InvalidWeaponException> {
                     randomWhiteMage.equip(randomBow)
                 }
@@ -147,16 +138,11 @@ class WhiteMageTest : FunSpec({
         }
         test("Be unable to equip knives") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt(),
-                genE = Arb.string(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight ->
-                val randomKnife = Knife(weapName, damage, weight)
-                val randomWhiteMage = WhiteMage(charName, maxHp, maxMp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { whiteMage, knife ->
+                val randomKnife = Knife(knife.name, knife.damage, knife.weight)
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
                 assertThrows<InvalidWeaponException> {
                     randomWhiteMage.equip(randomKnife)
                 }
@@ -164,17 +150,11 @@ class WhiteMageTest : FunSpec({
         }
         test("Be able to equip staves") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt(),
-                genE = Arb.string(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt(),
-                genH = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight, magicDamage ->
-                val randomStaff = Staff(weapName, damage, weight, magicDamage)
-                val randomWhiteMage = WhiteMage(charName, maxHp, maxMp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { whiteMage, staff ->
+                val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
                 assertDoesNotThrow {
                     randomWhiteMage.equip(randomStaff)
                 }
@@ -183,16 +163,11 @@ class WhiteMageTest : FunSpec({
         }
         test("Be unable to equip swords") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt(),
-                genE = Arb.string(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight ->
-                val randomSword = Sword(weapName, damage, weight)
-                val randomWhiteMage = WhiteMage(charName, maxHp, maxMp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { whiteMage, sword ->
+                val randomSword = Sword(sword.name, sword.damage, sword.weight)
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
                 assertThrows<InvalidWeaponException> {
                     randomWhiteMage.equip(randomSword)
                 }
@@ -200,49 +175,35 @@ class WhiteMageTest : FunSpec({
         }
         test("Be able to have its currentHp changed to non-negative values") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt(),
-                genE = Arb.positiveInt()
-            ) { name, maxHp, maxMp, defense, randomDamage ->
-                val randomWhiteMage = WhiteMage(name, maxHp, maxMp, defense, queue)
-                randomWhiteMage.currentHp shouldBe maxHp
+                genA = validCharacterGenerator,
+                genB = Arb.positiveInt()
+            ) { whiteMage, randomDamage ->
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
+                randomWhiteMage.currentHp shouldBe whiteMage.maxHp
                 randomWhiteMage.currentHp = Integer.max(0, randomWhiteMage.currentHp - randomDamage)
-                randomWhiteMage.currentHp shouldNotBe maxHp
+                randomWhiteMage.currentHp shouldNotBe whiteMage.maxHp
                 randomWhiteMage.currentHp shouldBeGreaterThanOrEqualTo 0
             }
         }
         test("Be able to have its currentMp changed to non-negative values") {
             checkAll(
-                PropTestConfig(maxDiscardPercentage = 55),
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt(),
-                genE = Arb.positiveInt()
-            ) { name, maxHp, maxMp, defense, randomCost ->
-                assume(randomCost <= maxMp)
-                val randomWhiteMage = WhiteMage(name, maxHp, maxMp, defense, queue)
-                randomWhiteMage.currentMp shouldBe maxMp
+                genA = validCharacterGenerator,
+                genB = Arb.positiveInt()
+            ) { whiteMage, randomCost ->
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
+                randomWhiteMage.currentMp shouldBe whiteMage.maxHp
                 randomWhiteMage.currentMp = Integer.max(0, randomWhiteMage.currentMp - randomCost)
-                randomWhiteMage.currentMp shouldNotBe maxMp
+                randomWhiteMage.currentMp shouldNotBe whiteMage.maxMp
                 randomWhiteMage.currentMp shouldBeGreaterThanOrEqualTo 0
             }
         }
         test("Be able to join the turns queue with a weapon equipped") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.nonNegativeInt(),
-                genE = Arb.string(),
-                genF = Arb.positiveInt(),
-                genG = Arb.positiveInt(),
-                genH = Arb.positiveInt()
-            ) { charName, maxHp, maxMp, defense, weapName, damage, weight, magicDamage ->
-                val randomStaff = Staff(weapName, damage, weight, magicDamage)
-                val randomWhiteMage = WhiteMage(charName, maxHp, maxMp, defense, queue)
+                genA = validCharacterGenerator,
+                genB = validWeaponGenerator
+            ) { whiteMage, staff ->
+                val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
+                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
                 randomWhiteMage.equip(randomStaff)
                 assertDoesNotThrow {
                     randomWhiteMage.waitTurn()
