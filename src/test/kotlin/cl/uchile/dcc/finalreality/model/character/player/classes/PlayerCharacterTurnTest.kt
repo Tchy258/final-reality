@@ -70,11 +70,11 @@ class PlayerCharacterTurnTest : FunSpec({
             blackMage.equip(weapon3)
 
             val weightMap = hashMapOf<PlayerCharacter, Int>()
-            weightMap[knight] = weight1 + 1
-            weightMap[engineer] = weight2 + 2
-            weightMap[thief] = weight3 + 3
-            weightMap[whiteMage] = weight4 + 4
-            weightMap[blackMage] = weight5 + 5
+            weightMap[knight] = weight1
+            weightMap[engineer] = weight2
+            weightMap[thief] = weight3
+            weightMap[whiteMage] = weight4
+            weightMap[blackMage] = weight5
             // Characters are sorted according to their weapons' weight
             val sortedMap = weightMap.toList().sortedBy { (_, value) -> value }.toMap()
 
