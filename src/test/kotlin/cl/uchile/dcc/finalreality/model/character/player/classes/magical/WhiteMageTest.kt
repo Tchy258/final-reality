@@ -191,7 +191,7 @@ class WhiteMageTest : FunSpec({
                 genB = Arb.positiveInt()
             ) { whiteMage, randomCost ->
                 val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
-                randomWhiteMage.currentMp shouldBe whiteMage.maxHp
+                randomWhiteMage.currentMp shouldBe whiteMage.maxMp
                 randomWhiteMage.currentMp = Integer.max(0, randomWhiteMage.currentMp - randomCost)
                 randomWhiteMage.currentMp shouldNotBe whiteMage.maxMp
                 randomWhiteMage.currentMp shouldBeGreaterThanOrEqualTo 0

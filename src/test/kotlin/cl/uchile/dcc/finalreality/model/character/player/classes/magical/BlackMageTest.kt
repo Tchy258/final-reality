@@ -200,7 +200,7 @@ class BlackMageTest : FunSpec({
                 genB = Arb.positiveInt()
             ) { blackMage, randomCost ->
                 val randomBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, queue)
-                randomBlackMage.currentMp shouldBe blackMage.maxHp
+                randomBlackMage.currentMp shouldBe blackMage.maxMp
                 if (randomCost> randomBlackMage.maxMp) {
                     assertThrows<InvalidStatValueException> {
                         randomBlackMage.currentMp -= randomCost
