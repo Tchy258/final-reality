@@ -6,7 +6,15 @@ import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.nonNegativeInt
 import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.arbitrary.string
-
+/**
+ * Class that contains a [Weapon]'s data
+ * @property name the weapon's name
+ * @property damage the weapon's damage
+ * @property weight the weapon's weight
+ * @property magicDamage the weapon's magicDamage (if it's a [Staff])
+ *
+ * @author <a href="https://www.github.com/tchy258">Tchy258</a>
+ */
 data class WeaponData(val name: String, val damage: Int, val weight: Int, val magicDamage: Int) {
     companion object {
         /**

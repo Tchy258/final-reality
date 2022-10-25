@@ -6,12 +6,13 @@ import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.nonNegativeInt
 import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.arbitrary.string
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.AbstractMage
 
 /**
  * Class that contains a [PlayerCharacter]'s data
  * @property name the character's name
  * @property maxHp the character's maxHp
- * @property maxMp the character's maxMp
+ * @property maxMp the character's maxMp (if it's a class that extends [AbstractMage])
  * @property defense the character's defense
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
