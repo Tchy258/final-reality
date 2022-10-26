@@ -5,6 +5,7 @@ import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
@@ -147,7 +148,7 @@ class StaffTest : FunSpec({
         test("Be equippable to a BlackMage") {
             checkAll(
                 genA = validWeaponGenerator,
-                genB = validCharacterGenerator
+                genB = validMageGenerator
             ) { staff, blackMage ->
                 val testBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, LinkedBlockingQueue<GameCharacter>())
                 val testStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
@@ -159,7 +160,7 @@ class StaffTest : FunSpec({
         test("Be equippable to a WhiteMage") {
             checkAll(
                 genA = validWeaponGenerator,
-                genB = validCharacterGenerator
+                genB = validMageGenerator
             ) { staff, whiteMage ->
                 val testWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, LinkedBlockingQueue<GameCharacter>())
                 val testStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)

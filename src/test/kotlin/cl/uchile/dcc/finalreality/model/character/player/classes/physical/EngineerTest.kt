@@ -14,9 +14,12 @@ import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
 import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
+import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
+import io.kotest.property.PropTestConfig
 import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.assume
 import io.kotest.property.checkAll
@@ -58,7 +61,6 @@ class EngineerTest : FunSpec({
                 assume(
                     engineer1.name != engineer2.name ||
                         engineer1.maxHp != engineer2.maxHp ||
-                        engineer1.maxMp != engineer2.maxMp ||
                         engineer1.defense != engineer2.defense
                 )
                 val randomEngineer1 = Engineer(engineer1.name, engineer1.maxHp, engineer1.defense, queue)
@@ -191,6 +193,34 @@ class EngineerTest : FunSpec({
                     }
                     randomEngineer.currentHp shouldNotBe engineer.maxHp
                     randomEngineer.currentHp shouldBeGreaterThanOrEqualTo 0
+                }
+            }
+        }
+        test("Not be able to have more current hp than its maxHp") {
+            checkAll(
+                PropTestConfig(maxDiscardPercentage = 55),
+                genA = validCharacterGenerator,
+                genB = Arb.positiveInt(),
+                genC = Arb.positiveInt()
+            ) {engineer, randomHealing, randomDamage ->
+                assume {
+                    randomDamage shouldBeLessThanOrEqual engineer.maxHp
+                }
+                val randomEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, queue)
+                randomEngineer.currentHp shouldBe engineer.maxHp
+                randomEngineer.currentHp -= randomDamage
+                randomEngineer.currentHp shouldNotBe engineer.maxHp
+                if (randomHealing > randomEngineer.maxHp - randomEngineer.currentHp) {
+                    assertThrows<InvalidStatValueException> {
+                        randomEngineer.currentHp += randomHealing
+                    }
+                }
+                else {
+                    assertDoesNotThrow {
+                        randomEngineer.currentHp += randomHealing
+                    }
+                    randomEngineer.currentHp shouldBeLessThanOrEqual randomEngineer.maxHp
+                    randomEngineer.currentHp shouldBeGreaterThan 0
                 }
             }
         }

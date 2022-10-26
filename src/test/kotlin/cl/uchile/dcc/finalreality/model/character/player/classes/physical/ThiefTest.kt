@@ -3,6 +3,8 @@ package cl.uchile.dcc.finalreality.model.character.player.classes.physical
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
+import cl.uchile.dcc.finalreality.model.character.Enemy
+import cl.uchile.dcc.finalreality.model.character.EnemyData
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
@@ -14,9 +16,12 @@ import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
 import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
+import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
+import io.kotest.property.PropTestConfig
 import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.assume
 import io.kotest.property.checkAll
@@ -58,7 +63,6 @@ class ThiefTest : FunSpec({
                 assume(
                     thief1.name != thief2.name ||
                         thief1.maxHp != thief2.maxHp ||
-                        thief1.maxMp != thief2.maxMp ||
                         thief1.defense != thief2.defense
                 )
                 val randomThief1 = Thief(thief1.name, thief1.maxHp, thief1.defense, queue)
@@ -192,6 +196,34 @@ class ThiefTest : FunSpec({
                     }
                     randomThief.currentHp shouldNotBe thief.maxHp
                     randomThief.currentHp shouldBeGreaterThanOrEqualTo 0
+                }
+            }
+        }
+        test("Not be able to have more current hp than its maxHp") {
+            checkAll(
+                PropTestConfig(maxDiscardPercentage = 55),
+                genA = validCharacterGenerator,
+                genB = Arb.positiveInt(),
+                genC = Arb.positiveInt()
+            ) {thief, randomHealing, randomDamage ->
+                assume {
+                    randomDamage shouldBeLessThanOrEqual thief.maxHp
+                }
+                val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
+                randomThief.currentHp shouldBe thief.maxHp
+                randomThief.currentHp -= randomDamage
+                randomThief.currentHp shouldNotBe thief.maxHp
+                if (randomHealing > randomThief.maxHp - randomThief.currentHp) {
+                    assertThrows<InvalidStatValueException> {
+                        randomThief.currentHp += randomHealing
+                    }
+                }
+                else {
+                    assertDoesNotThrow {
+                        randomThief.currentHp += randomHealing
+                    }
+                    randomThief.currentHp shouldBeLessThanOrEqual randomThief.maxHp
+                    randomThief.currentHp shouldBeGreaterThan 0
                 }
             }
         }

@@ -14,9 +14,12 @@ import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
 import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
+import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
+import io.kotest.property.PropTestConfig
 import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.assume
 import io.kotest.property.checkAll
@@ -58,7 +61,6 @@ class KnightTest : FunSpec({
                 assume(
                     knight1.name != knight2.name ||
                         knight1.maxHp != knight2.maxHp ||
-                        knight1.maxMp != knight2.maxMp ||
                         knight1.defense != knight2.defense
                 )
                 val randomKnight1 = Knight(knight1.name, knight1.maxHp, knight1.defense, queue)
@@ -192,6 +194,34 @@ class KnightTest : FunSpec({
                     }
                     randomKnight.currentHp shouldNotBe knight.maxHp
                     randomKnight.currentHp shouldBeGreaterThanOrEqualTo 0
+                }
+            }
+        }
+        test("Not be able to have more current hp than its maxHp") {
+            checkAll(
+                PropTestConfig(maxDiscardPercentage = 55),
+                genA = validCharacterGenerator,
+                genB = Arb.positiveInt(),
+                genC = Arb.positiveInt()
+            ) {knight, randomHealing, randomDamage ->
+                assume {
+                    randomDamage shouldBeLessThanOrEqual knight.maxHp
+                }
+                val randomKnight = Knight(knight.name, knight.maxHp, knight.defense, queue)
+                randomKnight.currentHp shouldBe knight.maxHp
+                randomKnight.currentHp -= randomDamage
+                randomKnight.currentHp shouldNotBe knight.maxHp
+                if (randomHealing > randomKnight.maxHp - randomKnight.currentHp) {
+                    assertThrows<InvalidStatValueException> {
+                        randomKnight.currentHp += randomHealing
+                    }
+                }
+                else {
+                    assertDoesNotThrow {
+                        randomKnight.currentHp += randomHealing
+                    }
+                    randomKnight.currentHp shouldBeLessThanOrEqual randomKnight.maxHp
+                    randomKnight.currentHp shouldBeGreaterThan 0
                 }
             }
         }

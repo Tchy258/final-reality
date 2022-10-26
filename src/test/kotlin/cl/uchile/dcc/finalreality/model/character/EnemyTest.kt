@@ -1,16 +1,23 @@
 package cl.uchile.dcc.finalreality.model.character
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
+import cl.uchile.dcc.finalreality.model.character.EnemyData.Companion.arbitraryEnemyGenerator
+import cl.uchile.dcc.finalreality.model.character.EnemyData.Companion.validEnemyGenerator
 import io.kotest.assertions.timing.eventually
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
+import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.nonNegativeInt
+import io.kotest.property.PropTestConfig
+import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.positiveInt
-import io.kotest.property.arbitrary.string
 import io.kotest.property.assume
 import io.kotest.property.checkAll
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import java.util.concurrent.LinkedBlockingQueue
 
 class EnemyTest : FunSpec({
@@ -29,15 +36,9 @@ class EnemyTest : FunSpec({
     }
     context("Two enemies with the same parameters should:") {
         test("Be equal") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt(),
-                genE = Arb.nonNegativeInt()
-            ) { name, damage, weight, maxHp, defense ->
-                val randomEnemy1 = Enemy(name, damage, weight, maxHp, defense, queue)
-                val randomEnemy2 = Enemy(name, damage, weight, maxHp, defense, queue)
+            checkAll(validEnemyGenerator) { enemy ->
+                val randomEnemy1 = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
+                val randomEnemy2 = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
                 randomEnemy1 shouldBe randomEnemy2
             }
             enemy1 shouldBe enemy2
@@ -49,26 +50,18 @@ class EnemyTest : FunSpec({
     context("Two enemies with different parameters should:") {
         test("Not be equal") {
             checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt(),
-                genE = Arb.nonNegativeInt(),
-                genF = Arb.string(),
-                genG = Arb.positiveInt(),
-                genH = Arb.positiveInt(),
-                genI = Arb.positiveInt(),
-                genJ = Arb.nonNegativeInt()
-            ) { name1, damage1, weight1, maxHp1, defense1, name2, damage2, weight2, maxHp2, defense2 ->
+                genA = validEnemyGenerator,
+                genB = validEnemyGenerator
+            ) { enemy1, enemy2 ->
                 assume(
-                    name1 != name2 ||
-                        damage1 != damage2 ||
-                        maxHp1 != maxHp2 ||
-                        defense1 != defense2 ||
-                        weight1 != weight2
+                    enemy1.name != enemy2.name ||
+                        enemy1.damage != enemy2.damage ||
+                        enemy1.maxHp != enemy2.maxHp ||
+                        enemy1.defense != enemy2.defense ||
+                        enemy1.weight != enemy2.weight
                 )
-                val randomEnemy1 = Enemy(name1, damage1, weight1, maxHp1, defense1, queue)
-                val randomEnemy2 = Enemy(name2, damage2, weight2, maxHp2, defense2, queue)
+                val randomEnemy1 = Enemy(enemy1.name, enemy1.damage, enemy1.weight, enemy1.maxHp, enemy1.defense, queue)
+                val randomEnemy2 = Enemy(enemy2.name, enemy2.damage, enemy2.weight, enemy2.maxHp, enemy2.defense, queue)
                 randomEnemy1 shouldNotBe randomEnemy2
             }
             enemy1 shouldNotBe enemy3
@@ -83,14 +76,8 @@ class EnemyTest : FunSpec({
             enemy4.toString() shouldBe "Enemy { name:'LightEnemy', damage: 5, weight: 5, maxHp: 10, defense: 1, currentHp: 10 }"
         }
         test("Not be null") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt(),
-                genE = Arb.nonNegativeInt()
-            ) { name, damage, weight, maxHp, defense ->
-                val randomEnemy = Enemy(name, damage, weight, maxHp, defense, queue)
+            checkAll(validEnemyGenerator) { enemy ->
+                val randomEnemy = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
                 randomEnemy shouldNotBe null
             }
             enemy1 shouldNotBe null
@@ -98,22 +85,75 @@ class EnemyTest : FunSpec({
             enemy3 shouldNotBe null
             enemy4 shouldNotBe null
         }
-        test("Be able to have its currentHp changed to non-negative values") {
-            checkAll(
-                genA = Arb.string(),
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt(),
-                genD = Arb.positiveInt(),
-                genE = Arb.nonNegativeInt(),
-                genF = Arb.positiveInt()
-            ) { name, damage, weight, maxHp, defense, randomDamage ->
-                val randomEnemy = Enemy(name, damage, weight, maxHp, defense, queue)
-                randomEnemy.currentHp shouldBe maxHp
-                randomEnemy.currentHp = Integer.max(0, randomEnemy.currentHp - randomDamage)
-                randomEnemy.currentHp shouldNotBe maxHp
-                randomEnemy.currentHp shouldBeGreaterThanOrEqualTo 0
+        test("Have valid stats") {
+            checkAll(arbitraryEnemyGenerator) {
+                enemy ->
+                if (enemy.maxHp <= 0 || enemy.defense < 0 || enemy.damage <0 || enemy.weight <= 0) {
+                    assertThrows<InvalidStatValueException> {
+                        Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
+                    }
+                } else {
+                    assertDoesNotThrow {
+                        Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
+                    }
+                }
+            }
+            assertThrows<InvalidStatValueException> {
+                Enemy("", -1, -1, -1, -1, queue)
+            }
+            assertDoesNotThrow {
+                Enemy("", 1, 1, 1, 1, queue)
             }
         }
+        test("Be able to have its currentHp changed to non-negative values") {
+            checkAll(
+                genA = validEnemyGenerator,
+                genB = Arb.positiveInt()
+            ) { enemy, randomDamage ->
+                val randomEnemy = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
+                randomEnemy.currentHp shouldBe enemy.maxHp
+                if (randomDamage> enemy.maxHp) {
+                    assertThrows<InvalidStatValueException> {
+                        randomEnemy.currentHp -= randomDamage
+                    }
+                } else {
+                    assertDoesNotThrow {
+                        randomEnemy.currentHp -= randomDamage
+                    }
+                    randomEnemy.currentHp shouldNotBe enemy.maxHp
+                    randomEnemy.currentHp shouldBeGreaterThanOrEqualTo 0
+                }
+            }
+        }
+        test("Not be able to have more current hp than its maxHp") {
+            checkAll(
+                PropTestConfig(maxDiscardPercentage = 55),
+                genA = validEnemyGenerator,
+                genB = Arb.positiveInt(),
+                genC = Arb.positiveInt()
+            ) {enemy, randomHealing, randomDamage ->
+                assume {
+                    randomDamage shouldBeLessThanOrEqual enemy.maxHp
+                }
+                val randomEnemy = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
+                randomEnemy.currentHp shouldBe enemy.maxHp
+                randomEnemy.currentHp -= randomDamage
+                randomEnemy.currentHp shouldNotBe enemy.maxHp
+                if (randomHealing > randomEnemy.maxHp - randomEnemy.currentHp) {
+                    assertThrows<InvalidStatValueException> {
+                        randomEnemy.currentHp += randomHealing
+                    }
+                }
+                else {
+                    assertDoesNotThrow {
+                        randomEnemy.currentHp += randomHealing
+                    }
+                    randomEnemy.currentHp shouldBeLessThanOrEqual randomEnemy.maxHp
+                    randomEnemy.currentHp shouldBeGreaterThan 0
+                }
+            }
+        }
+        // This test only tries with fixed weight values, other characters try with random values
         test("Be able to join the turns queue and take its turn when it should") {
             enemy1.waitTurn()
             enemy2.waitTurn()

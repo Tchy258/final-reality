@@ -3,6 +3,7 @@ package cl.uchile.dcc.finalreality.model.character.player.classes
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
@@ -35,8 +36,8 @@ class PlayerCharacterTurnTest : FunSpec({
             genF = validCharacterGenerator,
             genG = validCharacterGenerator,
             genH = validCharacterGenerator,
-            genI = validCharacterGenerator,
-            genJ = validCharacterGenerator,
+            genI = validMageGenerator,
+            genJ = validMageGenerator,
             iterations = 10 // Or else this test takes 15 minutes
         ) { weight1, weight2, weight3, weight4, weight5,
             character1, character2, character3, character4, character5 ->

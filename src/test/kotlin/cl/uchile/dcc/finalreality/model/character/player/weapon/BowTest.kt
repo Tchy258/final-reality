@@ -5,6 +5,7 @@ import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
@@ -146,7 +147,7 @@ class BowTest : FunSpec({
         test("Be unequippable to a BlackMage") {
             checkAll(
                 genA = validWeaponGenerator,
-                genB = validCharacterGenerator
+                genB = validMageGenerator
             ) { bow, blackMage ->
                 val testBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, LinkedBlockingQueue<GameCharacter>())
                 val testBow = Bow(bow.name, bow.damage, bow.weight)
@@ -158,7 +159,7 @@ class BowTest : FunSpec({
         test("Be unequippable to a WhiteMage") {
             checkAll(
                 genA = validWeaponGenerator,
-                genB = validCharacterGenerator
+                genB = validMageGenerator
             ) { bow, whiteMage ->
                 val testWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, LinkedBlockingQueue<GameCharacter>())
                 val testBow = Bow(bow.name, bow.damage, bow.weight)

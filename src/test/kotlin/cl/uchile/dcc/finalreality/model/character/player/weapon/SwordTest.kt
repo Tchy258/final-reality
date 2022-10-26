@@ -3,12 +3,14 @@ package cl.uchile.dcc.finalreality.model.character.player.weapon
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
+import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -34,7 +36,7 @@ class SwordTest : FunSpec({
     }
     context("Two swords with the same parameters should:") {
         test("Be equal") {
-            checkAll(WeaponData.validWeaponGenerator) { sword ->
+            checkAll(validWeaponGenerator) { sword ->
                 val randomSword1 =
                     Sword(sword.name, sword.damage, sword.weight)
                 val randomSword2 =
@@ -50,8 +52,8 @@ class SwordTest : FunSpec({
     context("Two swords with different parameters should:") {
         test("Not be equal") {
             checkAll(
-                genA = WeaponData.validWeaponGenerator,
-                genB = WeaponData.validWeaponGenerator
+                genA = validWeaponGenerator,
+                genB = validWeaponGenerator
             ) { sword1, sword2 ->
                 assume {
                     sword1.name != sword2.name ||
@@ -80,7 +82,7 @@ class SwordTest : FunSpec({
             sword3 shouldNotBe null
         }
         test("Be equal to itself") {
-            checkAll(WeaponData.validWeaponGenerator) { sword ->
+            checkAll(validWeaponGenerator) { sword ->
                 val randomSword = Sword(sword.name, sword.damage, sword.weight)
                 randomSword shouldBe randomSword
             }
@@ -114,8 +116,8 @@ class SwordTest : FunSpec({
         // Tests for equipTo... methods
         test("Be unequippable to an Engineer") {
             checkAll(
-                genA = WeaponData.validWeaponGenerator,
-                genB = CharacterData.validCharacterGenerator
+                genA = validWeaponGenerator,
+                genB = validCharacterGenerator
             ) { sword, engineer ->
                 // The queue is not relevant to the test so a fresh instance is made each time
                 val testEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, LinkedBlockingQueue<GameCharacter>())
@@ -127,8 +129,8 @@ class SwordTest : FunSpec({
         }
         test("Be equippable to a Knight") {
             checkAll(
-                genA = WeaponData.validWeaponGenerator,
-                genB = CharacterData.validCharacterGenerator
+                genA = validWeaponGenerator,
+                genB = validCharacterGenerator
             ) { sword, knight ->
                 val testKnight = Knight(knight.name, knight.maxHp, knight.defense, LinkedBlockingQueue<GameCharacter>())
                 val testSword = Sword(sword.name, sword.damage, sword.weight)
@@ -139,8 +141,8 @@ class SwordTest : FunSpec({
         }
         test("Be equippable to a Thief") {
             checkAll(
-                genA = WeaponData.validWeaponGenerator,
-                genB = CharacterData.validCharacterGenerator
+                genA = validWeaponGenerator,
+                genB = validCharacterGenerator
             ) { sword, thief ->
                 val testThief = Thief(thief.name, thief.maxHp, thief.defense, LinkedBlockingQueue<GameCharacter>())
                 val testSword = Sword(sword.name, sword.damage, sword.weight)
@@ -151,8 +153,8 @@ class SwordTest : FunSpec({
         }
         test("Be unequippable to a BlackMage") {
             checkAll(
-                genA = WeaponData.validWeaponGenerator,
-                genB = CharacterData.validCharacterGenerator
+                genA = validWeaponGenerator,
+                genB = validMageGenerator
             ) { sword, blackMage ->
                 val testBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, LinkedBlockingQueue<GameCharacter>())
                 val testSword = Sword(sword.name, sword.damage, sword.weight)
@@ -163,8 +165,8 @@ class SwordTest : FunSpec({
         }
         test("Be unequippable to a WhiteMage") {
             checkAll(
-                genA = WeaponData.validWeaponGenerator,
-                genB = CharacterData.validCharacterGenerator
+                genA = validWeaponGenerator,
+                genB = validMageGenerator
             ) { sword, whiteMage ->
                 val testWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, LinkedBlockingQueue<GameCharacter>())
                 val testSword = Sword(sword.name, sword.damage, sword.weight)
