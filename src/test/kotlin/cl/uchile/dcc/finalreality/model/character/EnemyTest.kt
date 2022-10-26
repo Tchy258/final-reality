@@ -12,7 +12,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
 import io.kotest.property.PropTestConfig
-import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.assume
 import io.kotest.property.checkAll
@@ -131,7 +130,7 @@ class EnemyTest : FunSpec({
                 genA = validEnemyGenerator,
                 genB = Arb.positiveInt(),
                 genC = Arb.positiveInt()
-            ) {enemy, randomHealing, randomDamage ->
+            ) { enemy, randomHealing, randomDamage ->
                 assume {
                     randomDamage shouldBeLessThanOrEqual enemy.maxHp
                 }
@@ -143,8 +142,7 @@ class EnemyTest : FunSpec({
                     assertThrows<InvalidStatValueException> {
                         randomEnemy.currentHp += randomHealing
                     }
-                }
-                else {
+                } else {
                     assertDoesNotThrow {
                         randomEnemy.currentHp += randomHealing
                     }

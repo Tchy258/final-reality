@@ -4,10 +4,8 @@ import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.arbitraryMageGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
 import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
@@ -196,7 +194,7 @@ class WhiteMageTest : FunSpec({
                 genA = validMageGenerator,
                 genB = Arb.positiveInt(),
                 genC = Arb.positiveInt()
-            ) {whiteMage, randomHealing, randomDamage ->
+            ) { whiteMage, randomHealing, randomDamage ->
                 assume {
                     randomDamage shouldBeLessThanOrEqual whiteMage.maxHp
                 }
@@ -208,8 +206,7 @@ class WhiteMageTest : FunSpec({
                     assertThrows<InvalidStatValueException> {
                         randomWhiteMage.currentHp += randomHealing
                     }
-                }
-                else {
+                } else {
                     assertDoesNotThrow {
                         randomWhiteMage.currentHp += randomHealing
                     }
@@ -224,7 +221,7 @@ class WhiteMageTest : FunSpec({
                 genA = validMageGenerator,
                 genB = Arb.positiveInt(),
                 genC = Arb.positiveInt()
-            ) {whiteMage, randomRestoration, randomCost ->
+            ) { whiteMage, randomRestoration, randomCost ->
                 assume {
                     randomCost shouldBeLessThanOrEqual whiteMage.maxMp
                 }
@@ -236,8 +233,7 @@ class WhiteMageTest : FunSpec({
                     assertThrows<InvalidStatValueException> {
                         randomWhiteMage.currentMp += randomRestoration
                     }
-                }
-                else {
+                } else {
                     assertDoesNotThrow {
                         randomWhiteMage.currentMp += randomRestoration
                     }

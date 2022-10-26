@@ -202,7 +202,7 @@ class EngineerTest : FunSpec({
                 genA = validCharacterGenerator,
                 genB = Arb.positiveInt(),
                 genC = Arb.positiveInt()
-            ) {engineer, randomHealing, randomDamage ->
+            ) { engineer, randomHealing, randomDamage ->
                 assume {
                     randomDamage shouldBeLessThanOrEqual engineer.maxHp
                 }
@@ -214,8 +214,7 @@ class EngineerTest : FunSpec({
                     assertThrows<InvalidStatValueException> {
                         randomEngineer.currentHp += randomHealing
                     }
-                }
-                else {
+                } else {
                     assertDoesNotThrow {
                         randomEngineer.currentHp += randomHealing
                     }

@@ -203,7 +203,7 @@ class BlackMageTest : FunSpec({
                 genA = validMageGenerator,
                 genB = Arb.positiveInt(),
                 genC = Arb.positiveInt()
-            ) {whiteMage, randomHealing, randomDamage ->
+            ) { whiteMage, randomHealing, randomDamage ->
                 assume {
                     randomDamage shouldBeLessThanOrEqual whiteMage.maxHp
                 }
@@ -215,8 +215,7 @@ class BlackMageTest : FunSpec({
                     assertThrows<InvalidStatValueException> {
                         randomWhiteMage.currentHp += randomHealing
                     }
-                }
-                else {
+                } else {
                     assertDoesNotThrow {
                         randomWhiteMage.currentHp += randomHealing
                     }
@@ -231,7 +230,7 @@ class BlackMageTest : FunSpec({
                 genA = validMageGenerator,
                 genB = Arb.positiveInt(),
                 genC = Arb.positiveInt()
-            ) {blackMage, randomRestoration, randomCost ->
+            ) { blackMage, randomRestoration, randomCost ->
                 assume {
                     randomCost shouldBeLessThanOrEqual blackMage.maxMp
                 }
@@ -243,8 +242,7 @@ class BlackMageTest : FunSpec({
                     assertThrows<InvalidStatValueException> {
                         randomBlackMage.currentMp += randomRestoration
                     }
-                }
-                else {
+                } else {
                     assertDoesNotThrow {
                         randomBlackMage.currentMp += randomRestoration
                     }

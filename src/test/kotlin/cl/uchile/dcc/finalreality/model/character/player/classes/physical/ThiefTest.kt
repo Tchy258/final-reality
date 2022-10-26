@@ -3,8 +3,6 @@ package cl.uchile.dcc.finalreality.model.character.player.classes.physical
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
-import cl.uchile.dcc.finalreality.model.character.Enemy
-import cl.uchile.dcc.finalreality.model.character.EnemyData
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
@@ -205,7 +203,7 @@ class ThiefTest : FunSpec({
                 genA = validCharacterGenerator,
                 genB = Arb.positiveInt(),
                 genC = Arb.positiveInt()
-            ) {thief, randomHealing, randomDamage ->
+            ) { thief, randomHealing, randomDamage ->
                 assume {
                     randomDamage shouldBeLessThanOrEqual thief.maxHp
                 }
@@ -217,8 +215,7 @@ class ThiefTest : FunSpec({
                     assertThrows<InvalidStatValueException> {
                         randomThief.currentHp += randomHealing
                     }
-                }
-                else {
+                } else {
                     assertDoesNotThrow {
                         randomThief.currentHp += randomHealing
                     }

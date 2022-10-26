@@ -203,7 +203,7 @@ class KnightTest : FunSpec({
                 genA = validCharacterGenerator,
                 genB = Arb.positiveInt(),
                 genC = Arb.positiveInt()
-            ) {knight, randomHealing, randomDamage ->
+            ) { knight, randomHealing, randomDamage ->
                 assume {
                     randomDamage shouldBeLessThanOrEqual knight.maxHp
                 }
@@ -215,8 +215,7 @@ class KnightTest : FunSpec({
                     assertThrows<InvalidStatValueException> {
                         randomKnight.currentHp += randomHealing
                     }
-                }
-                else {
+                } else {
                     assertDoesNotThrow {
                         randomKnight.currentHp += randomHealing
                     }

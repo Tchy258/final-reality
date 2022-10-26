@@ -37,7 +37,7 @@ class Enemy(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractCharacter(name, maxHp, defense, turnsQueue) {
     val weight = Require.Stat(weight, "Weight") atLeast 1
-    val damage = Require.Stat(damage,"Damage") atLeast 0
+    val damage = Require.Stat(damage, "Damage") atLeast 0
 
     override fun equals(other: Any?) = when {
         this === other -> true
