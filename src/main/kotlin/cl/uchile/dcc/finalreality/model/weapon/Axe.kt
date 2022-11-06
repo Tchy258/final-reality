@@ -5,43 +5,42 @@
  * You should have received a copy of the license along with this
  * work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
  */
-package cl.uchile.dcc.finalreality.model.character.player.weapon
+package cl.uchile.dcc.finalreality.model.weapon
 
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
 import java.util.Objects
-
 /**
- * A class that identifies a [Weapon] as a Sword, and tells whoever tries to equip it
- * to equip a sword.
+ * A class that identifies a [Weapon] as an Axe, and tells whoever tries to equip it
+ * to equip an axe.
  *
  * @param name the name of the weapon.
  * @param damage the base damage done by the weapon.
  * @param weight the weight of the weapon.
  *
- * @constructor Creates a new sword.
+ * @constructor Creates a new axe.
  * @author <a href="https://www.github.com/Tchy258">Tchy258</a>
  */
-class Sword(
+class Axe(
     name: String,
     damage: Int,
     weight: Int
 ) : AbstractWeapon(name, damage, weight) {
+    override fun equipToEngineer(character: Engineer) {
+        character.equipAxe(this)
+    }
     override fun equipToKnight(character: Knight) {
-        character.equipSword(this)
+        character.equipAxe(this)
     }
-    override fun equipToThief(character: Thief) {
-        character.equipSword(this)
-    }
-    override fun hashCode() = Objects.hash(Sword::class, name, damage, weight)
+    override fun hashCode() = Objects.hash(Axe::class, name, damage, weight)
     override fun equals(other: Any?) = when {
         this === other -> true
-        other !is Sword -> false
+        other !is Axe -> false
         hashCode() != other.hashCode() -> false
         name != other.name -> false
         damage != other.damage -> false
         weight != other.weight -> false
         else -> true
     }
-    override fun toString() = "Sword { name: '$name', damage: $damage, weight: $weight }"
+    override fun toString() = "Axe { name: '$name', damage: $damage, weight: $weight }"
 }

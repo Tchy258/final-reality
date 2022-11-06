@@ -8,11 +8,11 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMa
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Axe
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Staff
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
+import cl.uchile.dcc.finalreality.model.weapon.Axe
+import cl.uchile.dcc.finalreality.model.weapon.Bow
+import cl.uchile.dcc.finalreality.model.weapon.Knife
+import cl.uchile.dcc.finalreality.model.weapon.Staff
+import cl.uchile.dcc.finalreality.model.weapon.Sword
 import io.kotest.assertions.timing.eventually
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe

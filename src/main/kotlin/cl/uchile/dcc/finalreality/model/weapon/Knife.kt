@@ -5,7 +5,7 @@
  * You should have received a copy of the license along with this
  * work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
  */
-package cl.uchile.dcc.finalreality.model.character.player.weapon
+package cl.uchile.dcc.finalreality.model.weapon
 
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight

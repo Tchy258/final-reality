@@ -9,10 +9,10 @@ package cl.uchile.dcc.finalreality.model.character.player.classes.physical
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.AbstractPlayerCharacter
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Bow
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Sword
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
+import cl.uchile.dcc.finalreality.model.weapon.Bow
+import cl.uchile.dcc.finalreality.model.weapon.Knife
+import cl.uchile.dcc.finalreality.model.weapon.Sword
+import cl.uchile.dcc.finalreality.model.weapon.Weapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 

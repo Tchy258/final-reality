@@ -8,7 +8,7 @@
 package cl.uchile.dcc.finalreality.exceptions
 
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
+import cl.uchile.dcc.finalreality.model.weapon.Weapon
 
 /**
  * This error is used to represent an illegal weapon equip

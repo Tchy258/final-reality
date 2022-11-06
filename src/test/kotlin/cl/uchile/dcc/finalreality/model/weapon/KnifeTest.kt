@@ -1,4 +1,4 @@
-package cl.uchile.dcc.finalreality.model.character.player.weapon
+package cl.uchile.dcc.finalreality.model.weapon
 
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
@@ -10,8 +10,8 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMa
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
-import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.arbitraryWeaponGenerator
-import cl.uchile.dcc.finalreality.model.character.player.weapon.WeaponData.Companion.validWeaponGenerator
+import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.arbitraryWeaponGenerator
+import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
