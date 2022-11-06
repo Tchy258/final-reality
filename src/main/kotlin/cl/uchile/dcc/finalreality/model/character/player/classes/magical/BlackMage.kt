@@ -8,9 +8,9 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Knife
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Staff
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
+import cl.uchile.dcc.finalreality.model.weapon.Knife
+import cl.uchile.dcc.finalreality.model.weapon.Staff
+import cl.uchile.dcc.finalreality.model.weapon.Weapon
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 

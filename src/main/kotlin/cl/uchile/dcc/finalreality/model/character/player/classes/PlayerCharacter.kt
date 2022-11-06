@@ -7,7 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes
 
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
+import cl.uchile.dcc.finalreality.model.weapon.Weapon
 
 /**
  * A character controlled by the user.

@@ -1,4 +1,4 @@
-package cl.uchile.dcc.finalreality.model.character.player.weapon
+package cl.uchile.dcc.finalreality.model.weapon
 
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary

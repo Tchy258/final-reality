@@ -10,7 +10,7 @@ package cl.uchile.dcc.finalreality.model.character.player.classes
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.AbstractCharacter
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.player.weapon.Weapon
+import cl.uchile.dcc.finalreality.model.weapon.Weapon
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
