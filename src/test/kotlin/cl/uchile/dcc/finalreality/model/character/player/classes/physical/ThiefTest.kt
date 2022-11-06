@@ -184,13 +184,13 @@ class ThiefTest : FunSpec({
             ) { thief, randomDamage ->
                 val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 randomThief.currentHp shouldBe thief.maxHp
-                if (randomDamage> thief.maxHp) {
+                if (randomDamage> (thief.maxHp + thief.defense)) {
                     assertThrows<InvalidStatValueException> {
-                        randomThief.currentHp -= randomDamage
+                        randomThief.receiveAttack(randomDamage)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomThief.currentHp -= randomDamage
+                        randomThief.receiveAttack(randomDamage)
                     }
                     randomThief.currentHp shouldNotBe thief.maxHp
                     randomThief.currentHp shouldBeGreaterThanOrEqualTo 0
@@ -205,19 +205,19 @@ class ThiefTest : FunSpec({
                 genC = Arb.positiveInt()
             ) { thief, randomHealing, randomDamage ->
                 assume {
-                    randomDamage shouldBeLessThanOrEqual thief.maxHp
+                    randomDamage shouldBeLessThanOrEqual (thief.maxHp + thief.defense)
                 }
                 val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 randomThief.currentHp shouldBe thief.maxHp
-                randomThief.currentHp -= randomDamage
+                randomThief.receiveAttack(randomDamage)
                 randomThief.currentHp shouldNotBe thief.maxHp
                 if (randomHealing > randomThief.maxHp - randomThief.currentHp) {
                     assertThrows<InvalidStatValueException> {
-                        randomThief.currentHp += randomHealing
+                        randomThief.receiveHealing(randomHealing)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomThief.currentHp += randomHealing
+                        randomThief.receiveHealing(randomHealing)
                     }
                     randomThief.currentHp shouldBeLessThanOrEqual randomThief.maxHp
                     randomThief.currentHp shouldBeGreaterThan 0

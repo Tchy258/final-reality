@@ -22,11 +22,26 @@ package cl.uchile.dcc.finalreality.model.character
 interface GameCharacter {
     val name: String
     val maxHp: Int
-    var currentHp: Int
+    val currentHp: Int
     val defense: Int
     /**
      * Sets a scheduled executor to make this character (thread) wait for `speed / 10`
      * seconds (that is the same as `speed * 100` milliseconds) before adding the character to the queue.
      */
     fun waitTurn()
+
+    /**
+     * Decrements this character's currentHp by receiving damage
+     */
+    fun receiveAttack(damage: Int)
+
+    /**
+     * Attacks a [GameCharacter], decreasing [anotherCharacter]'s [currentHp]
+     */
+    fun attack(anotherCharacter: GameCharacter)
+
+    /**
+     * Heals this character's currentHp increasing its value
+     */
+    fun receiveHealing(healing: Int)
 }

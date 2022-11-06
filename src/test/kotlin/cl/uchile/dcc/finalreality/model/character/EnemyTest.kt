@@ -3,11 +3,21 @@ package cl.uchile.dcc.finalreality.model.character
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.model.character.EnemyData.Companion.arbitraryEnemyGenerator
 import cl.uchile.dcc.finalreality.model.character.EnemyData.Companion.validEnemyGenerator
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
+import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
 import io.kotest.assertions.timing.eventually
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.matchers.ints.shouldBeLessThanOrEqual
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
@@ -111,13 +121,13 @@ class EnemyTest : FunSpec({
             ) { enemy, randomDamage ->
                 val randomEnemy = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
                 randomEnemy.currentHp shouldBe enemy.maxHp
-                if (randomDamage> enemy.maxHp) {
+                if (randomDamage> (enemy.maxHp + enemy.defense)) {
                     assertThrows<InvalidStatValueException> {
-                        randomEnemy.currentHp -= randomDamage
+                        randomEnemy.receiveAttack(randomDamage)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomEnemy.currentHp -= randomDamage
+                        randomEnemy.receiveAttack(randomDamage)
                     }
                     randomEnemy.currentHp shouldNotBe enemy.maxHp
                     randomEnemy.currentHp shouldBeGreaterThanOrEqualTo 0
@@ -132,19 +142,19 @@ class EnemyTest : FunSpec({
                 genC = Arb.positiveInt()
             ) { enemy, randomHealing, randomDamage ->
                 assume {
-                    randomDamage shouldBeLessThanOrEqual enemy.maxHp
+                    randomDamage shouldBeLessThanOrEqual (enemy.maxHp + enemy.defense)
                 }
                 val randomEnemy = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
                 randomEnemy.currentHp shouldBe enemy.maxHp
-                randomEnemy.currentHp -= randomDamage
+                randomEnemy.receiveAttack(randomDamage)
                 randomEnemy.currentHp shouldNotBe enemy.maxHp
                 if (randomHealing > randomEnemy.maxHp - randomEnemy.currentHp) {
                     assertThrows<InvalidStatValueException> {
-                        randomEnemy.currentHp += randomHealing
+                        randomEnemy.receiveHealing(randomHealing)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomEnemy.currentHp += randomHealing
+                        randomEnemy.receiveHealing(randomHealing)
                     }
                     randomEnemy.currentHp shouldBeLessThanOrEqual randomEnemy.maxHp
                     randomEnemy.currentHp shouldBeGreaterThan 0
@@ -167,5 +177,6 @@ class EnemyTest : FunSpec({
             queue.poll() // Take out the other one with the same weight
             queue.poll() shouldBe enemy3
         }
+        
     }
 })

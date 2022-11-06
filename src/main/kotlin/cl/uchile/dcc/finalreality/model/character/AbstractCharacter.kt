@@ -8,6 +8,7 @@
 package cl.uchile.dcc.finalreality.model.character
 
 import cl.uchile.dcc.finalreality.exceptions.Require
+import java.lang.Integer.max
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ScheduledExecutorService
 
@@ -31,11 +32,23 @@ abstract class AbstractCharacter(
 
     protected lateinit var scheduledExecutor: ScheduledExecutorService
     override val maxHp = Require.Stat(maxHp, "Max Hp") atLeast 1
-    override var currentHp = maxHp
+    override val defense = Require.Stat(defense, "Defense") atLeast 0
+    private var _currentHp = maxHp
         set(value) {
             field = Require.Stat(value, "Current Hp") inRange 0..maxHp
         }
-    override val defense = Require.Stat(defense, "Defense") atLeast 0
+    override val currentHp: Int
+        get() = _currentHp
+
+    override fun receiveAttack(damage: Int) {
+        _currentHp -= max(0,(damage - defense))
+    }
+
+    override fun receiveHealing(healing: Int) {
+        _currentHp += healing
+    }
+    abstract override fun attack(anotherCharacter: GameCharacter)
+
     /**
      * Adds this character to the [turnsQueue].
      */

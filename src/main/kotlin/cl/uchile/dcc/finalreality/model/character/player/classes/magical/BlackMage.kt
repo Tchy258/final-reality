@@ -37,14 +37,27 @@ class BlackMage(
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
+    /**
+     * Boolean value to check magicDamage calculations
+     */
+    private var _hasStaff: Boolean = false
     override fun equip(weapon: Weapon) {
         weapon.equipToBlackMage(this)
     }
     fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
+        _hasStaff = false
     }
     fun equipStaff(staff: Staff) {
         this.setWeapon(staff)
+        _hasStaff = true
+    }
+
+    override fun castSpell(cost: Int, spell: Any?) {
+        _currentMp-= cost
+        // TODO Once spells are implemented this method will tell the spell object to be cast
+        // This method has to be abstract because black mages can have knives which
+        // have no magicDamage value
     }
     override fun equals(other: Any?) = when {
         this === other -> true
