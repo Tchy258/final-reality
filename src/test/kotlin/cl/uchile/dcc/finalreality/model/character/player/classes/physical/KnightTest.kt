@@ -184,13 +184,13 @@ class KnightTest : FunSpec({
             ) { knight, randomDamage ->
                 val randomKnight = Knight(knight.name, knight.maxHp, knight.defense, queue)
                 randomKnight.currentHp shouldBe knight.maxHp
-                if (randomDamage> knight.maxHp) {
+                if (randomDamage> (knight.maxHp + knight.defense)) {
                     assertThrows<InvalidStatValueException> {
-                        randomKnight.currentHp -= randomDamage
+                        randomKnight.receiveAttack(randomDamage)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomKnight.currentHp -= randomDamage
+                        randomKnight.receiveAttack(randomDamage)
                     }
                     randomKnight.currentHp shouldNotBe knight.maxHp
                     randomKnight.currentHp shouldBeGreaterThanOrEqualTo 0
@@ -205,19 +205,19 @@ class KnightTest : FunSpec({
                 genC = Arb.positiveInt()
             ) { knight, randomHealing, randomDamage ->
                 assume {
-                    randomDamage shouldBeLessThanOrEqual knight.maxHp
+                    randomDamage shouldBeLessThanOrEqual (knight.maxHp + knight.defense)
                 }
                 val randomKnight = Knight(knight.name, knight.maxHp, knight.defense, queue)
                 randomKnight.currentHp shouldBe knight.maxHp
-                randomKnight.currentHp -= randomDamage
+                randomKnight.receiveAttack(randomDamage)
                 randomKnight.currentHp shouldNotBe knight.maxHp
                 if (randomHealing > randomKnight.maxHp - randomKnight.currentHp) {
                     assertThrows<InvalidStatValueException> {
-                        randomKnight.currentHp += randomHealing
+                        randomKnight.receiveHealing(randomHealing)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomKnight.currentHp += randomHealing
+                        randomKnight.receiveHealing(randomHealing)
                     }
                     randomKnight.currentHp shouldBeLessThanOrEqual randomKnight.maxHp
                     randomKnight.currentHp shouldBeGreaterThan 0

@@ -35,8 +35,17 @@ abstract class AbstractMage(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
     val maxMp = Require.Stat(maxMp, "Max MP") atLeast 1
-    var currentMp: Int = maxMp
+    protected var _currentMp: Int = maxMp
         set(value) {
             field = Require.Stat(value, "Current MP") inRange 0..maxMp
         }
+
+    /**
+     * Casts a [spell]
+     * @param cost the spell's mp cost
+     * @param spell the cast spell
+     */
+    abstract fun castSpell(cost: Int, spell: Any? = null)
+    val currentMp: Int
+        get() = _currentMp
 }

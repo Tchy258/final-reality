@@ -19,4 +19,4 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
  */
 
 class NoWeaponEquippedException(aCharacter: String) :
-    Exception("Attempted to join turn queue unarmed. $aCharacter has no weapon equipped")
+    Exception("Attempted to join turn queue or attack while unarmed. $aCharacter has no weapon equipped")

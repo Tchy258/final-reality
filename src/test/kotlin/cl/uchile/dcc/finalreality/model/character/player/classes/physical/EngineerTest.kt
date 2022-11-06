@@ -183,13 +183,13 @@ class EngineerTest : FunSpec({
             ) { engineer, randomDamage ->
                 val randomEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, queue)
                 randomEngineer.currentHp shouldBe engineer.maxHp
-                if (randomDamage> engineer.maxHp) {
+                if (randomDamage> (engineer.maxHp + engineer.defense)) {
                     assertThrows<InvalidStatValueException> {
-                        randomEngineer.currentHp -= randomDamage
+                        randomEngineer.receiveAttack(randomDamage)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomEngineer.currentHp -= randomDamage
+                        randomEngineer.receiveAttack(randomDamage)
                     }
                     randomEngineer.currentHp shouldNotBe engineer.maxHp
                     randomEngineer.currentHp shouldBeGreaterThanOrEqualTo 0
@@ -204,19 +204,19 @@ class EngineerTest : FunSpec({
                 genC = Arb.positiveInt()
             ) { engineer, randomHealing, randomDamage ->
                 assume {
-                    randomDamage shouldBeLessThanOrEqual engineer.maxHp
+                    randomDamage shouldBeLessThanOrEqual (engineer.maxHp + engineer.defense)
                 }
                 val randomEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, queue)
                 randomEngineer.currentHp shouldBe engineer.maxHp
-                randomEngineer.currentHp -= randomDamage
+                randomEngineer.receiveAttack(randomDamage)
                 randomEngineer.currentHp shouldNotBe engineer.maxHp
                 if (randomHealing > randomEngineer.maxHp - randomEngineer.currentHp) {
                     assertThrows<InvalidStatValueException> {
-                        randomEngineer.currentHp += randomHealing
+                        randomEngineer.receiveHealing(randomHealing)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomEngineer.currentHp += randomHealing
+                        randomEngineer.receiveHealing(randomHealing)
                     }
                     randomEngineer.currentHp shouldBeLessThanOrEqual randomEngineer.maxHp
                     randomEngineer.currentHp shouldBeGreaterThan 0

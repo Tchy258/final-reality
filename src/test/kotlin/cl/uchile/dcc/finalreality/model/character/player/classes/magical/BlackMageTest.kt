@@ -20,6 +20,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
 import io.kotest.property.PropTestConfig
+import io.kotest.property.arbitrary.negativeInt
 import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.assume
 import io.kotest.property.checkAll
@@ -184,13 +185,13 @@ class BlackMageTest : FunSpec({
             ) { blackMage, randomDamage ->
                 val randomBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, queue)
                 randomBlackMage.currentHp shouldBe blackMage.maxHp
-                if (randomDamage> randomBlackMage.maxHp) {
+                if (randomDamage> (randomBlackMage.maxHp + randomBlackMage.defense)) {
                     assertThrows<InvalidStatValueException> {
-                        randomBlackMage.currentHp -= randomDamage
+                        randomBlackMage.receiveAttack(randomDamage)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomBlackMage.currentHp -= randomDamage
+                        randomBlackMage.receiveAttack(randomDamage)
                     }
                     randomBlackMage.currentHp shouldNotBe blackMage.maxHp
                     randomBlackMage.currentHp shouldBeGreaterThanOrEqualTo 0
@@ -203,24 +204,24 @@ class BlackMageTest : FunSpec({
                 genA = validMageGenerator,
                 genB = Arb.positiveInt(),
                 genC = Arb.positiveInt()
-            ) { whiteMage, randomHealing, randomDamage ->
+            ) { blackMage, randomHealing, randomDamage ->
                 assume {
-                    randomDamage shouldBeLessThanOrEqual whiteMage.maxHp
+                    randomDamage shouldBeLessThanOrEqual (blackMage.maxHp + blackMage.defense)
                 }
-                val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
-                randomWhiteMage.currentHp shouldBe whiteMage.maxHp
-                randomWhiteMage.currentHp -= randomDamage
-                randomWhiteMage.currentHp shouldNotBe whiteMage.maxHp
-                if (randomHealing > randomWhiteMage.maxHp - randomWhiteMage.currentHp) {
+                val randomBlackMage = WhiteMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, queue)
+                randomBlackMage.currentHp shouldBe blackMage.maxHp
+                randomBlackMage.receiveAttack(randomDamage)
+                randomBlackMage.currentHp shouldNotBe blackMage.maxHp
+                if (randomHealing > randomBlackMage.maxHp - randomBlackMage.currentHp) {
                     assertThrows<InvalidStatValueException> {
-                        randomWhiteMage.currentHp += randomHealing
+                        randomBlackMage.receiveHealing(randomHealing)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomWhiteMage.currentHp += randomHealing
+                        randomBlackMage.receiveHealing(randomHealing)
                     }
-                    randomWhiteMage.currentHp shouldBeLessThanOrEqual randomWhiteMage.maxHp
-                    randomWhiteMage.currentHp shouldBeGreaterThan 0
+                    randomBlackMage.currentHp shouldBeLessThanOrEqual randomBlackMage.maxHp
+                    randomBlackMage.currentHp shouldBeGreaterThan 0
                 }
             }
         }
@@ -228,7 +229,7 @@ class BlackMageTest : FunSpec({
             checkAll(
                 PropTestConfig(maxDiscardPercentage = 55),
                 genA = validMageGenerator,
-                genB = Arb.positiveInt(),
+                genB = Arb.negativeInt(),
                 genC = Arb.positiveInt()
             ) { blackMage, randomRestoration, randomCost ->
                 assume {
@@ -236,15 +237,15 @@ class BlackMageTest : FunSpec({
                 }
                 val randomBlackMage = BlackMage(blackMage.name, blackMage.maxMp, blackMage.maxMp, blackMage.defense, queue)
                 randomBlackMage.currentMp shouldBe blackMage.maxMp
-                randomBlackMage.currentMp -= randomCost
+                randomBlackMage.castSpell(randomCost)
                 randomBlackMage.currentMp shouldNotBe blackMage.maxMp
                 if (randomRestoration > randomBlackMage.maxMp - randomBlackMage.currentMp) {
                     assertThrows<InvalidStatValueException> {
-                        randomBlackMage.currentMp += randomRestoration
+                        randomBlackMage.castSpell(randomRestoration)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomBlackMage.currentMp += randomRestoration
+                        randomBlackMage.castSpell(randomRestoration)
                     }
                     randomBlackMage.currentMp shouldBeLessThanOrEqual randomBlackMage.maxMp
                     randomBlackMage.currentMp shouldBeGreaterThan 0
@@ -260,11 +261,11 @@ class BlackMageTest : FunSpec({
                 randomBlackMage.currentMp shouldBe blackMage.maxMp
                 if (randomCost> randomBlackMage.maxMp) {
                     assertThrows<InvalidStatValueException> {
-                        randomBlackMage.currentMp -= randomCost
+                        randomBlackMage.castSpell(randomCost)
                     }
                 } else {
                     assertDoesNotThrow {
-                        randomBlackMage.currentMp -= randomCost
+                        randomBlackMage.castSpell(randomCost)
                     }
                     randomBlackMage.currentMp shouldNotBe blackMage.maxMp
                     randomBlackMage.currentMp shouldBeGreaterThanOrEqualTo 0
