@@ -10,11 +10,14 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMa
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
-import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.arbitraryWeaponGenerator
+import cl.uchile.dcc.finalreality.model.weapon.StaffData.Companion.arbitraryStaffGenerator
+import cl.uchile.dcc.finalreality.model.weapon.StaffData.Companion.validStaffGenerator
 import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.assume
 import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -33,7 +36,7 @@ class StaffTest : FunSpec({
     }
     context("Two staffs with the same parameters should:") {
         test("Be equal") {
-            checkAll(validWeaponGenerator) { staff ->
+            checkAll(validStaffGenerator) { staff ->
                 val randomStaff1 =
                     Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 val randomStaff2 =
@@ -49,8 +52,8 @@ class StaffTest : FunSpec({
     context("Two staffs with different parameters should:") {
         test("Not be equal") {
             checkAll(
-                genA = validWeaponGenerator,
-                genB = validWeaponGenerator
+                genA = validStaffGenerator,
+                genB = validStaffGenerator
             ) { staff1, staff2 ->
                 assume {
                     staff1.name != staff2.name ||
@@ -66,7 +69,7 @@ class StaffTest : FunSpec({
     }
     context("Any Staff should:") {
         test("Not be null") {
-            checkAll(validWeaponGenerator) { staff ->
+            checkAll(validStaffGenerator) { staff ->
                 val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 randomStaff shouldNotBe null
             }
@@ -75,15 +78,28 @@ class StaffTest : FunSpec({
             staff3 shouldNotBe null
         }
         test("Be equal to itself") {
-            checkAll(validWeaponGenerator) { staff ->
+            checkAll(validStaffGenerator) { staff ->
                 val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 randomStaff shouldBe randomStaff
             }
             staff1 shouldBe staff1
             staff2 shouldBe staff2
         }
+        test("Not be equal to other weapons even with same parameters") {
+            checkAll(validWeaponGenerator, Arb.positiveInt()) { weaponData, magicDamage ->
+                val randomAxe = Axe(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomBow = Bow(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomKnife = Knife(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomSword = Sword(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomStaff = Staff(weaponData.name, weaponData.damage, weaponData.weight, magicDamage)
+                randomStaff shouldNotBe randomBow
+                randomStaff shouldNotBe randomKnife
+                randomStaff shouldNotBe randomSword
+                randomStaff shouldNotBe randomAxe
+            }
+        }
         test("Have valid stats") {
-            checkAll(arbitraryWeaponGenerator) { staff ->
+            checkAll(arbitraryStaffGenerator) { staff ->
                 if (staff.damage < 0 || staff.weight <= 0 || staff.magicDamage <0) {
                     assertThrows<InvalidStatValueException> {
                         Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
@@ -109,7 +125,7 @@ class StaffTest : FunSpec({
         // Tests for equipTo... methods
         test("Be unequippable to an Engineer") {
             checkAll(
-                genA = validWeaponGenerator,
+                genA = validStaffGenerator,
                 genB = validCharacterGenerator
             ) {
                 staff, engineer ->
@@ -123,7 +139,7 @@ class StaffTest : FunSpec({
         }
         test("Be unequippable to a Knight") {
             checkAll(
-                genA = validWeaponGenerator,
+                genA = validStaffGenerator,
                 genB = validCharacterGenerator
             ) { staff, knight ->
                 val testKnight = Knight(knight.name, knight.maxHp, knight.defense, LinkedBlockingQueue<GameCharacter>())
@@ -135,7 +151,7 @@ class StaffTest : FunSpec({
         }
         test("Be unequippable to a Thief") {
             checkAll(
-                genA = validWeaponGenerator,
+                genA = validStaffGenerator,
                 genB = validCharacterGenerator
             ) { staff, thief ->
                 val testThief = Thief(thief.name, thief.maxHp, thief.defense, LinkedBlockingQueue<GameCharacter>())
@@ -147,7 +163,7 @@ class StaffTest : FunSpec({
         }
         test("Be equippable to a BlackMage") {
             checkAll(
-                genA = validWeaponGenerator,
+                genA = validStaffGenerator,
                 genB = validMageGenerator
             ) { staff, blackMage ->
                 val testBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, LinkedBlockingQueue<GameCharacter>())
@@ -159,7 +175,7 @@ class StaffTest : FunSpec({
         }
         test("Be equippable to a WhiteMage") {
             checkAll(
-                genA = validWeaponGenerator,
+                genA = validStaffGenerator,
                 genB = validMageGenerator
             ) { staff, whiteMage ->
                 val testWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, LinkedBlockingQueue<GameCharacter>())

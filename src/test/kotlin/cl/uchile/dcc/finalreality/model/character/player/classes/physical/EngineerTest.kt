@@ -10,6 +10,7 @@ import cl.uchile.dcc.finalreality.model.weapon.Axe
 import cl.uchile.dcc.finalreality.model.weapon.Bow
 import cl.uchile.dcc.finalreality.model.weapon.Knife
 import cl.uchile.dcc.finalreality.model.weapon.Staff
+import cl.uchile.dcc.finalreality.model.weapon.StaffData.Companion.validStaffGenerator
 import cl.uchile.dcc.finalreality.model.weapon.Sword
 import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
@@ -155,7 +156,7 @@ class EngineerTest : FunSpec({
         test("Be unable to equip staves") {
             checkAll(
                 genA = validCharacterGenerator,
-                genB = validWeaponGenerator
+                genB = validStaffGenerator
             ) { engineer, staff ->
                 val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 val randomEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, queue)
@@ -178,22 +179,20 @@ class EngineerTest : FunSpec({
         }
         test("Be able to have its currentHp changed to non-negative values") {
             checkAll(
+                PropTestConfig(maxDiscardPercentage = 55),
                 genA = validCharacterGenerator,
                 genB = Arb.positiveInt()
             ) { engineer, randomDamage ->
+                assume {
+                    randomDamage shouldBeGreaterThan engineer.defense
+                }
                 val randomEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, queue)
                 randomEngineer.currentHp shouldBe engineer.maxHp
-                if (randomDamage> (engineer.maxHp + engineer.defense)) {
-                    assertThrows<InvalidStatValueException> {
-                        randomEngineer.receiveAttack(randomDamage)
-                    }
-                } else {
-                    assertDoesNotThrow {
-                        randomEngineer.receiveAttack(randomDamage)
-                    }
-                    randomEngineer.currentHp shouldNotBe engineer.maxHp
-                    randomEngineer.currentHp shouldBeGreaterThanOrEqualTo 0
+                assertDoesNotThrow {
+                    randomEngineer.receiveAttack(randomDamage)
                 }
+                randomEngineer.currentHp shouldNotBe engineer.maxHp
+                randomEngineer.currentHp shouldBeGreaterThanOrEqualTo 0
             }
         }
         test("Not be able to have more current hp than its maxHp") {
@@ -204,23 +203,17 @@ class EngineerTest : FunSpec({
                 genC = Arb.positiveInt()
             ) { engineer, randomHealing, randomDamage ->
                 assume {
-                    randomDamage shouldBeLessThanOrEqual (engineer.maxHp + engineer.defense)
+                    randomDamage shouldBeGreaterThan engineer.defense
                 }
                 val randomEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, queue)
                 randomEngineer.currentHp shouldBe engineer.maxHp
                 randomEngineer.receiveAttack(randomDamage)
                 randomEngineer.currentHp shouldNotBe engineer.maxHp
-                if (randomHealing > randomEngineer.maxHp - randomEngineer.currentHp) {
-                    assertThrows<InvalidStatValueException> {
-                        randomEngineer.receiveHealing(randomHealing)
-                    }
-                } else {
-                    assertDoesNotThrow {
-                        randomEngineer.receiveHealing(randomHealing)
-                    }
-                    randomEngineer.currentHp shouldBeLessThanOrEqual randomEngineer.maxHp
-                    randomEngineer.currentHp shouldBeGreaterThan 0
+                assertDoesNotThrow {
+                    randomEngineer.receiveHealing(randomHealing)
                 }
+                randomEngineer.currentHp shouldBeLessThanOrEqual randomEngineer.maxHp
+                randomEngineer.currentHp shouldBeGreaterThan 0
             }
         }
         test("Be able to join the turns queue with a weapon equipped") {

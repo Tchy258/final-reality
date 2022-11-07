@@ -89,6 +89,19 @@ class SwordTest : FunSpec({
             sword1 shouldBe sword1
             sword2 shouldBe sword2
         }
+        test("Not be equal to other weapons even with same parameters") {
+            checkAll(validWeaponGenerator, Arb.positiveInt()) { weaponData, magicDamage ->
+                val randomAxe = Axe(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomBow = Bow(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomKnife = Knife(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomSword = Sword(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomStaff = Staff(weaponData.name, weaponData.damage, weaponData.weight, magicDamage)
+                randomSword shouldNotBe randomBow
+                randomSword shouldNotBe randomKnife
+                randomSword shouldNotBe randomStaff
+                randomSword shouldNotBe randomAxe
+            }
+        }
         test("Have valid stats") {
             checkAll(WeaponData.arbitraryWeaponGenerator) { sword ->
                 if (sword.damage < 0 || sword.weight <= 0) {

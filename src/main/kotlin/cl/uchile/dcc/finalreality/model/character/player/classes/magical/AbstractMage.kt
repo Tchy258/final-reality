@@ -41,11 +41,37 @@ abstract class AbstractMage(
         }
 
     /**
-     * Casts a [spell]
-     * @param cost the spell's mp cost
-     * @param spell the cast spell
+     * Checks whether a spell with a [spellCost] can be cast and deducts mp
+     * if it has to
+     * @param spellCost the spell's mp cost
+     * @return whether the spell can be cast or not
      */
-    abstract fun castSpell(cost: Int, spell: Any? = null)
+    fun useMp(spellCost: Int): Boolean {
+        /*
+         * This method is temporary, once the magic logic is implemented
+         * this check will be inside the method that tells the mage to cast
+         * a spell
+         */
+        return if (_currentMp >= spellCost) {
+            _currentMp -= spellCost
+            true
+        } else {
+            false
+        }
+    }
+
+    /**
+     * Restores [restoration] mp to the mage
+     * @param restoration the amount of mp restored
+     */
+    fun restoreMp(restoration: Int) {
+        val finalMp: Int = try {
+            Math.addExact(_currentMp, restoration)
+        } catch (integerOverflow: ArithmeticException) {
+            this.maxMp
+        }
+        _currentMp = Integer.min(this.maxMp, finalMp)
+    }
     val currentMp: Int
         get() = _currentMp
 }

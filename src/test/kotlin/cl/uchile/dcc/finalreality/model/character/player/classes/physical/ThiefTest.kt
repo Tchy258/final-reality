@@ -10,6 +10,7 @@ import cl.uchile.dcc.finalreality.model.weapon.Axe
 import cl.uchile.dcc.finalreality.model.weapon.Bow
 import cl.uchile.dcc.finalreality.model.weapon.Knife
 import cl.uchile.dcc.finalreality.model.weapon.Staff
+import cl.uchile.dcc.finalreality.model.weapon.StaffData.Companion.validStaffGenerator
 import cl.uchile.dcc.finalreality.model.weapon.Sword
 import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.validWeaponGenerator
 import io.kotest.core.spec.style.FunSpec
@@ -155,7 +156,7 @@ class ThiefTest : FunSpec({
         test("Be unable to equip staves") {
             checkAll(
                 genA = validCharacterGenerator,
-                genB = validWeaponGenerator
+                genB = validStaffGenerator
             ) { thief, staff ->
                 val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
                 val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
@@ -179,22 +180,20 @@ class ThiefTest : FunSpec({
         }
         test("Be able to have its currentHp changed to non-negative values") {
             checkAll(
+                PropTestConfig(maxDiscardPercentage = 55),
                 genA = validCharacterGenerator,
                 genB = Arb.positiveInt()
             ) { thief, randomDamage ->
+                assume {
+                    randomDamage shouldBeGreaterThan thief.defense
+                }
                 val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 randomThief.currentHp shouldBe thief.maxHp
-                if (randomDamage> (thief.maxHp + thief.defense)) {
-                    assertThrows<InvalidStatValueException> {
-                        randomThief.receiveAttack(randomDamage)
-                    }
-                } else {
-                    assertDoesNotThrow {
-                        randomThief.receiveAttack(randomDamage)
-                    }
-                    randomThief.currentHp shouldNotBe thief.maxHp
-                    randomThief.currentHp shouldBeGreaterThanOrEqualTo 0
+                assertDoesNotThrow {
+                    randomThief.receiveAttack(randomDamage)
                 }
+                randomThief.currentHp shouldNotBe thief.maxHp
+                randomThief.currentHp shouldBeGreaterThanOrEqualTo 0
             }
         }
         test("Not be able to have more current hp than its maxHp") {
@@ -205,23 +204,17 @@ class ThiefTest : FunSpec({
                 genC = Arb.positiveInt()
             ) { thief, randomHealing, randomDamage ->
                 assume {
-                    randomDamage shouldBeLessThanOrEqual (thief.maxHp + thief.defense)
+                    randomDamage shouldBeGreaterThan thief.defense
                 }
                 val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 randomThief.currentHp shouldBe thief.maxHp
                 randomThief.receiveAttack(randomDamage)
                 randomThief.currentHp shouldNotBe thief.maxHp
-                if (randomHealing > randomThief.maxHp - randomThief.currentHp) {
-                    assertThrows<InvalidStatValueException> {
-                        randomThief.receiveHealing(randomHealing)
-                    }
-                } else {
-                    assertDoesNotThrow {
-                        randomThief.receiveHealing(randomHealing)
-                    }
-                    randomThief.currentHp shouldBeLessThanOrEqual randomThief.maxHp
-                    randomThief.currentHp shouldBeGreaterThan 0
+                assertDoesNotThrow {
+                    randomThief.receiveHealing(randomHealing)
                 }
+                randomThief.currentHp shouldBeLessThanOrEqual randomThief.maxHp
+                randomThief.currentHp shouldBeGreaterThan 0
             }
         }
         test("Be able to join the turns queue with a weapon equipped") {

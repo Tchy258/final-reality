@@ -11,11 +11,10 @@ import io.kotest.property.arbitrary.string
  * @property name the weapon's name
  * @property damage the weapon's damage
  * @property weight the weapon's weight
- * @property magicDamage the weapon's magicDamage (if it's a [Staff])
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-data class WeaponData(val name: String, val damage: Int, val weight: Int, val magicDamage: Int) {
+internal data class WeaponData(val name: String, val damage: Int, val weight: Int) {
     companion object {
         /**
          * [Arb] generator for arbitrary valid [Weapon] data
@@ -24,8 +23,7 @@ data class WeaponData(val name: String, val damage: Int, val weight: Int, val ma
             val name = Arb.string().bind()
             val damage = Arb.nonNegativeInt().bind()
             val weight = Arb.positiveInt().bind()
-            val magicDamage = Arb.nonNegativeInt().bind()
-            WeaponData(name, damage, weight, magicDamage)
+            WeaponData(name, damage, weight)
         }
         /**
          * [Arb] generator for arbitrary [Weapon] data, the generated data might not be valid.
@@ -34,8 +32,7 @@ data class WeaponData(val name: String, val damage: Int, val weight: Int, val ma
             val name = Arb.string().bind()
             val damage = Arb.int().bind()
             val weight = Arb.int().bind()
-            val magicDamage = Arb.int().bind()
-            WeaponData(name, damage, weight, magicDamage)
+            WeaponData(name, damage, weight)
         }
     }
 }

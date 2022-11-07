@@ -13,7 +13,7 @@ import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertThrows
 
 class NoWeaponEquippedExceptionTest : FunSpec({
-    val prefix = "Attempted to join turn queue unarmed. "
+    val prefix = "Attempted to join turn queue or attack while unarmed. "
     val suffix = " has no weapon equipped"
 
     test("A NoWeaponEquippedException can be thrown with a character's name in its message") {
