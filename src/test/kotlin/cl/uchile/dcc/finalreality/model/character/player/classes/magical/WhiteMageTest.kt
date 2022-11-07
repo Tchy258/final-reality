@@ -3,6 +3,8 @@ package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
+import cl.uchile.dcc.finalreality.model.character.Enemy
+import cl.uchile.dcc.finalreality.model.character.EnemyData
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.arbitraryMageGenerator
@@ -20,6 +22,7 @@ import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.validWeaponG
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -283,6 +286,60 @@ class WhiteMageTest : FunSpec({
                 assertDoesNotThrow {
                     randomWhiteMage.waitTurn()
                 }
+            }
+        }
+        test("Be able to attack other characters") {
+            checkAll(
+                PropTestConfig(maxDiscardPercentage = 80),
+                EnemyData.validEnemyGenerator,
+                validMageGenerator,
+                validCharacterGenerator,
+                validMageGenerator,
+                validStaffGenerator
+            ) { enemy, mage1, character, mage2, staff ->
+                assume {
+                    staff.damage shouldBeGreaterThan mage2.defense
+                    staff.damage shouldBeGreaterThan character.defense
+                    staff.damage shouldBeGreaterThan enemy.defense
+                }
+                val randomWhiteMage = WhiteMage(mage1.name, mage1.maxHp, mage1.maxMp, mage1.defense, queue)
+                val randomStaff = Staff(staff.name, staff.damage, staff.weight, staff.magicDamage)
+
+                randomWhiteMage.equip(randomStaff)
+
+                val randomCharacters: List<GameCharacter> = listOf(
+                    Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue),
+                    Engineer(character.name, character.maxHp, character.defense, queue),
+                    BlackMage(mage2.name, mage2.maxHp, mage2.maxMp, mage2.defense, queue),
+                    Knight(character.name, character.maxHp, character.defense, queue),
+                    Thief(character.name, character.maxHp, character.defense, queue),
+                    WhiteMage(mage2.name, mage2.maxHp, mage2.maxMp, mage2.defense, queue)
+                )
+                for (gameCharacter in randomCharacters) {
+                    gameCharacter.currentHp shouldBe gameCharacter.maxHp
+                    randomWhiteMage.attack(gameCharacter)
+                    gameCharacter.currentHp shouldBeLessThan gameCharacter.maxHp
+                }
+            }
+
+            whiteMage1.equip(Staff("TestStaff", 11, 5, 10))
+
+            val randomCharacters: List<GameCharacter> = listOf(
+                whiteMage2,
+                Engineer("TestCharacter", 20, 5, queue),
+                Enemy("TestEnemy", 10, 10, 15, 4, queue),
+                Knight("TestCharacter", 30, 10, queue),
+                Thief("TestCharacter", 15, 2, queue),
+                BlackMage("TestMage", 10, 10, 0, queue),
+            )
+            for (gameCharacter in randomCharacters) {
+                gameCharacter.currentHp shouldBe gameCharacter.maxHp
+                whiteMage1.attack(gameCharacter)
+                gameCharacter.currentHp shouldBeLessThan gameCharacter.maxHp
+                gameCharacter.currentHp shouldBe Integer.max(
+                    0,
+                    gameCharacter.maxHp - (whiteMage1.equippedWeapon.damage - gameCharacter.defense)
+                )
             }
         }
     }
