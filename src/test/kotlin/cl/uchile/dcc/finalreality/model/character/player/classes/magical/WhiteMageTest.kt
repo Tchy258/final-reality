@@ -130,11 +130,14 @@ class WhiteMageTest : FunSpec({
                 WhiteMage("", 1, 1, 1, queue)
             }
         }
-        test("Not be able to wait its turn unarmed") {
+        test("Not be able to wait its turn or attack unarmed") {
             checkAll(validMageGenerator) { whiteMage ->
                 val randomWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, queue)
                 assertThrows<NoWeaponEquippedException> {
                     randomWhiteMage.waitTurn()
+                }
+                assertThrows<NoWeaponEquippedException> {
+                    randomWhiteMage.attack(whiteMage1)
                 }
             }
         }
