@@ -19,8 +19,8 @@ enemies controlled by the computer.
 Execution instructions
 --------------
 
-The main function on the Main.kt file compiled on IntelliJ demonstrates the project's current state and functionality showcasing all the methods,
-a bit of exception handling and an example of the turn order.
+At present only the tests can be executed, to do this, open the project in Intellij, click on the
+gradle tab to the right, and then go to *final-reality-kt > Tasks > verification* and double-click on either test or check
 
 First revision
 --------------
