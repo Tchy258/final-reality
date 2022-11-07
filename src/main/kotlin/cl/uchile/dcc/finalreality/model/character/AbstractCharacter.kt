@@ -8,7 +8,7 @@
 package cl.uchile.dcc.finalreality.model.character
 
 import cl.uchile.dcc.finalreality.exceptions.Require
-import java.lang.Integer.max
+import java.lang.Integer.min
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ScheduledExecutorService
 
@@ -41,11 +41,26 @@ abstract class AbstractCharacter(
         get() = _currentHp
 
     override fun receiveAttack(damage: Int) {
-        _currentHp -= max(0,(damage - defense))
+        val finalDamage: Int = if (damage > defense) {
+            damage - defense
+        } else {
+            0
+        }
+        val finalHp: Int = if (finalDamage > _currentHp) {
+            0
+        } else {
+            _currentHp - finalDamage
+        }
+        _currentHp = finalHp
     }
 
     override fun receiveHealing(healing: Int) {
-        _currentHp += healing
+        val finalHp: Int = try {
+            Math.addExact(_currentHp, healing)
+        } catch (integerOverflow: ArithmeticException) {
+            this.maxHp
+        }
+        _currentHp = min(this.maxHp, finalHp)
     }
     abstract override fun attack(anotherCharacter: GameCharacter)
 

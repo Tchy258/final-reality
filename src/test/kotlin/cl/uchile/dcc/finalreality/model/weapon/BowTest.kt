@@ -15,6 +15,8 @@ import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.validWeaponG
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.positiveInt
 import io.kotest.property.assume
 import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -79,6 +81,19 @@ class BowTest : FunSpec({
             }
             bow1 shouldBe bow1
             bow2 shouldBe bow2
+        }
+        test("Not be equal to other weapons even with same parameters") {
+            checkAll(validWeaponGenerator, Arb.positiveInt()) { weaponData, magicDamage ->
+                val randomAxe = Axe(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomBow = Bow(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomKnife = Knife(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomSword = Sword(weaponData.name, weaponData.damage, weaponData.weight)
+                val randomStaff = Staff(weaponData.name, weaponData.damage, magicDamage, weaponData.weight)
+                randomBow shouldNotBe randomAxe
+                randomBow shouldNotBe randomKnife
+                randomBow shouldNotBe randomSword
+                randomBow shouldNotBe randomStaff
+            }
         }
         test("Have valid stats") {
             checkAll(arbitraryWeaponGenerator) { bow ->

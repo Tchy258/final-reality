@@ -59,8 +59,7 @@ abstract class AbstractPlayerCharacter(
     override fun attack(anotherCharacter: GameCharacter) {
         if (::_equippedWeapon.isInitialized) {
             anotherCharacter.receiveAttack(_equippedWeapon.damage)
-        }
-        else {
+        } else {
             throw NoWeaponEquippedException(this.name)
         }
     }
