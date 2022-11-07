@@ -128,11 +128,14 @@ class ThiefTest : FunSpec({
                 Thief("", 1, 1, queue)
             }
         }
-        test("Not be able to wait its turn unarmed") {
+        test("Not be able to wait its turn or attack unarmed") {
             checkAll(validCharacterGenerator) { thief ->
                 val randomThief = Thief(thief.name, thief.maxHp, thief.defense, queue)
                 assertThrows<NoWeaponEquippedException> {
                     randomThief.waitTurn()
+                }
+                assertThrows<NoWeaponEquippedException> {
+                    randomThief.attack(thief1)
                 }
             }
         }

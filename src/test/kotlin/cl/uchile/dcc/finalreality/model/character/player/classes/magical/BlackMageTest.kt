@@ -139,11 +139,14 @@ class BlackMageTest : FunSpec({
                 BlackMage("", 1, 1, 1, queue)
             }
         }
-        test("Not be able to wait its turn unarmed") {
+        test("Not be able to wait its turn or attack unarmed") {
             checkAll(validMageGenerator) { blackMage ->
                 val randomBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, queue)
                 assertThrows<NoWeaponEquippedException> {
                     randomBlackMage.waitTurn()
+                }
+                assertThrows<NoWeaponEquippedException> {
+                    randomBlackMage.attack(blackMage1)
                 }
             }
         }
