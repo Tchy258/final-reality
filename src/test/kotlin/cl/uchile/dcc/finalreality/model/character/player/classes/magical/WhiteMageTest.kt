@@ -4,8 +4,12 @@ import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.arbitraryMageGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
 import cl.uchile.dcc.finalreality.model.weapon.Axe
 import cl.uchile.dcc.finalreality.model.weapon.Bow
 import cl.uchile.dcc.finalreality.model.weapon.Knife
@@ -86,6 +90,22 @@ class WhiteMageTest : FunSpec({
             whiteMage1 shouldNotBe null
             whiteMage2 shouldNotBe null
             whiteMage3 shouldNotBe null
+        }
+        test("Not be equal to other characters even with the same parameters") {
+            checkAll(validCharacterGenerator, Arb.positiveInt()) {
+                characterData, maxMp ->
+
+                val randomBlackMage = BlackMage(characterData.name, characterData.maxHp, maxMp, characterData.defense, queue)
+                val randomEngineer = Engineer(characterData.name, characterData.maxHp, characterData.defense, queue)
+                val randomThief = Thief(characterData.name, characterData.maxHp, characterData.defense, queue)
+                val randomKnight = Knight(characterData.name, characterData.maxHp, characterData.defense, queue)
+                val randomWhiteMage = WhiteMage(characterData.name, characterData.maxHp, maxMp, characterData.defense, queue)
+
+                randomWhiteMage shouldNotBe randomEngineer
+                randomWhiteMage shouldNotBe randomThief
+                randomWhiteMage shouldNotBe randomKnight
+                randomWhiteMage shouldNotBe randomBlackMage
+            }
         }
         test("Have valid stats") {
             checkAll(arbitraryMageGenerator) {

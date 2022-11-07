@@ -6,6 +6,8 @@ import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.weapon.Axe
 import cl.uchile.dcc.finalreality.model.weapon.Bow
 import cl.uchile.dcc.finalreality.model.weapon.Knife
@@ -85,6 +87,22 @@ class ThiefTest : FunSpec({
             thief1 shouldNotBe null
             thief2 shouldNotBe null
             thief3 shouldNotBe null
+        }
+        test("Not be equal to other characters even with the same parameters") {
+            checkAll(validCharacterGenerator, Arb.positiveInt()) {
+                characterData, maxMp ->
+
+                val randomBlackMage = BlackMage(characterData.name, characterData.maxHp, maxMp, characterData.defense, queue)
+                val randomEngineer = Engineer(characterData.name, characterData.maxHp, characterData.defense, queue)
+                val randomThief = Thief(characterData.name, characterData.maxHp, characterData.defense, queue)
+                val randomKnight = Knight(characterData.name, characterData.maxHp, characterData.defense, queue)
+                val randomWhiteMage = WhiteMage(characterData.name, characterData.maxHp, maxMp, characterData.defense, queue)
+
+                randomThief shouldNotBe randomWhiteMage
+                randomThief shouldNotBe randomEngineer
+                randomThief shouldNotBe randomKnight
+                randomThief shouldNotBe randomBlackMage
+            }
         }
         test("Have valid stats") {
             checkAll(CharacterData.arbitraryCharacterGenerator) {
