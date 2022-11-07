@@ -93,6 +93,24 @@ class EnemyTest : FunSpec({
             enemy3 shouldNotBe null
             enemy4 shouldNotBe null
         }
+        test("Not be equal to other characters even with the same parameters") {
+            checkAll(validCharacterGenerator, Arb.positiveInt(), validEnemyGenerator) {
+                    characterData, maxMp, enemyData ->
+
+                val randomBlackMage = BlackMage(characterData.name,characterData.maxHp,maxMp,characterData.defense,queue)
+                val randomEngineer = Engineer(characterData.name,characterData.maxHp,characterData.defense,queue)
+                val randomThief = Thief(characterData.name,characterData.maxHp,characterData.defense,queue)
+                val randomKnight = Knight(characterData.name,characterData.maxHp,characterData.defense,queue)
+                val randomWhiteMage = WhiteMage(characterData.name,characterData.maxHp,maxMp,characterData.defense,queue)
+                val randomEnemy = Enemy(enemyData.name, enemyData.damage, enemyData.weight, enemyData.maxHp, enemyData.defense, queue)
+
+                randomEnemy shouldNotBe randomWhiteMage
+                randomEnemy shouldNotBe randomThief
+                randomEnemy shouldNotBe randomKnight
+                randomEnemy shouldNotBe randomBlackMage
+                randomEnemy shouldNotBe randomEngineer
+            }
+        }
         test("Have valid stats") {
             checkAll(arbitraryEnemyGenerator) {
                 enemy ->
