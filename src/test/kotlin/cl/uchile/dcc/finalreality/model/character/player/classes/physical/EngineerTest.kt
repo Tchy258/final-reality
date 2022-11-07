@@ -3,10 +3,13 @@ package cl.uchile.dcc.finalreality.model.character.player.classes.physical
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
+import cl.uchile.dcc.finalreality.model.character.Enemy
+import cl.uchile.dcc.finalreality.model.character.EnemyData.Companion.validEnemyGenerator
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.arbitraryCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.weapon.Axe
 import cl.uchile.dcc.finalreality.model.weapon.Bow
@@ -18,6 +21,7 @@ import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.validWeaponG
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -245,6 +249,60 @@ class EngineerTest : FunSpec({
                 assertDoesNotThrow {
                     randomEngineer.waitTurn()
                 }
+            }
+        }
+        test("Be able to attack other characters") {
+            checkAll(
+                PropTestConfig(maxDiscardPercentage = 80),
+                validEnemyGenerator,
+                validCharacterGenerator,
+                validCharacterGenerator,
+                validMageGenerator,
+                validWeaponGenerator
+            ) { enemy, character1, character2, mage, weapon ->
+                assume {
+                    weapon.damage shouldBeGreaterThan mage.defense
+                    weapon.damage shouldBeGreaterThan character2.defense
+                    weapon.damage shouldBeGreaterThan enemy.defense
+                }
+                val randomEngineer = Engineer(character1.name, character1.maxHp, character1.defense, queue)
+                val randomBow = Bow(weapon.name, weapon.damage, weapon.weight)
+
+                randomEngineer.equip(randomBow)
+
+                val randomCharacters: List<GameCharacter> = listOf(
+                    Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue),
+                    Engineer(character2.name, character2.maxHp, character2.defense, queue),
+                    BlackMage(mage.name, mage.maxHp, mage.maxMp, mage.defense, queue),
+                    Knight(character2.name, character2.maxHp, character2.defense, queue),
+                    Thief(character2.name, character2.maxHp, character2.defense, queue),
+                    WhiteMage(mage.name, mage.maxHp, mage.maxMp, mage.defense, queue)
+                )
+                for (gameCharacter in randomCharacters) {
+                    gameCharacter.currentHp shouldBe gameCharacter.maxHp
+                    randomEngineer.attack(gameCharacter)
+                    gameCharacter.currentHp shouldBeLessThan gameCharacter.maxHp
+                }
+            }
+
+            engineer1.equip(Bow("TestBow", 11, 5))
+
+            val randomCharacters: List<GameCharacter> = listOf(
+                engineer2,
+                BlackMage("TestMage", 10, 10, 0, queue),
+                Enemy("TestEnemy", 10, 10, 15, 4, queue),
+                Knight("TestCharacter", 30, 10, queue),
+                Thief("TestCharacter", 15, 2, queue),
+                WhiteMage("TestMage", 10, 10, 0, queue),
+            )
+            for (gameCharacter in randomCharacters) {
+                gameCharacter.currentHp shouldBe gameCharacter.maxHp
+                engineer1.attack(gameCharacter)
+                gameCharacter.currentHp shouldBeLessThan gameCharacter.maxHp
+                gameCharacter.currentHp shouldBe Integer.max(
+                    0,
+                    gameCharacter.maxHp - (engineer1.equippedWeapon.damage - gameCharacter.defense)
+                )
             }
         }
     }
