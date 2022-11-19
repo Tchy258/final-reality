@@ -35,7 +35,7 @@ abstract class AbstractMage(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
     val maxMp = Require.Stat(maxMp, "Max MP") atLeast 1
-    protected var _currentMp: Int = maxMp
+    private var _currentMp: Int = maxMp
         set(value) {
             field = Require.Stat(value, "Current MP") inRange 0..maxMp
         }
@@ -46,12 +46,7 @@ abstract class AbstractMage(
      * @param spellCost the spell's mp cost
      * @return whether the spell can be cast or not
      */
-    fun useMp(spellCost: Int): Boolean {
-        /*
-         * This method is temporary, once the magic logic is implemented
-         * this check will be inside the method that tells the mage to cast
-         * a spell
-         */
+    fun canUseMp(spellCost: Int): Boolean {
         return if (_currentMp >= spellCost) {
             _currentMp -= spellCost
             true

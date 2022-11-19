@@ -7,7 +7,9 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.magic.whitemagic.WhiteMagic
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Weapon
 import java.util.Objects
@@ -37,6 +39,22 @@ class WhiteMage(
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
     override fun equip(weapon: Weapon) {
         weapon.equipToWhiteMage(this)
+    }
+    /**
+     * Attempts to cast a [whiteMagic] spell
+     *
+     * @return whether the spell was cast or not
+     */
+    fun castWhiteMagicSpell(whiteMagic: WhiteMagic, target: GameCharacter): Boolean {
+        try {
+            val wasCast: Boolean = canUseMp(whiteMagic.cost)
+            if (wasCast) {
+                whiteMagic.castWhiteMagic((this.equippedWeapon as Staff).magicDamage, target)
+            }
+            return wasCast
+        } catch (e: UninitializedPropertyAccessException) {
+            throw NoWeaponEquippedException(this.name)
+        }
     }
     fun equipStaff(staff: Staff) {
         this.setWeapon(staff)

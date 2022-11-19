@@ -7,6 +7,8 @@
  */
 package cl.uchile.dcc.finalreality.model.character
 
+import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+
 /**
  * This represents a character from the game.
  * A character can be controlled by the player or by the CPU (an enemy).
@@ -31,17 +33,29 @@ interface GameCharacter {
     fun waitTurn()
 
     /**
-     * Decrements this character's currentHp by receiving damage
+     * Decrements this character's currentHp by receiving damage (mitigated by defense)
      */
     fun receiveAttack(damage: Int)
-
     /**
-     * Attacks a [GameCharacter], decreasing [anotherCharacter]'s [currentHp]
+     * Reduces this character's hp ignoring its defense due to a magic spell or its effect
      */
-    fun attack(anotherCharacter: GameCharacter)
-
+    fun receiveMagicDamage(damage: Int)
     /**
      * Heals this character's currentHp increasing its value
      */
     fun receiveHealing(healing: Int)
+    /**
+     * Attacks a [GameCharacter], decreasing [anotherCharacter]'s [currentHp],
+     * if this character is not paralyzed
+     * @return whether the attack was successful or not
+     */
+    fun attack(anotherCharacter: GameCharacter): Boolean
+    /**
+     * Adds a [Debuff] to this character
+     */
+    fun addDebuff(debuff: Debuff)
+    /**
+     * Removes a [Debuff] to this character
+     */
+    fun removeDebuff(debuff: Debuff)
 }

@@ -8,6 +8,10 @@
 package cl.uchile.dcc.finalreality.model.character
 
 import cl.uchile.dcc.finalreality.exceptions.Require
+import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+import cl.uchile.dcc.finalreality.model.character.debuff.NullState
+import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
+import java.lang.Integer.max
 import java.lang.Integer.min
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ScheduledExecutorService
@@ -30,6 +34,7 @@ abstract class AbstractCharacter(
     private val turnsQueue: BlockingQueue<GameCharacter>,
 ) : GameCharacter {
 
+    private val statusEffects: MutableSet<Debuff> = mutableSetOf(NullState())
     protected lateinit var scheduledExecutor: ScheduledExecutorService
     override val maxHp = Require.Stat(maxHp, "Max Hp") atLeast 1
     override val defense = Require.Stat(defense, "Defense") atLeast 0
@@ -40,6 +45,12 @@ abstract class AbstractCharacter(
     override val currentHp: Int
         get() = _currentHp
 
+    override fun addDebuff(debuff: Debuff) {
+        statusEffects.add(debuff)
+    }
+    override fun removeDebuff(debuff: Debuff) {
+        statusEffects.remove(debuff)
+    }
     override fun receiveAttack(damage: Int) {
         val finalDamage: Int = if (damage > defense) {
             damage - defense
@@ -54,6 +65,9 @@ abstract class AbstractCharacter(
         _currentHp = finalHp
     }
 
+    override fun receiveMagicDamage(damage: Int) {
+        _currentHp = max(0, _currentHp - damage)
+    }
     override fun receiveHealing(healing: Int) {
         val finalHp: Int = try {
             Math.addExact(_currentHp, healing)
@@ -62,8 +76,30 @@ abstract class AbstractCharacter(
         }
         _currentHp = min(this.maxHp, finalHp)
     }
-    abstract override fun attack(anotherCharacter: GameCharacter)
 
+    /**
+     * This method encapsulates the real attack logic which depends on
+     * whether this [GameCharacter] is a [PlayerCharacter] or an [Enemy]
+     */
+    protected abstract fun executeAttack(anotherCharacter: GameCharacter)
+
+    override fun attack(anotherCharacter: GameCharacter): Boolean {
+        val canAttack = rollEffects()
+        if (canAttack) {
+            executeAttack(anotherCharacter)
+        }
+        return canAttack
+    }
+    /**
+     *
+     */
+    private fun rollEffects(): Boolean {
+        var canAttack = true
+        for (debuff in statusEffects) {
+            canAttack = canAttack && debuff.rollEffect(this)
+        }
+        return canAttack
+    }
     /**
      * Adds this character to the [turnsQueue].
      */

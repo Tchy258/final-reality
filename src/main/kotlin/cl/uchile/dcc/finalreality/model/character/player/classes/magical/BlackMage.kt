@@ -7,7 +7,9 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.magic.blackmagic.BlackMagic
 import cl.uchile.dcc.finalreality.model.weapon.Knife
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Weapon
@@ -41,6 +43,28 @@ class BlackMage(
      * Boolean value to check magicDamage calculations
      */
     private var _hasStaff: Boolean = false
+
+    /**
+     * Attempts to cast a [blackMagic] spell
+     *
+     * @return whether the spell was cast or not
+     */
+    fun castBlackMagicSpell(blackMagic: BlackMagic, target: GameCharacter): Boolean {
+        try {
+            val wasCast: Boolean = canUseMp(blackMagic.cost)
+            if (wasCast) {
+                if (_hasStaff) {
+                    blackMagic.castBlackMagic((this.equippedWeapon as Staff).magicDamage, target)
+                } else {
+                    blackMagic.castBlackMagic(0, target)
+                }
+            }
+            return wasCast
+        } catch (e: UninitializedPropertyAccessException) {
+            throw NoWeaponEquippedException(this.name)
+        }
+    }
+
     override fun equip(weapon: Weapon) {
         weapon.equipToBlackMage(this)
     }
