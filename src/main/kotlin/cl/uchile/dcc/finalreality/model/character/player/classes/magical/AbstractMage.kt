@@ -19,8 +19,6 @@ import java.util.concurrent.BlockingQueue
  * @param maxHp the mage's maximum health points.
  * @param defense the mage's defense.
  * @param turnsQueue the queue with the characters waiting for their turn.
- * @property maxMp the mage's maximum magic points.
- * @property currentMp The current MP of the mage.
  * @property currentHp The current HP of the mage.
  * @constructor Creates a new playable mage.
  *
@@ -33,20 +31,14 @@ abstract class AbstractMage(
     maxMp: Int,
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
-) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue) {
-    val maxMp = Require.Stat(maxMp, "Max MP") atLeast 1
+) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
+    Mage {
+    override val maxMp: Int = Require.Stat(maxMp, "Max MP") atLeast 1
     private var _currentMp: Int = maxMp
         set(value) {
             field = Require.Stat(value, "Current MP") inRange 0..maxMp
         }
-
-    /**
-     * Checks whether a spell with a [spellCost] can be cast and deducts mp
-     * if it has to
-     * @param spellCost the spell's mp cost
-     * @return whether the spell can be cast or not
-     */
-    fun canUseMp(spellCost: Int): Boolean {
+    override fun canUseMp(spellCost: Int): Boolean {
         return if (_currentMp >= spellCost) {
             _currentMp -= spellCost
             true
@@ -54,12 +46,7 @@ abstract class AbstractMage(
             false
         }
     }
-
-    /**
-     * Restores [restoration] mp to the mage
-     * @param restoration the amount of mp restored
-     */
-    fun restoreMp(restoration: Int) {
+    override fun restoreMp(restoration: Int) {
         val finalMp: Int = try {
             Math.addExact(_currentMp, restoration)
         } catch (integerOverflow: ArithmeticException) {
@@ -67,6 +54,6 @@ abstract class AbstractMage(
         }
         _currentMp = Integer.min(this.maxMp, finalMp)
     }
-    val currentMp: Int
+    override val currentMp: Int
         get() = _currentMp
 }
