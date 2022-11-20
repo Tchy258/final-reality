@@ -7,7 +7,10 @@
  */
 package cl.uchile.dcc.finalreality.model.character
 
+import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
+import cl.uchile.dcc.finalreality.model.character.debuff.Poisoned
 
 /**
  * This represents a character from the game.
@@ -58,4 +61,17 @@ interface GameCharacter {
      * Removes a [Debuff] to this character
      */
     fun removeDebuff(debuff: Debuff)
+
+    /**
+     * @return whether the character is [Burned]
+     */
+    fun isBurned(): Boolean
+    /**
+     * @return whether the character is [Paralyzed]
+     */
+    fun isParalyzed(): Boolean
+    /**
+     * @return whether the character is [Poisoned]
+     */
+    fun isPoisoned(): Boolean
 }

@@ -17,7 +17,7 @@ import cl.uchile.dcc.finalreality.model.weapon.Weapon
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-interface PlayerCharacter: GameCharacter {
+interface PlayerCharacter : GameCharacter {
     override val name: String
     val equippedWeapon: Weapon
     /**

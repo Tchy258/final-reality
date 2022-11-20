@@ -1,7 +1,15 @@
 package cl.uchile.dcc.finalreality.model.character.debuff
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.magic.blackmagic.Fire
 
+/**
+ * An adverse effect which deals damage overtime as a side effect of a [Fire] spell
+ * @property finalDamage the damage this effect deals per turn
+ * @property turnLimit the amount of turns until this adverse effect wears off
+ *
+ * @author <a href="https://www.github.com/tchy258">Tchy258</a>
+ */
 class Burned(private val finalDamage: Int) : Debuff {
     private var turnLimit: Int = 5
     override fun rollEffect(character: GameCharacter): Boolean {
@@ -14,25 +22,16 @@ class Burned(private val finalDamage: Int) : Debuff {
         return true
     }
 
+    override fun toString(): String {
+        return "Burned { finalDamage: $finalDamage, turnLimit: $turnLimit }"
+    }
+    // The amount of damage is not important, a burned status is just a burned status
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
-        other as Burned
-
-        if (finalDamage != other.finalDamage) return false
-        if (turnLimit != other.turnLimit) return false
-
         return true
     }
-
     override fun hashCode(): Int {
-        var result = finalDamage
-        result = 31 * result + turnLimit
-        return result
-    }
-
-    override fun toString(): String {
-        return "Burned { finalDamage: $finalDamage, turnLimit: $turnLimit }"
+        return javaClass.hashCode()
     }
 }

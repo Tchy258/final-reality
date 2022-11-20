@@ -16,6 +16,7 @@ interface WhiteMagic {
     /**
      * Casts this spell targeting a [spellTarget], activating its effect
      * and applying [Debuff]s (if any)
+     * @return whether the spell activated its adverse effect
      */
-    fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter)
+    fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean
 }

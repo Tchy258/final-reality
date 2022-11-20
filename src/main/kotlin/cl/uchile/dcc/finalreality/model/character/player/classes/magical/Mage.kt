@@ -9,7 +9,7 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
  * @property currentMp The current MP of the mage.
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-interface Mage: PlayerCharacter {
+interface Mage : PlayerCharacter {
     val maxMp: Int
     val currentMp: Int
     /**

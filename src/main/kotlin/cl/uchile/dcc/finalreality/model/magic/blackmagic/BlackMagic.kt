@@ -17,6 +17,7 @@ interface BlackMagic {
     /**
      * Casts this spell targeting a [spellTarget], activating its effect
      * and applying [Debuff]s (if any)
+     * @return whether the spell activated its adverse effect
      */
-    fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter)
+    fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean
 }

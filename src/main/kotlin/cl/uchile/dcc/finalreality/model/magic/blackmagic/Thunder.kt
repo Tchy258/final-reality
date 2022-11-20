@@ -6,12 +6,15 @@ import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 class Thunder : BlackMagic {
     override val cost: Int
         get() = 15
-    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter) {
-        val k: Double = Math.random()
+    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean {
+        var activated = false
+        val k: Double = RNGSeeder.seed.nextDouble()
         if (k <= 0.3) {
+            activated = true
             spellTarget.addDebuff(Paralyzed())
         }
         spellTarget.receiveMagicDamage(magicDamage)
+        return activated
     }
 
     override fun equals(other: Any?): Boolean {

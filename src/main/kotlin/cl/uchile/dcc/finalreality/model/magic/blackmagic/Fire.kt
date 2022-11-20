@@ -7,13 +7,16 @@ import kotlin.math.ceil
 class Fire : BlackMagic {
     override val cost: Int
         get() = 15
-    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter) {
-        val k: Double = Math.random()
+    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean {
+        var activated = false
+        val k: Double = RNGSeeder.seed.nextDouble()
         val finalDamage = ceil(magicDamage.toDouble() / 3f).toInt()
         if (k <= 0.2) {
+            activated = true
             spellTarget.addDebuff(Burned(finalDamage))
         }
         spellTarget.receiveMagicDamage(magicDamage)
+        return activated
     }
 
     override fun equals(other: Any?): Boolean {

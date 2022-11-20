@@ -8,9 +8,10 @@ class Poison : WhiteMagic {
     override val cost: Int
         get() = 40
 
-    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter) {
+    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean {
         val finalDamage = ceil(magicDamage.toDouble() * 3 / 10f).toInt()
         spellTarget.addDebuff(Poisoned(finalDamage))
+        return true
     }
 
     override fun equals(other: Any?): Boolean {

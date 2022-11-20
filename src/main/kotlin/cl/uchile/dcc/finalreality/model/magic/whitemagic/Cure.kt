@@ -7,9 +7,10 @@ class Cure : WhiteMagic {
     override val cost: Int
         get() = 15
 
-    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter) {
+    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean {
         // maxHp * 3/10 == 30% of maxHp
         spellTarget.receiveHealing(ceil(spellTarget.maxHp.toDouble() * 3 / 10f).toInt())
+        return false
     }
 
     override fun equals(other: Any?): Boolean {

@@ -2,6 +2,11 @@ package cl.uchile.dcc.finalreality.model.character.debuff
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 
+/**
+ * A dummy adverse effect which implies no status effect at all
+ *
+ * @author <a href="https://www.github.com/tchy258">Tchy258</a>
+ */
 class NullState : Debuff {
     override fun rollEffect(character: GameCharacter): Boolean {
         return true
