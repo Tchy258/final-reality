@@ -50,7 +50,7 @@ class BlackMage(
      * @return whether the spell was cast or not
      */
     fun castBlackMagicSpell(blackMagic: BlackMagic, target: GameCharacter): Boolean {
-        try {
+        if (hasWeaponEquipped()) {
             val wasCast: Boolean = canUseMp(blackMagic.cost)
             if (wasCast) {
                 if (_hasStaff) {
@@ -60,8 +60,8 @@ class BlackMage(
                 }
             }
             return wasCast
-        } catch (e: UninitializedPropertyAccessException) {
-            throw NoWeaponEquippedException(this.name)
+        } else {
+            throw(NoWeaponEquippedException(this.name))
         }
     }
 

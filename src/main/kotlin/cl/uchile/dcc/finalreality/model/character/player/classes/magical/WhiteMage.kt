@@ -46,13 +46,13 @@ class WhiteMage(
      * @return whether the spell was cast or not
      */
     fun castWhiteMagicSpell(whiteMagic: WhiteMagic, target: GameCharacter): Boolean {
-        try {
+        if (hasWeaponEquipped()) {
             val wasCast: Boolean = canUseMp(whiteMagic.cost)
             if (wasCast) {
                 whiteMagic.castWhiteMagic((this.equippedWeapon as Staff).magicDamage, target)
             }
             return wasCast
-        } catch (e: UninitializedPropertyAccessException) {
+        } else {
             throw NoWeaponEquippedException(this.name)
         }
     }

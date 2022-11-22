@@ -43,8 +43,11 @@ abstract class AbstractPlayerCharacter(
     protected fun setWeapon(weapon: Weapon) {
         _equippedWeapon = weapon
     }
+    protected fun hasWeaponEquipped(): Boolean {
+        return ::_equippedWeapon.isInitialized
+    }
     override fun waitTurn() {
-        if (::_equippedWeapon.isInitialized) {
+        if (hasWeaponEquipped()) {
             scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
             scheduledExecutor.schedule(
                 /* command = */ ::addToQueue,
@@ -57,7 +60,7 @@ abstract class AbstractPlayerCharacter(
     }
 
     override fun executeAttack(anotherCharacter: GameCharacter) {
-        if (::_equippedWeapon.isInitialized) {
+        if (hasWeaponEquipped()) {
             anotherCharacter.receiveAttack(_equippedWeapon.damage)
         } else {
             throw NoWeaponEquippedException(this.name)
