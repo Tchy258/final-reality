@@ -1,28 +1,23 @@
 package cl.uchile.dcc.finalreality.model.character
 
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
-import cl.uchile.dcc.finalreality.model.character.EnemyData.Companion.arbitraryEnemyGenerator
-import cl.uchile.dcc.finalreality.model.character.EnemyData.Companion.validEnemyGenerator
-import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
+import cl.uchile.dcc.finalreality.model.enemyAttackTest
+import cl.uchile.dcc.finalreality.model.enemyInequalityCheck
+import cl.uchile.dcc.finalreality.model.enemyValidStatCheck
+import cl.uchile.dcc.finalreality.model.equalityCheck
+import cl.uchile.dcc.finalreality.model.hpDecreaseCheck
+import cl.uchile.dcc.finalreality.model.hpIncreaseCheck
+import cl.uchile.dcc.finalreality.model.notNullCheck
 import io.kotest.assertions.timing.eventually
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
-import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.ints.shouldBeLessThan
-import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.kotest.property.Arb
-import io.kotest.property.PropTestConfig
-import io.kotest.property.arbitrary.positiveInt
-import io.kotest.property.assume
-import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.lang.Integer.max
@@ -44,11 +39,7 @@ class EnemyTest : FunSpec({
     }
     context("Two enemies with the same parameters should:") {
         test("Be equal") {
-            checkAll(validEnemyGenerator) { enemy ->
-                val randomEnemy1 = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
-                val randomEnemy2 = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
-                randomEnemy1 shouldBe randomEnemy2
-            }
+            equalityCheck(EnemyData.validGenerator, EnemyTestingFactory(queue))
             enemy1 shouldBe enemy2
         }
         test("Have the same hashcode") {
@@ -57,21 +48,7 @@ class EnemyTest : FunSpec({
     }
     context("Two enemies with different parameters should:") {
         test("Not be equal") {
-            checkAll(
-                genA = validEnemyGenerator,
-                genB = validEnemyGenerator
-            ) { enemy1, enemy2 ->
-                assume(
-                    enemy1.name != enemy2.name ||
-                        enemy1.damage != enemy2.damage ||
-                        enemy1.maxHp != enemy2.maxHp ||
-                        enemy1.defense != enemy2.defense ||
-                        enemy1.weight != enemy2.weight
-                )
-                val randomEnemy1 = Enemy(enemy1.name, enemy1.damage, enemy1.weight, enemy1.maxHp, enemy1.defense, queue)
-                val randomEnemy2 = Enemy(enemy2.name, enemy2.damage, enemy2.weight, enemy2.maxHp, enemy2.defense, queue)
-                randomEnemy1 shouldNotBe randomEnemy2
-            }
+            enemyInequalityCheck(EnemyTestingFactory(queue))
             enemy1 shouldNotBe enemy3
             enemy2 shouldNotBe enemy4
         }
@@ -84,46 +61,14 @@ class EnemyTest : FunSpec({
             enemy4.toString() shouldBe "Enemy { name:'LightEnemy', damage: 5, weight: 5, maxHp: 10, defense: 1, currentHp: 10 }"
         }
         test("Not be null") {
-            checkAll(validEnemyGenerator) { enemy ->
-                val randomEnemy = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
-                randomEnemy shouldNotBe null
-            }
+            notNullCheck(EnemyData.validGenerator, EnemyTestingFactory(queue))
             enemy1 shouldNotBe null
             enemy2 shouldNotBe null
             enemy3 shouldNotBe null
             enemy4 shouldNotBe null
         }
-        test("Not be equal to other characters even with the same parameters") {
-            checkAll(validCharacterGenerator, Arb.positiveInt(), validEnemyGenerator) {
-                characterData, maxMp, enemyData ->
-
-                val randomBlackMage = BlackMage(characterData.name, characterData.maxHp, maxMp, characterData.defense, queue)
-                val randomEngineer = Engineer(characterData.name, characterData.maxHp, characterData.defense, queue)
-                val randomThief = Thief(characterData.name, characterData.maxHp, characterData.defense, queue)
-                val randomKnight = Knight(characterData.name, characterData.maxHp, characterData.defense, queue)
-                val randomWhiteMage = WhiteMage(characterData.name, characterData.maxHp, maxMp, characterData.defense, queue)
-                val randomEnemy = Enemy(enemyData.name, enemyData.damage, enemyData.weight, enemyData.maxHp, enemyData.defense, queue)
-
-                randomEnemy shouldNotBe randomWhiteMage
-                randomEnemy shouldNotBe randomThief
-                randomEnemy shouldNotBe randomKnight
-                randomEnemy shouldNotBe randomBlackMage
-                randomEnemy shouldNotBe randomEngineer
-            }
-        }
         test("Have valid stats") {
-            checkAll(arbitraryEnemyGenerator) {
-                enemy ->
-                if (enemy.maxHp <= 0 || enemy.defense < 0 || enemy.damage <0 || enemy.weight <= 0) {
-                    assertThrows<InvalidStatValueException> {
-                        Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
-                    }
-                } else {
-                    assertDoesNotThrow {
-                        Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
-                    }
-                }
-            }
+            enemyValidStatCheck()
             assertThrows<InvalidStatValueException> {
                 Enemy("", -1, -1, -1, -1, queue)
             }
@@ -132,43 +77,10 @@ class EnemyTest : FunSpec({
             }
         }
         test("Be able to have its currentHp changed to non-negative values") {
-            checkAll(
-                PropTestConfig(maxDiscardPercentage = 55),
-                genA = validEnemyGenerator,
-                genB = Arb.positiveInt()
-            ) { enemy, randomDamage ->
-                assume {
-                    randomDamage shouldBeGreaterThan enemy.defense
-                }
-                val randomEnemy = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
-                randomEnemy.currentHp shouldBe enemy.maxHp
-                assertDoesNotThrow {
-                    randomEnemy.receiveAttack(randomDamage)
-                }
-                randomEnemy.currentHp shouldNotBe enemy.maxHp
-                randomEnemy.currentHp shouldBeGreaterThanOrEqualTo 0
-            }
+            hpDecreaseCheck(EnemyData.validGenerator, EnemyTestingFactory(queue))
         }
         test("Not be able to have more current hp than its maxHp") {
-            checkAll(
-                PropTestConfig(maxDiscardPercentage = 55),
-                genA = validEnemyGenerator,
-                genB = Arb.positiveInt(),
-                genC = Arb.positiveInt()
-            ) { enemy, randomHealing, randomDamage ->
-                assume {
-                    randomDamage shouldBeGreaterThan enemy.defense
-                }
-                val randomEnemy = Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
-                randomEnemy.currentHp shouldBe enemy.maxHp
-                randomEnemy.receiveAttack(randomDamage)
-                randomEnemy.currentHp shouldNotBe enemy.maxHp
-                assertDoesNotThrow {
-                    randomEnemy.receiveHealing(randomHealing)
-                }
-                randomEnemy.currentHp shouldBeLessThanOrEqual randomEnemy.maxHp
-                randomEnemy.currentHp shouldBeGreaterThan 0
-            }
+            hpIncreaseCheck(EnemyData.validGenerator, EnemyTestingFactory(queue))
         }
         // This test only tries with fixed weight values, other characters try with random values
         test("Be able to join the turns queue and take its turn when it should") {
@@ -187,33 +99,7 @@ class EnemyTest : FunSpec({
             queue.poll() shouldBe enemy3
         }
         test("Be able to attack other characters") {
-            checkAll(
-                PropTestConfig(maxDiscardPercentage = 80),
-                validEnemyGenerator,
-                validEnemyGenerator,
-                validCharacterGenerator,
-                validMageGenerator
-            ) { enemy1, enemy2, character, mage ->
-                assume {
-                    enemy1.damage shouldBeGreaterThan enemy2.defense
-                    enemy1.damage shouldBeGreaterThan character.defense
-                    enemy1.damage shouldBeGreaterThan mage.defense
-                }
-                val randomEnemy = Enemy(enemy1.name, enemy1.damage, enemy1.weight, enemy1.maxHp, enemy1.defense, queue)
-                val randomCharacters: List<GameCharacter> = listOf(
-                    Enemy(enemy2.name, enemy2.damage, enemy2.weight, enemy2.maxHp, enemy2.defense, queue),
-                    Engineer(character.name, character.maxHp, character.defense, queue),
-                    BlackMage(mage.name, mage.maxHp, mage.maxMp, mage.defense, queue),
-                    Knight(character.name, character.maxHp, character.defense, queue),
-                    Thief(character.name, character.maxHp, character.defense, queue),
-                    WhiteMage(mage.name, mage.maxHp, mage.maxMp, mage.defense, queue)
-                )
-                for (gameCharacter in randomCharacters) {
-                    gameCharacter.currentHp shouldBe gameCharacter.maxHp
-                    randomEnemy.attack(gameCharacter)
-                    gameCharacter.currentHp shouldBeLessThan gameCharacter.maxHp
-                }
-            }
+            enemyAttackTest(queue)
             val randomCharacters: List<GameCharacter> = listOf(
                 enemy2,
                 Engineer("TestCharacter", 20, 5, queue),

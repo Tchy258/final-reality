@@ -1,5 +1,6 @@
 package cl.uchile.dcc.finalreality.model.weapon
 
+import cl.uchile.dcc.finalreality.model.ModelData
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.int
@@ -15,22 +16,19 @@ import io.kotest.property.arbitrary.string
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-internal data class StaffData(val name: String, val damage: Int, val weight: Int, val magicDamage: Int) {
+internal data class StaffData(val name: String, val damage: Int, val weight: Int, val magicDamage: Int) : ModelData {
+
+    override val validGenerator: Arb<StaffData> = StaffData.validGenerator
+    override val arbitraryGenerator: Arb<StaffData> = StaffData.arbitraryGenerator
     companion object {
-        /**
-         * [Arb] generator for arbitrary valid [Staff] data
-         */
-        val validStaffGenerator = arbitrary {
+        val validGenerator: Arb<StaffData> = arbitrary {
             val name = Arb.string().bind()
             val damage = Arb.nonNegativeInt().bind()
             val weight = Arb.positiveInt().bind()
             val magicDamage = Arb.nonNegativeInt().bind()
             StaffData(name, damage, weight, magicDamage)
         }
-        /**
-         * [Arb] generator for arbitrary [Staff] data, the generated data might not be valid.
-         */
-        val arbitraryStaffGenerator = arbitrary {
+        val arbitraryGenerator: Arb<StaffData> = arbitrary {
             val name = Arb.string().bind()
             val damage = Arb.int().bind()
             val weight = Arb.int().bind()

@@ -1,112 +1,90 @@
 package cl.uchile.dcc.finalreality.model.weapon
 
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
-import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
+import cl.uchile.dcc.finalreality.model.character.CharacterTestingFactory
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
-import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.arbitraryWeaponGenerator
-import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.validWeaponGenerator
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMageTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMageTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.EngineerTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.KnightTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.ThiefTestingFactory
+import cl.uchile.dcc.finalreality.model.differentWeaponInequalityCheck
+import cl.uchile.dcc.finalreality.model.invalidEquippableWeaponCheck
+import cl.uchile.dcc.finalreality.model.validEquippableWeaponCheck
+import cl.uchile.dcc.finalreality.model.weaponEqualityCheck
+import cl.uchile.dcc.finalreality.model.weaponInequalityCheck
+import cl.uchile.dcc.finalreality.model.weaponNotNullCheck
+import cl.uchile.dcc.finalreality.model.weaponSelfEqualityCheck
+import cl.uchile.dcc.finalreality.model.weaponValidStatsCheck
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.positiveInt
-import io.kotest.property.assume
-import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.concurrent.LinkedBlockingQueue
 
 class BowTest : FunSpec({
-    lateinit var bow1: Bow
-    lateinit var bow2: Bow
-    lateinit var bow3: Bow
+    lateinit var testWeapon1: Bow
+    lateinit var testWeapon2: Bow
+    lateinit var testWeapon3: Bow
+    lateinit var thisFactory: BowTestingFactory
+    lateinit var thisData: Arb<WeaponData>
+    lateinit var characterData: Arb<CharacterData>
+    lateinit var mageData: Arb<MageData>
+    lateinit var characterFactories: List<CharacterTestingFactory>
 
     beforeEach {
-        bow1 = Bow("TestBow", 10, 20)
-        bow2 = Bow("TestBow", 10, 20)
-        bow3 = Bow("TestBow2", 20, 10)
+        testWeapon1 = Bow("TestBow", 10, 20)
+        testWeapon2 = Bow("TestBow", 10, 20)
+        testWeapon3 = Bow("TestBow2", 20, 10)
+        thisFactory = BowTestingFactory()
+        val queue: LinkedBlockingQueue<GameCharacter> = LinkedBlockingQueue()
+        thisData = WeaponData.validGenerator
+        characterData = CharacterData.validGenerator
+        mageData = MageData.validGenerator
+        characterFactories = listOf(
+            EngineerTestingFactory(queue),
+            KnightTestingFactory(queue),
+            ThiefTestingFactory(queue),
+            BlackMageTestingFactory(queue),
+            WhiteMageTestingFactory(queue)
+        )
     }
     context("Two bows with the same parameters should:") {
         test("Be equal") {
-            checkAll(validWeaponGenerator) { bow ->
-                val randomBow1 = Bow(bow.name, bow.damage, bow.weight)
-                val randomBow2 = Bow(bow.name, bow.damage, bow.weight)
-                randomBow1 shouldBe randomBow2
-            }
-            bow1 shouldBe bow2
+            weaponEqualityCheck(thisFactory)
+            testWeapon1 shouldBe testWeapon2
         }
         test("Have the same hashcode") {
-            bow1.hashCode() shouldBe bow2.hashCode()
+            testWeapon1.hashCode() shouldBe testWeapon2.hashCode()
         }
     }
     context("Two bows with different parameters should:") {
         test("Not be equal") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validWeaponGenerator
-            ) { bow1, bow2 ->
-                assume {
-                    bow1.name != bow2.name ||
-                        bow1.damage != bow2.damage ||
-                        bow1.weight != bow2.weight
-                }
-                val randomBow1 = Bow(bow1.name, bow1.damage, bow1.weight)
-                val randomBow2 = Bow(bow2.name, bow2.damage, bow2.weight)
-                randomBow1 shouldNotBe randomBow2
-            }
-            bow1 shouldNotBe bow3
+            weaponInequalityCheck(thisFactory)
+            testWeapon1 shouldNotBe testWeapon3
         }
     }
     context("Any Bow should:") {
         test("Not be null") {
-            checkAll(validWeaponGenerator) { bow ->
-                val randomBow = Bow(bow.name, bow.damage, bow.weight)
-                randomBow shouldNotBe null
-            }
-            bow1 shouldNotBe null
-            bow2 shouldNotBe null
-            bow3 shouldNotBe null
+            weaponNotNullCheck(thisFactory)
+            testWeapon1 shouldNotBe null
+            testWeapon2 shouldNotBe null
+            testWeapon3 shouldNotBe null
         }
         test("Be equal to itself") {
-            checkAll(validWeaponGenerator) { bow ->
-                val randomBow = Bow(bow.name, bow.damage, bow.weight)
-                randomBow shouldBe randomBow
-            }
-            bow1 shouldBe bow1
-            bow2 shouldBe bow2
+            weaponSelfEqualityCheck(thisFactory)
+            testWeapon1 shouldBe testWeapon1
+            testWeapon2 shouldBe testWeapon2
         }
         test("Not be equal to other weapons even with same parameters") {
-            checkAll(validWeaponGenerator, Arb.positiveInt()) { weaponData, magicDamage ->
-                val randomAxe = Axe(weaponData.name, weaponData.damage, weaponData.weight)
-                val randomBow = Bow(weaponData.name, weaponData.damage, weaponData.weight)
-                val randomKnife = Knife(weaponData.name, weaponData.damage, weaponData.weight)
-                val randomSword = Sword(weaponData.name, weaponData.damage, weaponData.weight)
-                val randomStaff = Staff(weaponData.name, weaponData.damage, magicDamage, weaponData.weight)
-                randomBow shouldNotBe randomAxe
-                randomBow shouldNotBe randomKnife
-                randomBow shouldNotBe randomSword
-                randomBow shouldNotBe randomStaff
-            }
+            differentWeaponInequalityCheck(thisFactory)
         }
         test("Have valid stats") {
-            checkAll(arbitraryWeaponGenerator) { bow ->
-                if (bow.damage < 0 || bow.weight <= 0) {
-                    assertThrows<InvalidStatValueException> {
-                        Bow(bow.name, bow.damage, bow.weight)
-                    }
-                } else {
-                    assertDoesNotThrow {
-                        Bow(bow.name, bow.damage, bow.weight)
-                    }
-                }
-            }
+            weaponValidStatsCheck(thisFactory)
             assertThrows<InvalidStatValueException> {
                 Bow("", -1, -1)
             }
@@ -116,72 +94,49 @@ class BowTest : FunSpec({
         }
         // Tests toString() method
         test("Have a string representation") {
-            bow1.toString() shouldBe "Bow { name: 'TestBow', damage: 10, weight: 20 }"
-            bow3.toString() shouldBe "Bow { name: 'TestBow2', damage: 20, weight: 10 }"
+            testWeapon1.toString() shouldBe "Bow { name: 'TestBow', damage: 10, weight: 20 }"
+            testWeapon3.toString() shouldBe "Bow { name: 'TestBow2', damage: 20, weight: 10 }"
         }
         // Tests for equipTo... methods
         test("Be equippable to an Engineer") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validCharacterGenerator
-            ) {
-                bow, engineer ->
-                // The queue is not relevant to the test so a fresh instance is made each time
-                val testEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(bow.name, bow.damage, bow.weight)
-                assertDoesNotThrow {
-                    testBow.equipToEngineer(testEngineer)
-                }
-            }
+            validEquippableWeaponCheck(
+                characterData,
+                thisData,
+                characterFactories[0],
+                thisFactory
+            )
         }
         test("Be unequippable to a Knight") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validCharacterGenerator
-            ) {
-                bow, knight ->
-                val testKnight = Knight(knight.name, knight.maxHp, knight.defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(bow.name, bow.damage, bow.weight)
-                assertThrows<InvalidWeaponException> {
-                    testBow.equipToKnight(testKnight)
-                }
-            }
+            invalidEquippableWeaponCheck(
+                characterData,
+                thisData,
+                characterFactories[1],
+                thisFactory
+            )
         }
         test("Be equippable to a Thief") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validCharacterGenerator
-            ) { bow, thief ->
-                val testThief = Thief(thief.name, thief.maxHp, thief.defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(bow.name, bow.damage, bow.weight)
-                assertDoesNotThrow {
-                    testBow.equipToThief(testThief)
-                }
-            }
+            validEquippableWeaponCheck(
+                characterData,
+                thisData,
+                characterFactories[2],
+                thisFactory
+            )
         }
         test("Be unequippable to a BlackMage") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validMageGenerator
-            ) { bow, blackMage ->
-                val testBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(bow.name, bow.damage, bow.weight)
-                assertThrows<InvalidWeaponException> {
-                    testBow.equipToBlackMage(testBlackMage)
-                }
-            }
+            invalidEquippableWeaponCheck(
+                mageData,
+                thisData,
+                characterFactories[3],
+                thisFactory
+            )
         }
         test("Be unequippable to a WhiteMage") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validMageGenerator
-            ) { bow, whiteMage ->
-                val testWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, LinkedBlockingQueue<GameCharacter>())
-                val testBow = Bow(bow.name, bow.damage, bow.weight)
-                assertThrows<InvalidWeaponException> {
-                    testBow.equipToWhiteMage(testWhiteMage)
-                }
-            }
+            invalidEquippableWeaponCheck(
+                mageData,
+                thisData,
+                characterFactories[4],
+                thisFactory
+            )
         }
     }
 })

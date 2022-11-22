@@ -1,5 +1,6 @@
 package cl.uchile.dcc.finalreality.model.character
 
+import cl.uchile.dcc.finalreality.model.ModelData
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.int
@@ -18,12 +19,11 @@ import io.kotest.property.arbitrary.string
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-internal data class EnemyData(val name: String, val damage: Int, val weight: Int, val maxHp: Int, val defense: Int) {
+internal data class EnemyData(val name: String, val damage: Int, val weight: Int, val maxHp: Int, val defense: Int) : ModelData {
+    override val validGenerator: Arb<EnemyData> = EnemyData.validGenerator
+    override val arbitraryGenerator: Arb<EnemyData> = EnemyData.arbitraryGenerator
     companion object {
-        /**
-         * [Arb] generator for arbitrary valid [Enemy] data.
-         */
-        val validEnemyGenerator = arbitrary {
+        val validGenerator: Arb<EnemyData> = arbitrary {
             val name = Arb.string().bind()
             val damage = Arb.nonNegativeInt().bind()
             val weight = Arb.positiveInt().bind()
@@ -31,11 +31,7 @@ internal data class EnemyData(val name: String, val damage: Int, val weight: Int
             val defense = Arb.nonNegativeInt().bind()
             EnemyData(name, damage, weight, maxHp, defense)
         }
-
-        /**
-         * [Arb] generator for arbitrary [Enemy] data, the generated enemies might not be valid.
-         */
-        val arbitraryEnemyGenerator = arbitrary {
+        val arbitraryGenerator: Arb<EnemyData> = arbitrary {
             val name = Arb.string().bind()
             val damage = Arb.int().bind()
             val weight = Arb.int().bind()

@@ -1,114 +1,90 @@
 package cl.uchile.dcc.finalreality.model.weapon
 
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
-import cl.uchile.dcc.finalreality.exceptions.InvalidWeaponException
+import cl.uchile.dcc.finalreality.model.character.CharacterTestingFactory
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData.Companion.validCharacterGenerator
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData.Companion.validMageGenerator
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
-import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.arbitraryWeaponGenerator
-import cl.uchile.dcc.finalreality.model.weapon.WeaponData.Companion.validWeaponGenerator
+import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMageTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData
+import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMageTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.EngineerTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.KnightTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.classes.physical.ThiefTestingFactory
+import cl.uchile.dcc.finalreality.model.differentWeaponInequalityCheck
+import cl.uchile.dcc.finalreality.model.invalidEquippableWeaponCheck
+import cl.uchile.dcc.finalreality.model.validEquippableWeaponCheck
+import cl.uchile.dcc.finalreality.model.weaponEqualityCheck
+import cl.uchile.dcc.finalreality.model.weaponInequalityCheck
+import cl.uchile.dcc.finalreality.model.weaponNotNullCheck
+import cl.uchile.dcc.finalreality.model.weaponSelfEqualityCheck
+import cl.uchile.dcc.finalreality.model.weaponValidStatsCheck
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.positiveInt
-import io.kotest.property.assume
-import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.concurrent.LinkedBlockingQueue
 
 class KnifeTest : FunSpec({
-    lateinit var knife1: Knife
-    lateinit var knife2: Knife
-    lateinit var knife3: Knife
+    lateinit var testWeapon1: Knife
+    lateinit var testWeapon2: Knife
+    lateinit var testWeapon3: Knife
+    lateinit var thisFactory: KnifeTestingFactory
+    lateinit var thisData: Arb<WeaponData>
+    lateinit var characterData: Arb<CharacterData>
+    lateinit var mageData: Arb<MageData>
+    lateinit var characterFactories: List<CharacterTestingFactory>
 
     beforeEach {
-        knife1 = Knife("TestKnife", 10, 20)
-        knife2 = Knife("TestKnife", 10, 20)
-        knife3 = Knife("TestKnife2", 20, 10)
+        testWeapon1 = Knife("TestKnife", 10, 20)
+        testWeapon2 = Knife("TestKnife", 10, 20)
+        testWeapon3 = Knife("TestKnife2", 20, 10)
+        thisFactory = KnifeTestingFactory()
+        val queue: LinkedBlockingQueue<GameCharacter> = LinkedBlockingQueue()
+        thisData = WeaponData.validGenerator
+        characterData = CharacterData.validGenerator
+        mageData = MageData.validGenerator
+        characterFactories = listOf(
+            EngineerTestingFactory(queue),
+            KnightTestingFactory(queue),
+            ThiefTestingFactory(queue),
+            BlackMageTestingFactory(queue),
+            WhiteMageTestingFactory(queue)
+        )
     }
     context("Two knifes with the same parameters should:") {
         test("Be equal") {
-            checkAll(validWeaponGenerator) { knife ->
-                val randomKnife1 =
-                    Knife(knife.name, knife.damage, knife.weight)
-                val randomKnife2 =
-                    Knife(knife.name, knife.damage, knife.weight)
-                randomKnife1 shouldBe randomKnife2
-            }
-            knife1 shouldBe knife2
+            weaponEqualityCheck(thisFactory)
+            testWeapon1 shouldBe testWeapon2
         }
         test("Have the same hashcode") {
-            knife1.hashCode() shouldBe knife2.hashCode()
+            testWeapon1.hashCode() shouldBe testWeapon2.hashCode()
         }
     }
     context("Two knifes with different parameters should:") {
         test("Not be equal") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validWeaponGenerator
-            ) { knife1, knife2 ->
-                assume {
-                    knife1.name != knife2.name ||
-                        knife1.damage != knife2.damage ||
-                        knife1.weight != knife2.weight
-                }
-                val randomKnife1 = Knife(knife1.name, knife1.damage, knife1.weight)
-                val randomKnife2 = Knife(knife2.name, knife2.damage, knife2.weight)
-                randomKnife1 shouldNotBe randomKnife2
-            }
-            knife1 shouldNotBe knife3
+            weaponInequalityCheck(thisFactory)
+            testWeapon1 shouldNotBe testWeapon3
         }
     }
     context("Any Knife should:") {
         test("Not be null") {
-            checkAll(validWeaponGenerator) { knife ->
-                val randomKnife = Knife(knife.name, knife.damage, knife.weight)
-                randomKnife shouldNotBe null
-            }
-            knife1 shouldNotBe null
-            knife2 shouldNotBe null
-            knife3 shouldNotBe null
+            weaponNotNullCheck(thisFactory)
+            testWeapon1 shouldNotBe null
+            testWeapon2 shouldNotBe null
+            testWeapon3 shouldNotBe null
         }
         test("Be equal to itself") {
-            checkAll(validWeaponGenerator) { knife ->
-                val randomKnife = Knife(knife.name, knife.damage, knife.weight)
-                randomKnife shouldBe randomKnife
-            }
-            knife1 shouldBe knife1
-            knife2 shouldBe knife2
+            weaponSelfEqualityCheck(thisFactory)
+            testWeapon1 shouldBe testWeapon1
+            testWeapon2 shouldBe testWeapon2
         }
         test("Not be equal to other weapons even with same parameters") {
-            checkAll(validWeaponGenerator, Arb.positiveInt()) { weaponData, magicDamage ->
-                val randomAxe = Axe(weaponData.name, weaponData.damage, weaponData.weight)
-                val randomBow = Bow(weaponData.name, weaponData.damage, weaponData.weight)
-                val randomKnife = Knife(weaponData.name, weaponData.damage, weaponData.weight)
-                val randomSword = Sword(weaponData.name, weaponData.damage, weaponData.weight)
-                val randomStaff = Staff(weaponData.name, weaponData.damage, magicDamage, weaponData.weight)
-                randomKnife shouldNotBe randomBow
-                randomKnife shouldNotBe randomAxe
-                randomKnife shouldNotBe randomSword
-                randomKnife shouldNotBe randomStaff
-            }
+            differentWeaponInequalityCheck(thisFactory)
         }
         test("Have valid stats") {
-            checkAll(arbitraryWeaponGenerator) { knife ->
-                if (knife.damage < 0 || knife.weight <= 0) {
-                    assertThrows<InvalidStatValueException> {
-                        Knife(knife.name, knife.damage, knife.weight)
-                    }
-                } else {
-                    assertDoesNotThrow {
-                        Knife(knife.name, knife.damage, knife.weight)
-                    }
-                }
-            }
+            weaponValidStatsCheck(thisFactory)
             assertThrows<InvalidStatValueException> {
                 Knife("", -1, -1)
             }
@@ -118,70 +94,49 @@ class KnifeTest : FunSpec({
         }
         // Tests toString() method
         test("Have a string representation") {
-            knife1.toString() shouldBe "Knife { name: 'TestKnife', damage: 10, weight: 20 }"
-            knife3.toString() shouldBe "Knife { name: 'TestKnife2', damage: 20, weight: 10 }"
+            testWeapon1.toString() shouldBe "Knife { name: 'TestKnife', damage: 10, weight: 20 }"
+            testWeapon3.toString() shouldBe "Knife { name: 'TestKnife2', damage: 20, weight: 10 }"
         }
         // Tests for equipTo... methods
         test("Be unequippable to an Engineer") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validCharacterGenerator
-            ) { knife, engineer ->
-                // The queue is not relevant to the test so a fresh instance is made each time
-                val testEngineer = Engineer(engineer.name, engineer.maxHp, engineer.defense, LinkedBlockingQueue<GameCharacter>())
-                val testKnife = Knife(knife.name, knife.damage, knife.weight)
-                assertThrows<InvalidWeaponException> {
-                    testKnife.equipToEngineer(testEngineer)
-                }
-            }
+            invalidEquippableWeaponCheck(
+                characterData,
+                thisData,
+                characterFactories[0],
+                thisFactory
+            )
         }
         test("Be equippable to a Knight") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validCharacterGenerator
-            ) { knife, knight ->
-                val testKnight = Knight(knight.name, knight.maxHp, knight.defense, LinkedBlockingQueue<GameCharacter>())
-                val testKnife = Knife(knife.name, knife.damage, knife.weight)
-                assertDoesNotThrow {
-                    testKnife.equipToKnight(testKnight)
-                }
-            }
+            validEquippableWeaponCheck(
+                characterData,
+                thisData,
+                characterFactories[1],
+                thisFactory
+            )
         }
         test("Be equippable to a Thief") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validCharacterGenerator
-            ) { knife, thief ->
-                val testThief = Thief(thief.name, thief.maxHp, thief.defense, LinkedBlockingQueue<GameCharacter>())
-                val testKnife = Knife(knife.name, knife.damage, knife.weight)
-                assertDoesNotThrow {
-                    testKnife.equipToThief(testThief)
-                }
-            }
+            validEquippableWeaponCheck(
+                characterData,
+                thisData,
+                characterFactories[2],
+                thisFactory
+            )
         }
         test("Be equippable to a BlackMage") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validMageGenerator
-            ) { knife, blackMage ->
-                val testBlackMage = BlackMage(blackMage.name, blackMage.maxHp, blackMage.maxMp, blackMage.defense, LinkedBlockingQueue<GameCharacter>())
-                val testKnife = Knife(knife.name, knife.damage, knife.weight)
-                assertDoesNotThrow {
-                    testKnife.equipToBlackMage(testBlackMage)
-                }
-            }
+            validEquippableWeaponCheck(
+                mageData,
+                thisData,
+                characterFactories[3],
+                thisFactory
+            )
         }
         test("Be unequippable to a WhiteMage") {
-            checkAll(
-                genA = validWeaponGenerator,
-                genB = validMageGenerator
-            ) { knife, whiteMage ->
-                val testWhiteMage = WhiteMage(whiteMage.name, whiteMage.maxHp, whiteMage.maxMp, whiteMage.defense, LinkedBlockingQueue<GameCharacter>())
-                val testKnife = Knife(knife.name, knife.damage, knife.weight)
-                assertThrows<InvalidWeaponException> {
-                    testKnife.equipToWhiteMage(testWhiteMage)
-                }
-            }
+            invalidEquippableWeaponCheck(
+                mageData,
+                thisData,
+                characterFactories[4],
+                thisFactory
+            )
         }
     }
 })
