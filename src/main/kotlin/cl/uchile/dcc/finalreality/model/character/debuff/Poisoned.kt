@@ -27,7 +27,7 @@ class Poisoned(private val finalDamage: Int) : Debuff {
         if (turnLimit == 0) {
             character.removeDebuff(this)
         }
-        return true
+        return character.currentHp != 0
     }
     // Poisoned is just a status
     override fun equals(other: Any?): Boolean {

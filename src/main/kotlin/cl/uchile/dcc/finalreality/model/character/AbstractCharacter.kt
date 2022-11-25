@@ -12,7 +12,6 @@ import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 import cl.uchile.dcc.finalreality.model.character.debuff.Poisoned
-import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import java.lang.Integer.max
 import java.lang.Integer.min
 import java.util.concurrent.BlockingQueue
@@ -91,24 +90,9 @@ abstract class AbstractCharacter(
         _currentHp = min(this.maxHp, finalHp)
     }
 
-    /**
-     * This method encapsulates the real attack logic which depends on
-     * whether this [GameCharacter] is a [PlayerCharacter] or an [Enemy]
-     */
-    protected abstract fun executeAttack(anotherCharacter: GameCharacter)
+    abstract override fun attack(anotherCharacter: GameCharacter): Boolean
 
-    override fun attack(anotherCharacter: GameCharacter): Boolean {
-        val canAttack = rollEffects()
-        if (canAttack) {
-            executeAttack(anotherCharacter)
-        }
-        return canAttack
-    }
-    /**
-     * Activates adverse effects applied to this character
-     * @return whether this character can attack or not (depending on if it's [Paralyzed])
-     */
-    private fun rollEffects(): Boolean {
+    override fun rollEffects(): Boolean {
         var canAttack = true
         for (debuff in statusEffects) {
             canAttack = canAttack && debuff.rollEffect(this)

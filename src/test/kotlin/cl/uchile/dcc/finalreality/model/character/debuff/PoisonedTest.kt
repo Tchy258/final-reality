@@ -59,8 +59,10 @@ class PoisonedTest : FunSpec({
     test("When a character is poisoned, they should receive damage upon attacking (using a turn)") {
         val testSword = Sword("TestSword", 10, 5)
         character.equip(testSword)
+        character.rollEffects()
         character.attack(enemy1)
         character.currentHp shouldBe character.maxHp - 10
+        enemy2.rollEffects()
         enemy2.attack(character)
         enemy2.currentHp shouldBe enemy2.maxHp - 20
     }
@@ -86,10 +88,11 @@ class PoisonedTest : FunSpec({
         val testSword = Sword("ReallyWeakSword", 1, 10)
         character.equip(testSword)
         for (i in 0..3) {
+            character.rollEffects()
             character.attack(enemy1)
             character.isPoisoned() shouldBe true
         }
-
+        character.rollEffects()
         character.attack(enemy1)
         character.isPoisoned() shouldNotBe true
     }

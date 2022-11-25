@@ -63,9 +63,10 @@ abstract class AbstractPlayerCharacter(
             throw NoWeaponEquippedException(this.name)
         }
     }
-    override fun executeAttack(anotherCharacter: GameCharacter) {
+    override fun attack(anotherCharacter: GameCharacter): Boolean {
         if (hasWeaponEquipped()) {
             anotherCharacter.receiveAttack(_equippedWeapon.damage)
+            return anotherCharacter.currentHp == 0
         } else {
             throw NoWeaponEquippedException(this.name)
         }

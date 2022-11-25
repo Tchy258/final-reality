@@ -49,8 +49,8 @@ interface GameCharacter {
     fun receiveHealing(healing: Int)
     /**
      * Attacks a [GameCharacter], decreasing [anotherCharacter]'s [currentHp],
-     * if this character is not paralyzed
-     * @return whether the attack was successful or not
+     *
+     * @return whether the attack lowered the target's hp to 0
      */
     fun attack(anotherCharacter: GameCharacter): Boolean
     /**
@@ -74,4 +74,9 @@ interface GameCharacter {
      * @return whether the character is [Poisoned]
      */
     fun isPoisoned(): Boolean
+    /**
+     * Activates adverse effects applied to this character
+     * @return whether this character can attack or not (depending on if it's [Paralyzed] or died)
+     */
+    fun rollEffects(): Boolean
 }

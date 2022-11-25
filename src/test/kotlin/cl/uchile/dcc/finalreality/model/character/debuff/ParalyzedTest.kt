@@ -52,8 +52,7 @@ class ParalyzedTest : FunSpec({
         val sword = Sword("PowerfulSword", 1000, 20)
         testCharacter.equip(sword)
         testCharacter.isParalyzed() shouldBe true
-        testCharacter.attack(enemy1)
-        enemy1.currentHp shouldBe enemy1.maxHp
+        testCharacter.rollEffects()
         testCharacter.isParalyzed() shouldNotBe true
         testCharacter.attack(enemy1)
         enemy1.currentHp shouldNotBe enemy1.maxHp

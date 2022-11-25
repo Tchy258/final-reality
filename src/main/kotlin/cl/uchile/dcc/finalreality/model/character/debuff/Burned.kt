@@ -27,7 +27,7 @@ class Burned(private val finalDamage: Int) : Debuff {
         if (turnLimit == 0) {
             character.removeDebuff(this)
         }
-        return true
+        return character.currentHp != 0
     }
 
     override fun toString(): String {

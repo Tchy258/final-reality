@@ -16,7 +16,7 @@ import cl.uchile.dcc.finalreality.model.character.GameCharacter
 interface Debuff {
     /**
      * Activates this adverse effect on the [character]
-     * @return whether this character can attack or not due to [Paralyzed]
+     * @return whether this character can attack or not due to [Paralyzed] or death
      */
     fun rollEffect(character: GameCharacter): Boolean
 }
