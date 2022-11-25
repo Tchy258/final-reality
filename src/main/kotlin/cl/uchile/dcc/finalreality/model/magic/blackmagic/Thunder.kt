@@ -3,6 +3,13 @@ package cl.uchile.dcc.finalreality.model.magic.blackmagic
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 
+/**
+ * This represents a Thunder spell castable by a BlackMage.
+ * It has a chance of applying the [Paralyzed] adverse status effect.
+ * @property cost the cost of this spell, which is always `15`
+ *
+ * @author <a href="https://www.github.com/tchy258">Tchy258</a>
+ */
 class Thunder : BlackMagic {
     override val cost: Int
         get() = 15
@@ -29,7 +36,7 @@ class Thunder : BlackMagic {
     }
 
     override fun hashCode(): Int {
-        return cost
+        return javaClass.hashCode()
     }
 
     override fun toString(): String {

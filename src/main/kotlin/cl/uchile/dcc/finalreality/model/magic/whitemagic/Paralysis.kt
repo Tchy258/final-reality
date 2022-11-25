@@ -1,21 +1,19 @@
 package cl.uchile.dcc.finalreality.model.magic.whitemagic
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.debuff.Poisoned
-import kotlin.math.ceil
+import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 
 /**
- * This represents the Poison spell, which inflicts the Poisoned adverse effect onto a character
- * @property cost the cost of this spell, which is always `40`
+ * This represents the Paralysis spell, which always paralyzes a target
+ * @property cost the cost of this spell, which is always `25`
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-class Poison : WhiteMagic {
+class Paralysis : WhiteMagic {
     override val cost: Int
-        get() = 40
+        get() = 25
 
     override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean {
-        val finalDamage = ceil(magicDamage.toDouble() / 3).toInt()
-        spellTarget.addDebuff(Poisoned(finalDamage))
+        spellTarget.addDebuff(Paralyzed())
         return true
     }
 
@@ -23,7 +21,7 @@ class Poison : WhiteMagic {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Poison
+        other as Paralysis
         if (hashCode() != other.hashCode()) return false
         if (cost != other.cost) return false
 
@@ -35,6 +33,6 @@ class Poison : WhiteMagic {
     }
 
     override fun toString(): String {
-        return "Poison { cost: $cost }"
+        return "Paralysis { cost: $cost }"
     }
 }
