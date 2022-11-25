@@ -30,6 +30,8 @@ import cl.uchile.dcc.finalreality.model.weapon.StaffTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.SwordTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.WeaponData
 import cl.uchile.dcc.finalreality.model.weapon.WeaponTestingFactory
+import cl.uchile.dcc.finalreality.model.whiteMageUnusableSpellCastCheck
+import cl.uchile.dcc.finalreality.model.whiteMagicCastTest
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.matchers.shouldBe
@@ -199,6 +201,12 @@ class WhiteMageTest : FunSpec({
                     gameCharacter.maxHp - (whiteMage1.equippedWeapon.damage - gameCharacter.defense)
                 )
             }
+        }
+        test("Be able to cast white magic spells") {
+            whiteMagicCastTest(queue)
+        }
+        test("Be unable to cast black magic spells") {
+            whiteMageUnusableSpellCastCheck(queue)
         }
     }
 })

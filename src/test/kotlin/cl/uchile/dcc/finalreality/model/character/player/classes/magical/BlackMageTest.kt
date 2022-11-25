@@ -1,6 +1,7 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
+import cl.uchile.dcc.finalreality.model.blackMageUnusableSpellCastCheck
 import cl.uchile.dcc.finalreality.model.blackMagicNoStaffCastTest
 import cl.uchile.dcc.finalreality.model.blackMagicStaffCastTest
 import cl.uchile.dcc.finalreality.model.character.Enemy
@@ -212,6 +213,9 @@ class BlackMageTest : FunSpec({
         test("Be able to cast black magic spells") {
             blackMagicStaffCastTest(queue)
             blackMagicNoStaffCastTest(queue)
+        }
+        test("Be unable to cast white magic spells") {
+            blackMageUnusableSpellCastCheck(queue)
         }
     }
 })
