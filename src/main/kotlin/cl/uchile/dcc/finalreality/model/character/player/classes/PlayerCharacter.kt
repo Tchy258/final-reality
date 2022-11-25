@@ -25,4 +25,45 @@ interface PlayerCharacter : GameCharacter {
      * @param weapon the weapon this character equips
      */
     fun equip(weapon: Weapon)
+
+    /**
+     * This companion object is a container for static methods that
+     * interact with the PlayerCharacters' inventory
+     */
+    companion object Inventory {
+        /**
+         * The weapon inventory shared by all instances of PlayerCharacter
+         */
+        private val weaponInventory: MutableList<Weapon> = mutableListOf()
+
+        /**
+         * Getter for the weapon inventory shared by PlayerCharacters
+         * @return the characters' weapon inventory as an immutable list
+         */
+        @JvmStatic
+        fun getInventory(): List<Weapon> {
+            return weaponInventory.toList()
+        }
+
+        /**
+         * Adds a weapon to the characters' inventory.
+         * This weapon might be new or a weapon that was previously equipped and
+         * was changed for another weapon
+         * @param weapon the weapon to add to the inventory
+         */
+        @JvmStatic
+        fun addWeaponToInventory(weapon: Weapon) {
+            weaponInventory.add(weapon)
+        }
+
+        /**
+         * Discards a weapon, if it is in the inventory
+         * @param weapon the weapon to discard
+         * @return whether the weapon in the inventory was discarded or not
+         */
+        @JvmStatic
+        fun discardWeaponFromInventory(weapon: Weapon): Boolean {
+            return weaponInventory.remove(weapon)
+        }
+    }
 }

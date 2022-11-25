@@ -41,6 +41,11 @@ abstract class AbstractPlayerCharacter(
      * Setter for the [equippedWeapon] once the character knows if it can equip it
      */
     protected fun setWeapon(weapon: Weapon) {
+        if (hasWeaponEquipped()) {
+            PlayerCharacter.addWeaponToInventory(_equippedWeapon)
+        }
+        // When a weapon is equipped, it's not in the inventory anymore
+        PlayerCharacter.discardWeaponFromInventory(weapon)
         _equippedWeapon = weapon
     }
     protected fun hasWeaponEquipped(): Boolean {
@@ -58,7 +63,6 @@ abstract class AbstractPlayerCharacter(
             throw NoWeaponEquippedException(this.name)
         }
     }
-
     override fun executeAttack(anotherCharacter: GameCharacter) {
         if (hasWeaponEquipped()) {
             anotherCharacter.receiveAttack(_equippedWeapon.damage)
