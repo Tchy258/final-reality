@@ -14,9 +14,10 @@ class Poisoned(private val finalDamage: Int) : Debuff {
     private var turnLimit = 5
     override fun rollEffect(character: GameCharacter): Boolean {
         character.receiveMagicDamage(finalDamage)
-        if (turnLimit != 0) {
+        if (turnLimit > 0) {
             turnLimit--
-        } else {
+        }
+        if (turnLimit == 0) {
             character.removeDebuff(this)
         }
         return true
