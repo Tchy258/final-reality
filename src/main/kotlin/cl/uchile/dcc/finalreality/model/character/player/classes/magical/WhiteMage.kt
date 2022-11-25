@@ -7,11 +7,14 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidSpellCastException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.magic.Magic
 import cl.uchile.dcc.finalreality.model.magic.whitemagic.WhiteMagic
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Weapon
+import java.lang.ClassCastException
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
@@ -39,6 +42,14 @@ class WhiteMage(
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
     override fun equip(weapon: Weapon) {
         weapon.equipToWhiteMage(this)
+    }
+    override fun cast(spell: Magic, target: GameCharacter): Boolean {
+        return try {
+            spell as WhiteMagic
+            castWhiteMagicSpell(spell, target)
+        } catch (e: ClassCastException) {
+            throw InvalidSpellCastException(this::class.simpleName!!, spell::class.simpleName!!)
+        }
     }
     /**
      * Attempts to cast a [whiteMagic] spell

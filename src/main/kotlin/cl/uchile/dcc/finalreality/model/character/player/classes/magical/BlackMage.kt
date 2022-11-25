@@ -7,12 +7,15 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidSpellCastException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.magic.Magic
 import cl.uchile.dcc.finalreality.model.magic.blackmagic.BlackMagic
 import cl.uchile.dcc.finalreality.model.weapon.Knife
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Weapon
+import java.lang.ClassCastException
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
@@ -43,7 +46,14 @@ class BlackMage(
      * Boolean value to check magicDamage calculations
      */
     private var _hasStaff: Boolean = false
-
+    override fun cast(spell: Magic, target: GameCharacter): Boolean {
+        return try {
+            spell as BlackMagic
+            castBlackMagicSpell(spell, target)
+        } catch (e: ClassCastException) {
+            throw InvalidSpellCastException(this::class.simpleName!!, spell::class.simpleName!!)
+        }
+    }
     /**
      * Attempts to cast a [blackMagic] spell
      *

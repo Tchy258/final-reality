@@ -1,6 +1,8 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
+import cl.uchile.dcc.finalreality.model.magic.Magic
 
 /**
  * This represents a mage controlled by the user
@@ -12,6 +14,11 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 interface Mage : PlayerCharacter {
     val maxMp: Int
     val currentMp: Int
+    /**
+     * Atempts to casts a spell
+     * @return whether the spell was cast or not
+     */
+    fun cast(spell: Magic, target: GameCharacter): Boolean
     /**
      * Checks whether a spell with a [spellCost] can be cast and deducts mp
      * if it has to
