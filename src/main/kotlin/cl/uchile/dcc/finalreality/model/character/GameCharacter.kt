@@ -7,6 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.character
 
+import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
@@ -79,4 +80,9 @@ interface GameCharacter {
      * @return whether this character can attack or not (depending on if it's [Paralyzed] or died)
      */
     fun rollEffects(): Boolean
+
+    /**
+     * Function used to take turns on the GameController
+     */
+    fun takeTurn(game: GameController)
 }

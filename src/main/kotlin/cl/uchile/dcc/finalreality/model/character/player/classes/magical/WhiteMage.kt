@@ -7,6 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.exceptions.InvalidSpellCastException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
@@ -42,6 +43,10 @@ class WhiteMage(
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
     override fun equip(weapon: Weapon) {
         weapon.equipToWhiteMage(this)
+    }
+
+    override fun takeTurn(game: GameController) {
+        game.playerWhiteMageTurn(this)
     }
     override fun cast(spell: Magic, target: GameCharacter): Boolean {
         return try {

@@ -7,6 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.exceptions.InvalidSpellCastException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
@@ -46,6 +47,9 @@ class BlackMage(
      * Boolean value to check magicDamage calculations
      */
     private var _hasStaff: Boolean = false
+    override fun takeTurn(game: GameController) {
+        game.playerBlackMageTurn(this)
+    }
     override fun cast(spell: Magic, target: GameCharacter): Boolean {
         return try {
             spell as BlackMagic

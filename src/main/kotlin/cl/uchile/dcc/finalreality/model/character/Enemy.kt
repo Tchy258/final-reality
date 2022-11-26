@@ -7,6 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.character
 
+import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.exceptions.Require
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
@@ -57,6 +58,10 @@ class Enemy(
             /* delay = */ (this.weight * 100).toLong(),
             /* unit = */ TimeUnit.MILLISECONDS
         )
+    }
+
+    override fun takeTurn(game: GameController) {
+        game.enemyTurn(this)
     }
     override fun attack(anotherCharacter: GameCharacter): Boolean {
         anotherCharacter.receiveAttack(this.damage)
