@@ -1,4 +1,4 @@
-package cl.uchile.dcc.finalreality.controller
+/*package cl.uchile.dcc.finalreality.controller
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -14,4 +14,4 @@ class GameControllerTest: FunSpec ({
             game.isGameOver() shouldBe false
         }
     }
-})
+})*/
