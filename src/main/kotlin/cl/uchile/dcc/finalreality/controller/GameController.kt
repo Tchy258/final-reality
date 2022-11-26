@@ -413,10 +413,10 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
     }
     fun enemyTurn(character: Enemy) {
         var attackDone = false
-        while(!attackDone) {
-            val k = Random.nextInt(0,5)
+        while (!attackDone) {
+            val k = Random.nextInt(0, 5)
             if (playerCharacters[k].currentHp != 0) {
-                attack(character,playerCharacters[k])
+                attack(character, playerCharacters[k])
                 attackDone = true
             }
         }
