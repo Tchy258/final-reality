@@ -8,6 +8,7 @@
 package cl.uchile.dcc.finalreality.model.magic.whitemagic
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 
 /**
@@ -19,9 +20,9 @@ class Paralysis : WhiteMagic {
     override val cost: Int
         get() = 25
 
-    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean {
+    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
         spellTarget.addDebuff(Paralyzed())
-        return true
+        return Paralyzed()
     }
 
     override fun equals(other: Any?): Boolean {

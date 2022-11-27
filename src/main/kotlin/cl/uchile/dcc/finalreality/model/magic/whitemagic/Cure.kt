@@ -8,6 +8,7 @@
 package cl.uchile.dcc.finalreality.model.magic.whitemagic
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import kotlin.math.ceil
 
 /**
@@ -20,10 +21,10 @@ class Cure : WhiteMagic {
     override val cost: Int
         get() = 15
 
-    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean {
+    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff? {
         // maxHp * 3/10 == 30% of maxHp
         spellTarget.receiveHealing(ceil(spellTarget.maxHp.toDouble() * 3 / 10f).toInt())
-        return false
+        return null
     }
 
     override fun equals(other: Any?): Boolean {

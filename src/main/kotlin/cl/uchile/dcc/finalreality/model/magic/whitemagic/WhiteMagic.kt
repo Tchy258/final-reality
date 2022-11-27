@@ -7,6 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.magic.whitemagic
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidSpellCastException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.magic.Magic
@@ -17,11 +18,7 @@ import cl.uchile.dcc.finalreality.model.magic.Magic
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
 interface WhiteMagic : Magic {
-    override fun cast(magicDamage: Int, spellTarget: GameCharacter): Boolean = castWhiteMagic(magicDamage, spellTarget)
-    /**
-     * Casts this spell targeting a [spellTarget], activating its effect
-     * and applying [Debuff]s (if any)
-     * @return whether the spell activated its adverse effect
-     */
-    fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean
+    override fun cast(magicDamage: Int, spellTarget: GameCharacter): Debuff? = castWhiteMagic(magicDamage, spellTarget)
+    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff?
+    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff? = throw InvalidSpellCastException("WhiteMage", this::class.simpleName!!)
 }

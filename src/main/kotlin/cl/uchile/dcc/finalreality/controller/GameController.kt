@@ -148,17 +148,18 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
     /**
      * Function called immediately after the init block
      */
-    fun nextTurn() {
+    tailrec fun nextTurn() {
         if (!gameIsOver) {
             if (turnsQueue.isEmpty()) {
                 Thread.sleep(2000)
-                nextTurn()
+                return nextTurn()
             }
+            print(this)
             val character: GameCharacter = turnsQueue.poll()
             character.rollEffects()
             if (character.currentHp == 0) {
                 println("${character.name} has died to an adverse effect!")
-                nextTurn()
+                return nextTurn()
             } else {
                 character.takeTurn(this)
             }
@@ -177,7 +178,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
             if (enemyDead) {
                 onPlayerWin()
             }
-            nextTurn()
+            return nextTurn()
         } else {
             return
         }
@@ -213,7 +214,8 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
      */
     fun attack(attacker: GameCharacter, target: GameCharacter) {
         if (!attacker.isParalyzed()) {
-            println("${attacker.name} attacks ${target.name}!")
+            val damage = attacker.attack(target)
+            println("${attacker.name} attacks ${target.name} dealing $damage health points of damage!")
             if (target.currentHp == 0) {
                 println("${target.name} has been defeated")
             }
@@ -259,25 +261,23 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
      * @return whether the attacker executed the spell (T) or didn't have enough mana (F)
      */
     fun useMagic(spell: Magic, attacker: Mage, target: GameCharacter): Boolean {
-        val couldCast = attacker.cast(spell, target)
-        val wasParalyzed = target.isParalyzed()
-        val wasBurned = target.isBurned()
-        val wasPoisoned = target.isPoisoned()
-        if (couldCast) {
-            println("${attacker.name} casts ${spell::class.simpleName!!} on ${target.name}!")
-            if (!wasParalyzed && attacker.isParalyzed()) {
-                println("${target.name} has been paralyzed!")
+        val hpBefore = target.currentHp
+        val (damage, debuff) = attacker.cast(spell, target)
+        if (damage != -1 || hpBefore != target.currentHp) {
+            if (damage == 0) {
+                println("${attacker.name} casts ${spell::class.simpleName!!} on ${target.name}!")
+            } else if (target.currentHp < hpBefore) {
+                println("${attacker.name} casts ${spell::class.simpleName!!} on ${target.name} dealing $damage health points of damage!")
+            } else if (target.currentHp > hpBefore) {
+                println("${attacker.name} casts ${spell::class.simpleName!!} on ${target.name} healing $damage health points!")
             }
-            if (!wasBurned && attacker.isBurned()) {
-                println("${target.name} has been burned!")
-            }
-            if (!wasPoisoned && attacker.isPoisoned()) {
-                println("${target.name} has been poisoned!")
+            if (debuff != null) {
+                println("${target.name} was $debuff !")
             }
         } else {
             println("${attacker.name} can't cast ${spell::class.simpleName!!}, insufficient Mp")
         }
-        return couldCast
+        return damage != -1
     }
 
     /**
@@ -291,6 +291,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         println("2 Swap Weapon")
         characterActionSelection(character)
         val target = targetSelection(character, true, ::playerCharacterTurn)
+        if (target == Knight("", 1, 1, turnsQueue)) return
         attack(character, target)
     }
 
@@ -299,7 +300,11 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
      * @return a value that represents the action to execute
      */
     fun characterActionSelection(character: PlayerCharacter): Int {
-        var answer: Int = input.nextInt()
+        var answer: Int = try {
+            input.nextInt()
+        } catch (e: InputMismatchException) {
+            -2
+        }
         while (answer != 1 && answer != 3) {
             if (answer == 2) {
                 val newWeapon = swapWeapon(character.equippedWeapon)
@@ -341,11 +346,16 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
             }
         }
         println("(Input -1 to go back)")
-        var target: Int = input.nextInt()
+        var target: Int = try {
+            input.nextInt()
+        } catch (e: InputMismatchException) {
+            -2
+        }
         val upperLimit = if (selectEnemies) enemyCharacters.size else playerCharacters.size
         while (target < 1 || target > upperLimit) {
             if (target == -1) {
                 callerFun(character)
+                return Knight("Dummy", 1, 1, turnsQueue)
             } else {
                 println("Please choose a valid target")
             }
@@ -356,9 +366,9 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
             }
         }
         return if (selectEnemies) {
-            enemyCharacters[target]
+            enemyCharacters[target - 1]
         } else {
-            playerCharacters[target]
+            playerCharacters[target - 1]
         }
     }
 
@@ -380,6 +390,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         println("Target enemies or allies? [E/a]")
         val selectEnemies = input.next().lowercase() != "a"
         val target = targetSelection(character, selectEnemies, ::playerBlackMageTurn)
+        if (target == Knight("Dummy", 1, 1, turnsQueue)) return
         if (action == 1) {
             attack(character, target)
         } else if (action == 3) {
@@ -405,6 +416,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         println("Target enemies or allies? [E/a]")
         val selectEnemies = input.next().lowercase() != "a"
         val target = targetSelection(character, selectEnemies, ::playerWhiteMageTurn)
+        if (target == Knight("Dummy", 1, 1, turnsQueue)) return
         if (action == 1) {
             attack(character, target)
         } else if (action == 3) {
@@ -520,6 +532,24 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
     }
 
     override fun toString(): String {
-        TODO("Not implemented yet")
+        val builder: StringBuilder = StringBuilder()
+        builder.append("Enemies: ")
+        for (i in 0..9) {
+            builder.append(' ')
+        }
+        builder.append("Characters:\n")
+        for (i in 0..4) {
+            val enemy = enemyCharacters[i]
+            builder.append("${enemy.name} HP:${enemy.currentHp}/${enemy.maxHp} ")
+            for (j in 0..11) {
+                builder.append(' ')
+            }
+            val character = playerCharacters[i]
+            builder.append(character)
+            builder.append("\n")
+        }
+        builder.append("${enemyCharacters[5].name} HP:${enemyCharacters[5].currentHp}/${enemyCharacters[5].maxHp}")
+        builder.append("\n\n")
+        return builder.toString()
     }
 }

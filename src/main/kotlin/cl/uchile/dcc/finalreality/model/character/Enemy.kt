@@ -63,9 +63,10 @@ class Enemy(
     override fun takeTurn(game: GameController) {
         game.enemyTurn(this)
     }
-    override fun attack(anotherCharacter: GameCharacter): Boolean {
+    override fun attack(anotherCharacter: GameCharacter): Int {
+        val hpBefore = anotherCharacter.currentHp
         anotherCharacter.receiveAttack(this.damage)
-        return anotherCharacter.currentHp == 0
+        return hpBefore - anotherCharacter.currentHp
     }
     override fun hashCode() = Objects.hash(Enemy::class, name, damage, weight, maxHp, defense)
     override fun toString(): String = "Enemy { name:'$name', damage: $damage, weight: $weight, maxHp: $maxHp, defense: $defense, currentHp: $currentHp }"

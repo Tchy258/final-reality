@@ -8,14 +8,12 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
 import cl.uchile.dcc.finalreality.controller.GameController
-import cl.uchile.dcc.finalreality.exceptions.InvalidSpellCastException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.magic.Magic
-import cl.uchile.dcc.finalreality.model.magic.whitemagic.WhiteMagic
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Weapon
-import java.lang.ClassCastException
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
@@ -48,30 +46,23 @@ class WhiteMage(
     override fun takeTurn(game: GameController) {
         game.playerWhiteMageTurn(this)
     }
-    override fun cast(spell: Magic, target: GameCharacter): Boolean {
-        return try {
-            spell as WhiteMagic
-            castWhiteMagicSpell(spell, target)
-        } catch (e: ClassCastException) {
-            throw InvalidSpellCastException(this::class.simpleName!!, spell::class.simpleName!!)
-        }
-    }
-    /**
-     * Attempts to cast a [whiteMagic] spell
-     *
-     * @return whether the spell was cast or not
-     */
-    fun castWhiteMagicSpell(whiteMagic: WhiteMagic, target: GameCharacter): Boolean {
+
+    override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff?> {
         if (hasWeaponEquipped()) {
-            val wasCast: Boolean = canUseMp(whiteMagic.cost)
-            if (wasCast) {
-                whiteMagic.castWhiteMagic((this.equippedWeapon as Staff).magicDamage, target)
+            val wasCast: Boolean = canUseMp(spell.cost)
+            val debuff: Debuff?
+            return if (wasCast) {
+                val hpBefore = target.currentHp
+                debuff = spell.castWhiteMagic((this.equippedWeapon as Staff).magicDamage, target)
+                Pair(target.currentHp - hpBefore, debuff)
+            } else {
+                Pair(-1, null)
             }
-            return wasCast
         } else {
             throw NoWeaponEquippedException(this.name)
         }
     }
+
     fun equipStaff(staff: Staff) {
         this.setWeapon(staff)
     }

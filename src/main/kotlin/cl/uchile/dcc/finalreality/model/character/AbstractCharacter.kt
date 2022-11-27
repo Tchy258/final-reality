@@ -90,7 +90,7 @@ abstract class AbstractCharacter(
         _currentHp = min(this.maxHp, finalHp)
     }
 
-    abstract override fun attack(anotherCharacter: GameCharacter): Boolean
+    abstract override fun attack(anotherCharacter: GameCharacter): Int
 
     override fun rollEffects(): Boolean {
         var canAttack = true

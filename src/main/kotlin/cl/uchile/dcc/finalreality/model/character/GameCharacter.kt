@@ -51,9 +51,9 @@ interface GameCharacter {
     /**
      * Attacks a [GameCharacter], decreasing [anotherCharacter]'s [currentHp],
      *
-     * @return whether the attack lowered the target's hp to 0
+     * @return the amount of damage dealt
      */
-    fun attack(anotherCharacter: GameCharacter): Boolean
+    fun attack(anotherCharacter: GameCharacter): Int
     /**
      * Adds a [Debuff] to this character
      */

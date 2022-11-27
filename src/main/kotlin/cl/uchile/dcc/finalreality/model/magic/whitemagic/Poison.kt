@@ -8,6 +8,7 @@
 package cl.uchile.dcc.finalreality.model.magic.whitemagic
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.debuff.Poisoned
 import kotlin.math.ceil
 
@@ -20,10 +21,11 @@ class Poison : WhiteMagic {
     override val cost: Int
         get() = 40
 
-    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean {
+    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
         val finalDamage = ceil(magicDamage.toDouble() / 3).toInt()
-        spellTarget.addDebuff(Poisoned(finalDamage))
-        return true
+        val debuff = Poisoned(finalDamage)
+        spellTarget.addDebuff(debuff)
+        return debuff
     }
 
     override fun equals(other: Any?): Boolean {

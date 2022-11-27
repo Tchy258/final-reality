@@ -67,10 +67,11 @@ abstract class AbstractPlayerCharacter(
             throw NoWeaponEquippedException(this.name)
         }
     }
-    override fun attack(anotherCharacter: GameCharacter): Boolean {
+    override fun attack(anotherCharacter: GameCharacter): Int {
         if (hasWeaponEquipped()) {
+            val hpBefore = anotherCharacter.currentHp
             anotherCharacter.receiveAttack(_equippedWeapon.damage)
-            return anotherCharacter.currentHp == 0
+            return hpBefore - anotherCharacter.currentHp
         } else {
             throw NoWeaponEquippedException(this.name)
         }

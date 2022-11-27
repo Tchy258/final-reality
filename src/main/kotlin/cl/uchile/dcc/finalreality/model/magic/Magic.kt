@@ -23,7 +23,19 @@ interface Magic {
     /**
      * Cast this magic spell onto a [spellTarget] with a [magicDamage] value,
      * applying a [Debuff] if applicable
-     * @return whether the spell activated its adverse effect
+     * @return the spell's adverse effect or null if it didn't activate it
      */
-    fun cast(magicDamage: Int, spellTarget: GameCharacter): Boolean
+    fun cast(magicDamage: Int, spellTarget: GameCharacter): Debuff?
+    /**
+     * Cast this black magic spell onto a [spellTarget] with a [magicDamage] value,
+     * applying a [Debuff] if applicable
+     * @return the spell's adverse effect or null if it didn't activate it
+     */
+    fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff?
+    /**
+     * Cast this white magic spell onto a [spellTarget] with a [magicDamage] value,
+     * applying a [Debuff] if applicable
+     * @return the spell's adverse effect or null if it didn't activate it
+     */
+    fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff?
 }

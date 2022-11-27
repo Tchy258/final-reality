@@ -8,15 +8,13 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
 import cl.uchile.dcc.finalreality.controller.GameController
-import cl.uchile.dcc.finalreality.exceptions.InvalidSpellCastException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.magic.Magic
-import cl.uchile.dcc.finalreality.model.magic.blackmagic.BlackMagic
 import cl.uchile.dcc.finalreality.model.weapon.Knife
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Weapon
-import java.lang.ClassCastException
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 
@@ -50,30 +48,25 @@ class BlackMage(
     override fun takeTurn(game: GameController) {
         game.playerBlackMageTurn(this)
     }
-    override fun cast(spell: Magic, target: GameCharacter): Boolean {
-        return try {
-            spell as BlackMagic
-            castBlackMagicSpell(spell, target)
-        } catch (e: ClassCastException) {
-            throw InvalidSpellCastException(this::class.simpleName!!, spell::class.simpleName!!)
-        }
-    }
-    /**
-     * Attempts to cast a [blackMagic] spell
-     *
-     * @return whether the spell was cast or not
-     */
-    fun castBlackMagicSpell(blackMagic: BlackMagic, target: GameCharacter): Boolean {
+    override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff?> {
         if (hasWeaponEquipped()) {
-            val wasCast: Boolean = canUseMp(blackMagic.cost)
+            val wasCast: Boolean = canUseMp(spell.cost)
+            val hpBefore = target.currentHp
+            var hpNow = hpBefore
+            var debuff: Debuff? = null
             if (wasCast) {
                 if (_hasStaff) {
-                    blackMagic.castBlackMagic((this.equippedWeapon as Staff).magicDamage, target)
+                    debuff = spell.castBlackMagic((this.equippedWeapon as Staff).magicDamage, target)
+                    hpNow = target.currentHp
                 } else {
-                    blackMagic.castBlackMagic(0, target)
+                    spell.castBlackMagic(0, target)
                 }
             }
-            return wasCast
+            return if (wasCast) {
+                Pair(hpBefore - hpNow, debuff)
+            } else {
+                Pair(-1, null)
+            }
         } else {
             throw(NoWeaponEquippedException(this.name))
         }

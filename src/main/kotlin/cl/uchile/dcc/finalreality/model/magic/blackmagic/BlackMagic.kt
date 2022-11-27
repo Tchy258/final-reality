@@ -7,6 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.magic.blackmagic
 
+import cl.uchile.dcc.finalreality.exceptions.InvalidSpellCastException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.magic.Magic
@@ -18,11 +19,7 @@ import cl.uchile.dcc.finalreality.model.magic.Magic
  */
 
 interface BlackMagic : Magic {
-    override fun cast(magicDamage: Int, spellTarget: GameCharacter): Boolean = castBlackMagic(magicDamage, spellTarget)
-    /**
-     * Casts this spell targeting a [spellTarget], activating its effect
-     * and applying [Debuff]s (if any)
-     * @return whether the spell activated its adverse effect
-     */
-    fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Boolean
+    override fun cast(magicDamage: Int, spellTarget: GameCharacter): Debuff? = castBlackMagic(magicDamage, spellTarget)
+    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff?
+    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff? = throw InvalidSpellCastException("BlackMage", this::class.simpleName!!)
 }
