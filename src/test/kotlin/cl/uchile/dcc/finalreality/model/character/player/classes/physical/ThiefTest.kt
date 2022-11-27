@@ -23,10 +23,10 @@ import cl.uchile.dcc.finalreality.model.weapon.AxeTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.BowTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.Knife
 import cl.uchile.dcc.finalreality.model.weapon.KnifeTestingFactory
+import cl.uchile.dcc.finalreality.model.weapon.NonMagicalWeaponData
 import cl.uchile.dcc.finalreality.model.weapon.StaffData
 import cl.uchile.dcc.finalreality.model.weapon.StaffTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.SwordTestingFactory
-import cl.uchile.dcc.finalreality.model.weapon.WeaponData
 import cl.uchile.dcc.finalreality.model.weapon.WeaponTestingFactory
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.ints.shouldBeLessThan
@@ -45,14 +45,14 @@ class ThiefTest : FunSpec({
     lateinit var thisFactory: ThiefTestingFactory
     lateinit var thisData: Arb<CharacterData>
     lateinit var weaponFactories: List<WeaponTestingFactory>
-    lateinit var weaponData: Arb<WeaponData>
+    lateinit var weaponData: Arb<NonMagicalWeaponData>
     lateinit var staffData: Arb<StaffData>
 
     beforeEach {
         queue = LinkedBlockingQueue<GameCharacter>()
         thisFactory = ThiefTestingFactory(queue)
         thisData = CharacterData.validGenerator
-        weaponData = WeaponData.validGenerator
+        weaponData = NonMagicalWeaponData.validGenerator
         staffData = StaffData.validGenerator
         weaponFactories = listOf(
             AxeTestingFactory(),

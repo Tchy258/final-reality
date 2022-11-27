@@ -1,6 +1,7 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
-import cl.uchile.dcc.finalreality.model.ModelData
+import cl.uchile.dcc.finalreality.model.character.CharacterTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacterData
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.int
@@ -19,9 +20,13 @@ import io.kotest.property.arbitrary.string
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-internal data class MageData(val name: String, val maxHp: Int, val maxMp: Int, val defense: Int) : ModelData {
+internal data class MageData(val name: String, val maxHp: Int, val maxMp: Int, val defense: Int) : PlayerCharacterData {
     override val validGenerator = MageData.validGenerator
     override val arbitraryGenerator = MageData.arbitraryGenerator
+    override fun process(factory: CharacterTestingFactory): Mage {
+        return factory.createMage(this)
+    }
+
     companion object {
         val validGenerator = arbitrary {
             val name = Arb.string().bind()

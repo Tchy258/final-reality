@@ -31,7 +31,7 @@ class BowTest : FunSpec({
     lateinit var testWeapon2: Bow
     lateinit var testWeapon3: Bow
     lateinit var thisFactory: BowTestingFactory
-    lateinit var thisData: Arb<WeaponData>
+    lateinit var thisData: Arb<NonMagicalWeaponData>
     lateinit var characterData: Arb<CharacterData>
     lateinit var mageData: Arb<MageData>
     lateinit var characterFactories: List<CharacterTestingFactory>
@@ -42,7 +42,7 @@ class BowTest : FunSpec({
         testWeapon3 = Bow("TestBow2", 20, 10)
         thisFactory = BowTestingFactory()
         val queue: LinkedBlockingQueue<GameCharacter> = LinkedBlockingQueue()
-        thisData = WeaponData.validGenerator
+        thisData = NonMagicalWeaponData.validGenerator
         characterData = CharacterData.validGenerator
         mageData = MageData.validGenerator
         characterFactories = listOf(
@@ -55,7 +55,7 @@ class BowTest : FunSpec({
     }
     context("Two bows with the same parameters should:") {
         test("Be equal") {
-            weaponEqualityCheck(thisFactory)
+            weaponEqualityCheck(thisData, thisFactory)
             testWeapon1 shouldBe testWeapon2
         }
         test("Have the same hashcode") {
@@ -70,13 +70,13 @@ class BowTest : FunSpec({
     }
     context("Any Bow should:") {
         test("Not be null") {
-            weaponNotNullCheck(thisFactory)
+            weaponNotNullCheck(thisData, thisFactory)
             testWeapon1 shouldNotBe null
             testWeapon2 shouldNotBe null
             testWeapon3 shouldNotBe null
         }
         test("Be equal to itself") {
-            weaponSelfEqualityCheck(thisFactory)
+            weaponSelfEqualityCheck(thisData, thisFactory)
             testWeapon1 shouldBe testWeapon1
             testWeapon2 shouldBe testWeapon2
         }

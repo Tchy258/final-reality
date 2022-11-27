@@ -11,14 +11,17 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
 import cl.uchile.dcc.finalreality.model.characterAttackTest
 import cl.uchile.dcc.finalreality.model.characterQueueJoinCheck
-import cl.uchile.dcc.finalreality.model.differentCharacterInequalityCheck
+import cl.uchile.dcc.finalreality.model.differentMageInequalityCheck
 import cl.uchile.dcc.finalreality.model.equalityCheck
 import cl.uchile.dcc.finalreality.model.hpDecreaseCheck
 import cl.uchile.dcc.finalreality.model.hpIncreaseCheck
+import cl.uchile.dcc.finalreality.model.insufficientMpSpellCastCheck
 import cl.uchile.dcc.finalreality.model.invalidEquippableWeaponCheck
 import cl.uchile.dcc.finalreality.model.mageInequalityCheck
 import cl.uchile.dcc.finalreality.model.mageUnarmedActionCheck
 import cl.uchile.dcc.finalreality.model.mageValidStatCheck
+import cl.uchile.dcc.finalreality.model.magic.blackmagic.Fire
+import cl.uchile.dcc.finalreality.model.magic.blackmagic.Thunder
 import cl.uchile.dcc.finalreality.model.mpDecreaseCheck
 import cl.uchile.dcc.finalreality.model.mpIncreaseCheck
 import cl.uchile.dcc.finalreality.model.notNullCheck
@@ -27,11 +30,11 @@ import cl.uchile.dcc.finalreality.model.validEquippableWeaponCheck
 import cl.uchile.dcc.finalreality.model.weapon.AxeTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.BowTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.KnifeTestingFactory
+import cl.uchile.dcc.finalreality.model.weapon.NonMagicalWeaponData
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.StaffData
 import cl.uchile.dcc.finalreality.model.weapon.StaffTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.SwordTestingFactory
-import cl.uchile.dcc.finalreality.model.weapon.WeaponData
 import cl.uchile.dcc.finalreality.model.weapon.WeaponTestingFactory
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.ints.shouldBeLessThan
@@ -50,14 +53,14 @@ class BlackMageTest : FunSpec({
     lateinit var thisFactory: BlackMageTestingFactory
     lateinit var thisData: Arb<MageData>
     lateinit var weaponFactories: List<WeaponTestingFactory>
-    lateinit var weaponData: Arb<WeaponData>
+    lateinit var weaponData: Arb<NonMagicalWeaponData>
     lateinit var staffData: Arb<StaffData>
 
     beforeEach {
         queue = LinkedBlockingQueue<GameCharacter>()
         thisFactory = BlackMageTestingFactory(queue)
         thisData = MageData.validGenerator
-        weaponData = WeaponData.validGenerator
+        weaponData = NonMagicalWeaponData.validGenerator
         staffData = StaffData.validGenerator
         weaponFactories = listOf(
             AxeTestingFactory(),
@@ -104,7 +107,7 @@ class BlackMageTest : FunSpec({
             testCharacter3 shouldBe testCharacter3
         }
         test("Not be equal to other characters even with the same parameters") {
-            differentCharacterInequalityCheck(
+            differentMageInequalityCheck(
                 thisFactory
             )
         }
@@ -213,6 +216,10 @@ class BlackMageTest : FunSpec({
         test("Be able to cast black magic spells") {
             blackMagicStaffCastTest(queue)
             blackMagicNoStaffCastTest(queue)
+        }
+        test("Be unable to cast spells with insufficient mp") {
+            insufficientMpSpellCastCheck(Thunder(),thisData,thisFactory)
+            insufficientMpSpellCastCheck(Fire(), thisData, thisFactory)
         }
         test("Be unable to cast white magic spells") {
             blackMageUnusableSpellCastCheck(queue)

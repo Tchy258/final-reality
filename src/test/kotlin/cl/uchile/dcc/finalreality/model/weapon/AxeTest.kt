@@ -31,7 +31,7 @@ class AxeTest : FunSpec({
     lateinit var testWeapon2: Axe
     lateinit var testWeapon3: Axe
     lateinit var thisFactory: AxeTestingFactory
-    lateinit var thisData: Arb<WeaponData>
+    lateinit var thisData: Arb<NonMagicalWeaponData>
     lateinit var characterData: Arb<CharacterData>
     lateinit var mageData: Arb<MageData>
     lateinit var characterFactories: List<CharacterTestingFactory>
@@ -42,7 +42,7 @@ class AxeTest : FunSpec({
         testWeapon3 = Axe("TestAxe2", 20, 10)
         thisFactory = AxeTestingFactory()
         val queue: LinkedBlockingQueue<GameCharacter> = LinkedBlockingQueue()
-        thisData = WeaponData.validGenerator
+        thisData = NonMagicalWeaponData.validGenerator
         characterData = CharacterData.validGenerator
         mageData = MageData.validGenerator
         characterFactories = listOf(
@@ -55,7 +55,7 @@ class AxeTest : FunSpec({
     }
     context("Two axes with the same parameters should:") {
         test("Be equal") {
-            weaponEqualityCheck(thisFactory)
+            weaponEqualityCheck(thisData, thisFactory)
             testWeapon1 shouldBe testWeapon2
         }
         test("Have the same hashcode") {
@@ -70,10 +70,10 @@ class AxeTest : FunSpec({
     }
     context("Any Axe should:") {
         test("Not be null") {
-            weaponNotNullCheck(thisFactory)
+            weaponNotNullCheck(thisData, thisFactory)
         }
         test("Be equal to itself") {
-            weaponSelfEqualityCheck(thisFactory)
+            weaponSelfEqualityCheck(thisData, thisFactory)
             testWeapon1 shouldBe testWeapon1
             testWeapon2 shouldBe testWeapon2
         }

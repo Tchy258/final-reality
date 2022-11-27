@@ -1,10 +1,7 @@
 package cl.uchile.dcc.finalreality.model.weapon
 
-import cl.uchile.dcc.finalreality.model.ModelData
-
 internal class KnifeTestingFactory : WeaponTestingFactory {
-    override fun create(data: ModelData): Knife {
-        data as WeaponData
+    override fun createNonMagicalWeapon(data: NonMagicalWeaponData): Knife {
         return Knife(data.name, data.damage, data.weight)
     }
 

@@ -1,18 +1,17 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes.physical
 
-import cl.uchile.dcc.finalreality.model.ModelData
 import cl.uchile.dcc.finalreality.model.character.CharacterTestingFactory
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
+import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import java.util.concurrent.LinkedBlockingQueue
 
 internal class ThiefTestingFactory(override val queue: LinkedBlockingQueue<GameCharacter>) :
     CharacterTestingFactory {
-    override fun create(data: ModelData): Thief {
-        data as CharacterData
+    override fun createCharacter(data: CharacterData): PlayerCharacter {
         return Thief(data.name, data.maxHp, data.defense, queue)
     }
-    override fun isThiefFactory(): Boolean = true
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

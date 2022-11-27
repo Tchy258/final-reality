@@ -71,20 +71,20 @@ class BurnedTest : FunSpec({
             character.isBurned() shouldBe true
             val testStaff = Staff("TestStaff", 10, 10, 20)
             mage.equip(testStaff)
-            mage.castBlackMagicSpell(Fire(), character)
+            mage.cast(Fire(), character)
             character.isBurned() shouldBe true
-            mage.castBlackMagicSpell(Fire(), enemy2)
+            mage.cast(Fire(), enemy2)
             enemy2.isBurned() shouldBe true
         }
         test("A non burned target might be burned") {
             // The given seed ensures the enemy will be burned on the third cast
             val testStaff = Staff("TestStaff", 10, 10, 20)
             mage.equip(testStaff)
-            mage.castBlackMagicSpell(Fire(), enemy1)
+            mage.cast(Fire(), enemy1)
             enemy1.isBurned() shouldNotBe true
-            mage.castBlackMagicSpell(Fire(), enemy1)
+            mage.cast(Fire(), enemy1)
             enemy1.isBurned() shouldNotBe true
-            mage.castBlackMagicSpell(Fire(), enemy1)
+            mage.cast(Fire(), enemy1)
             enemy1.isBurned() shouldBe true
         }
     }

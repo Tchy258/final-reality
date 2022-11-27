@@ -1,6 +1,7 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes
 
-import cl.uchile.dcc.finalreality.model.ModelData
+import cl.uchile.dcc.finalreality.model.character.CharacterTestingFactory
+import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacterData
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.int
@@ -18,9 +19,13 @@ import io.kotest.property.arbitrary.string
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-internal data class CharacterData(val name: String, val maxHp: Int, val defense: Int) : ModelData {
+internal data class CharacterData(val name: String, val maxHp: Int, val defense: Int) : PlayerCharacterData {
     override val validGenerator: Arb<CharacterData> = CharacterData.validGenerator
     override val arbitraryGenerator: Arb<CharacterData> = CharacterData.arbitraryGenerator
+    override fun process(factory: CharacterTestingFactory): PlayerCharacter {
+        return factory.createCharacter(this)
+    }
+
     companion object {
         val validGenerator: Arb<CharacterData> = arbitrary {
             val name = Arb.string().bind()

@@ -1,7 +1,6 @@
 package cl.uchile.dcc.finalreality.model
 
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
-import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.EnemyData
 import cl.uchile.dcc.finalreality.model.character.EnemyTestingFactory
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
@@ -23,7 +22,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.concurrent.LinkedBlockingQueue
 
-internal suspend fun enemyAttackTest(queue: LinkedBlockingQueue<GameCharacter>) {
+internal suspend fun enemyAttackTest() {
     checkAll(
         PropTestConfig(maxDiscardPercentage = 80),
         EnemyData.validGenerator,
@@ -31,20 +30,21 @@ internal suspend fun enemyAttackTest(queue: LinkedBlockingQueue<GameCharacter>) 
         MageData.validGenerator,
         EnemyData.validGenerator
     ) { thisEnemy, character, mage, enemy ->
+        val queue = LinkedBlockingQueue<GameCharacter>()
         assume {
             thisEnemy.damage shouldBeGreaterThan mage.defense
             thisEnemy.damage shouldBeGreaterThan character.defense
             thisEnemy.damage shouldBeGreaterThan enemy.defense
         }
-        val thisRandomEnemy = EnemyTestingFactory(queue).create(thisEnemy)
+        val thisRandomEnemy = thisEnemy.process(EnemyTestingFactory(queue))
 
         val randomCharacters: List<GameCharacter> = listOf(
-            EnemyTestingFactory(queue).create(enemy),
-            EngineerTestingFactory(queue).create(character),
-            BlackMageTestingFactory(queue).create(mage),
-            KnightTestingFactory(queue).create(character),
-            ThiefTestingFactory(queue).create(character),
-            WhiteMageTestingFactory(queue).create(mage)
+            enemy.process(EnemyTestingFactory(queue)),
+            character.process(EngineerTestingFactory(queue)),
+            mage.process(BlackMageTestingFactory(queue)),
+            character.process(KnightTestingFactory(queue)),
+            character.process(ThiefTestingFactory(queue)),
+            mage.process(WhiteMageTestingFactory(queue))
         )
         for (gameCharacter in randomCharacters) {
             gameCharacter.currentHp shouldBe gameCharacter.maxHp
@@ -54,7 +54,7 @@ internal suspend fun enemyAttackTest(queue: LinkedBlockingQueue<GameCharacter>) 
     }
 }
 
-internal suspend fun enemyInequalityCheck(enemyFactory: EnemyTestingFactory) {
+internal suspend fun enemyInequalityCheck() {
     checkAll(EnemyData.validGenerator, EnemyData.validGenerator) { enemy1, enemy2 ->
         assume(
             enemy1.name != enemy2.name ||
@@ -63,8 +63,9 @@ internal suspend fun enemyInequalityCheck(enemyFactory: EnemyTestingFactory) {
                 enemy1.defense != enemy2.defense ||
                 enemy1.weight != enemy2.weight
         )
-        val randomEnemy1 = enemyFactory.create(enemy1)
-        val randomEnemy2 = enemyFactory.create(enemy2)
+        val factory = EnemyTestingFactory(LinkedBlockingQueue<GameCharacter>())
+        val randomEnemy1 = enemy1.process(factory)
+        val randomEnemy2 = enemy2.process(factory)
         randomEnemy1 shouldNotBe randomEnemy2
     }
 }
@@ -72,14 +73,13 @@ internal suspend fun enemyInequalityCheck(enemyFactory: EnemyTestingFactory) {
 internal suspend fun enemyValidStatCheck() {
     checkAll(EnemyData.arbitraryGenerator) { enemy ->
         val enemyFactory = EnemyTestingFactory(LinkedBlockingQueue<GameCharacter>())
-        val queue = enemyFactory.queue
         if (enemy.maxHp <= 0 || enemy.defense < 0 || enemy.damage < 0 || enemy.weight <= 0) {
             assertThrows<InvalidStatValueException> {
-                Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
+                enemy.process(enemyFactory)
             }
         } else {
             assertDoesNotThrow {
-                Enemy(enemy.name, enemy.damage, enemy.weight, enemy.maxHp, enemy.defense, queue)
+                enemy.process(enemyFactory)
             }
         }
     }

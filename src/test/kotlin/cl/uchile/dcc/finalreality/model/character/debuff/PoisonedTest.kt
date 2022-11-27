@@ -71,16 +71,16 @@ class PoisonedTest : FunSpec({
             character.isPoisoned() shouldBe true
             val testStaff = Staff("TestStaff", 10, 10, 20)
             mage.equip(testStaff)
-            mage.castWhiteMagicSpell(Poison(), character)
+            mage.cast(Poison(), character)
             character.isPoisoned() shouldBe true
-            mage.castWhiteMagicSpell(Poison(), enemy2)
+            mage.cast(Poison(), enemy2)
             enemy2.isPoisoned() shouldBe true
         }
         test("A non poisoned target will be poisoned") {
             // The given seed ensures the enemy will be poisoned on the third cast
             val testStaff = Staff("TestStaff", 10, 10, 20)
             mage.equip(testStaff)
-            mage.castWhiteMagicSpell(Poison(), enemy1)
+            mage.cast(Poison(), enemy1)
             enemy1.isPoisoned() shouldBe true
         }
     }

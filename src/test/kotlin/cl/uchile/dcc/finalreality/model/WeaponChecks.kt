@@ -4,62 +4,63 @@ import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
 import cl.uchile.dcc.finalreality.model.weapon.AxeTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.BowTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.KnifeTestingFactory
+import cl.uchile.dcc.finalreality.model.weapon.NonMagicalWeaponData
 import cl.uchile.dcc.finalreality.model.weapon.StaffData
-import cl.uchile.dcc.finalreality.model.weapon.StaffTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.SwordTestingFactory
 import cl.uchile.dcc.finalreality.model.weapon.WeaponData
 import cl.uchile.dcc.finalreality.model.weapon.WeaponTestingFactory
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.property.Arb
 import io.kotest.property.assume
 import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
-internal suspend fun weaponEqualityCheck(weaponFactory: WeaponTestingFactory) {
-    checkAll(WeaponData.validGenerator) { modelData ->
-        val randomWeapon1 = weaponFactory.create(modelData)
-        val randomWeapon2 = weaponFactory.create(modelData)
+internal suspend fun weaponEqualityCheck(generator: Arb<WeaponData>, weaponFactory: WeaponTestingFactory) {
+    checkAll(generator) { weapon ->
+        val randomWeapon1 = weapon.process(weaponFactory)
+        val randomWeapon2 = weapon.process(weaponFactory)
         randomWeapon1 shouldBe randomWeapon2
     }
 }
 
-internal suspend fun weaponSelfEqualityCheck(weaponFactory: WeaponTestingFactory) {
-    checkAll(WeaponData.validGenerator) { modelData ->
-        val randomWeapon1 = weaponFactory.create(modelData)
+internal suspend fun weaponSelfEqualityCheck(generator: Arb<WeaponData>, weaponFactory: WeaponTestingFactory) {
+    checkAll(generator) { weapon ->
+        val randomWeapon1 = weapon.process(weaponFactory)
         randomWeapon1 shouldBe randomWeapon1
     }
 }
 
 internal suspend fun weaponInequalityCheck(weaponFactory: WeaponTestingFactory) {
-    checkAll(WeaponData.validGenerator, WeaponData.validGenerator) { weapon1, weapon2 ->
-        assume {
+    checkAll(NonMagicalWeaponData.validGenerator, NonMagicalWeaponData.validGenerator) { weapon1, weapon2 ->
+        assume (
             weapon1.name != weapon2.name ||
                 weapon1.damage != weapon2.damage ||
                 weapon1.weight != weapon2.weight
-        }
-        val randomWeapon1 = weaponFactory.create(weapon1)
-        val randomWeapon2 = weaponFactory.create(weapon2)
+        )
+        val randomWeapon1 = weapon1.process(weaponFactory)
+        val randomWeapon2 = weapon2.process(weaponFactory)
         randomWeapon1 shouldNotBe randomWeapon2
     }
 }
 
-internal suspend fun weaponNotNullCheck(weaponFactory: WeaponTestingFactory) {
-    checkAll(WeaponData.validGenerator) { weapon ->
-        val randomWeapon = weaponFactory.create(weapon)
+internal suspend fun weaponNotNullCheck(generator: Arb<WeaponData>, weaponFactory: WeaponTestingFactory) {
+    checkAll(generator) { weapon ->
+        val randomWeapon = weapon.process(weaponFactory)
         randomWeapon shouldNotBe null
     }
 }
 
 internal suspend fun weaponValidStatsCheck(weaponFactory: WeaponTestingFactory) {
-    checkAll(WeaponData.arbitraryGenerator) { weapon ->
+    checkAll(NonMagicalWeaponData.arbitraryGenerator) { weapon ->
         if (weapon.damage < 0 || weapon.weight < 1) {
             assertThrows<InvalidStatValueException> {
-                weaponFactory.create(weapon)
+                weapon.process(weaponFactory)
             }
         } else {
             assertDoesNotThrow {
-                weaponFactory.create(weapon)
+                weapon.process(weaponFactory)
             }
         }
     }
@@ -71,28 +72,21 @@ internal suspend fun differentWeaponInequalityCheck(weaponFactory: WeaponTesting
             AxeTestingFactory(),
             BowTestingFactory(),
             SwordTestingFactory(),
-            KnifeTestingFactory(),
-            StaffTestingFactory()
+            KnifeTestingFactory()
         )
-    checkAll(StaffData.validGenerator) { staff ->
-        val weaponData = WeaponData(staff.name, staff.damage, staff.weight)
-        val randomWeapon = if (weaponFactory == factories.last()) {
-            weaponFactory.create(staff)
-        } else {
-            weaponFactory.create(weaponData)
-        }
+    checkAll(NonMagicalWeaponData.validGenerator) { data ->
+        val randomWeapon = data.process(weaponFactory)
 
         for (factory in factories) {
             if (weaponFactory == factory) {
                 continue
             } else {
-                val differentWeapon = if (factory == factories.last()) {
-                    factory.create(staff)
-                } else {
-                    factory.create(weaponData)
-                }
+                val differentWeapon = data.process(factory)
                 randomWeapon shouldNotBe differentWeapon
             }
         }
+        val dummyValue = randomWeapon.damage
+        val staffData = StaffData(randomWeapon.name, randomWeapon.damage, randomWeapon.weight, dummyValue)
+        randomWeapon shouldNotBe staffData
     }
 }

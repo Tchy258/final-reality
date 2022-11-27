@@ -21,8 +21,8 @@ class InvalidSpellCastExceptionTest : FunSpec({
         checkAll(MageData.validGenerator) {
             mage ->
             val queue = LinkedBlockingQueue<GameCharacter>()
-            val randomBlackMage = BlackMageTestingFactory(queue).create(mage)
-            val randomWhiteMage = WhiteMageTestingFactory(queue).create(mage)
+            val randomBlackMage = mage.process(BlackMageTestingFactory(queue))
+            val randomWhiteMage = mage.process(WhiteMageTestingFactory(queue))
             assertThrows<InvalidSpellCastException> {
                 throw InvalidSpellCastException(
                     randomBlackMage::class.simpleName!!,

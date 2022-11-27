@@ -7,16 +7,14 @@ import cl.uchile.dcc.finalreality.model.character.CharacterTestingFactory
 import cl.uchile.dcc.finalreality.model.character.EnemyData
 import cl.uchile.dcc.finalreality.model.character.EnemyTestingFactory
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.player.PlayerCharacterData
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
-import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMageTestingFactory
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.Mage
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMageTestingFactory
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.EngineerTestingFactory
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.KnightTestingFactory
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.ThiefTestingFactory
-import cl.uchile.dcc.finalreality.model.weapon.StaffData
 import cl.uchile.dcc.finalreality.model.weapon.WeaponData
 import cl.uchile.dcc.finalreality.model.weapon.WeaponTestingFactory
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
@@ -33,17 +31,17 @@ import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
-internal suspend fun equalityCheck(generator: Arb<ModelData>, characterFactory: CharacterTestingFactory) {
+internal suspend fun equalityCheck(generator: Arb<GameCharacterData>, characterFactory: CharacterTestingFactory) {
     checkAll(generator) { modelData ->
-        val randomCharacter1 = characterFactory.create(modelData)
-        val randomCharacter2 = characterFactory.create(modelData)
+        val randomCharacter1 = modelData.process(characterFactory)
+        val randomCharacter2 = modelData.process(characterFactory)
         randomCharacter1 shouldBe randomCharacter2
     }
 }
 
-internal suspend fun selfEqualityCheck(generator: Arb<ModelData>, characterFactory: CharacterTestingFactory) {
+internal suspend fun selfEqualityCheck(generator: Arb<GameCharacterData>, characterFactory: CharacterTestingFactory) {
     checkAll(generator) { modelData ->
-        val randomCharacter1 = characterFactory.create(modelData)
+        val randomCharacter1 = modelData.process(characterFactory)
         randomCharacter1 shouldBe randomCharacter1
     }
 }
@@ -61,9 +59,9 @@ internal suspend fun characterInequalityCheck(characterFactory: CharacterTesting
     }
 }
 
-internal suspend fun notNullCheck(generator: Arb<ModelData>, characterFactory: CharacterTestingFactory) {
+internal suspend fun notNullCheck(generator: Arb<GameCharacterData>, characterFactory: CharacterTestingFactory) {
     checkAll(generator) { characterData ->
-        val randomCharacter = characterFactory.create(characterData)
+        val randomCharacter = characterData.process(characterFactory)
         randomCharacter shouldNotBe null
     }
 }
@@ -83,35 +81,18 @@ internal suspend fun characterValidStatCheck(characterFactory: CharacterTestingF
     }
 }
 
-internal suspend fun hpDecreaseCheck(generator: Arb<ModelData>, characterFactory: CharacterTestingFactory) {
+internal suspend fun hpDecreaseCheck(generator: Arb<GameCharacterData>, characterFactory: CharacterTestingFactory) {
     checkAll(
         PropTestConfig(maxDiscardPercentage = 55),
         generator,
         Arb.positiveInt()
     ) { character, randomDamage ->
         // These casts are needed to use the same function for characters, mages and enemies
-        var defense: Int
-        var maxHp: Int
-        try {
-            character as CharacterData
-            defense = character.defense
-            maxHp = character.maxHp
-        } catch (e: ClassCastException) {
-            try {
-                character as MageData
-                defense = character.defense
-                maxHp = character.maxHp
-            } catch (e: ClassCastException) {
-                character as EnemyData
-                defense = character.defense
-                maxHp = character.maxHp
-            }
-        }
-
+        val randomCharacter = character.process(characterFactory)
         assume {
-            randomDamage shouldBeGreaterThan defense
+            randomDamage shouldBeGreaterThan randomCharacter.defense
         }
-        val randomCharacter = characterFactory.create(character)
+        val maxHp = randomCharacter.maxHp
         randomCharacter.currentHp shouldBe maxHp
         assertDoesNotThrow {
             randomCharacter.receiveAttack(randomDamage)
@@ -121,34 +102,19 @@ internal suspend fun hpDecreaseCheck(generator: Arb<ModelData>, characterFactory
     }
 }
 
-internal suspend fun hpIncreaseCheck(generator: Arb<ModelData>, characterFactory: CharacterTestingFactory) {
+internal suspend fun hpIncreaseCheck(generator: Arb<GameCharacterData>, characterFactory: CharacterTestingFactory) {
     checkAll(
         PropTestConfig(maxDiscardPercentage = 55),
         generator,
         Arb.positiveInt(),
         Arb.positiveInt()
     ) { character, randomHealing, randomDamage ->
-        var defense: Int
-        var maxHp: Int
-        try {
-            character as CharacterData
-            defense = character.defense
-            maxHp = character.maxHp
-        } catch (e: ClassCastException) {
-            try {
-                character as MageData
-                defense = character.defense
-                maxHp = character.maxHp
-            } catch (e: ClassCastException) {
-                character as EnemyData
-                defense = character.defense
-                maxHp = character.maxHp
-            }
-        }
+        val randomCharacter = character.process(characterFactory)
+        val defense: Int = randomCharacter.defense
+        val maxHp: Int = randomCharacter.maxHp
         assume {
             randomDamage shouldBeGreaterThan defense
         }
-        val randomCharacter = characterFactory.create(character)
         randomCharacter.currentHp shouldBe maxHp
         randomCharacter.receiveAttack(randomDamage)
         randomCharacter.currentHp shouldNotBe maxHp
@@ -160,95 +126,43 @@ internal suspend fun hpIncreaseCheck(generator: Arb<ModelData>, characterFactory
     }
 }
 
-internal suspend fun mpIncreaseCheck(characterFactory: CharacterTestingFactory) {
-    checkAll(
-        PropTestConfig(maxDiscardPercentage = 55),
-        MageData.validGenerator,
-        Arb.positiveInt(),
-        Arb.positiveInt()
-    ) { mage, randomRestoration, randomCost ->
-        assume {
-            randomCost shouldBeLessThanOrEqual mage.maxMp
-        }
-        val randomCharacter = characterFactory.create(mage) as Mage
-
-        randomCharacter.currentMp shouldBe mage.maxMp
-        randomCharacter.canUseMp(randomCost)
-        randomCharacter.currentMp shouldNotBe mage.maxMp
-        assertDoesNotThrow {
-            randomCharacter.restoreMp(randomRestoration)
-        }
-        randomCharacter.currentMp shouldBeLessThanOrEqual randomCharacter.maxMp
-        randomCharacter.currentMp shouldBeGreaterThan 0
-    }
-}
-
-internal suspend fun mpDecreaseCheck(characterFactory: CharacterTestingFactory) {
-    checkAll(
-        MageData.validGenerator,
-        Arb.positiveInt()
-    ) { mage, randomCost ->
-        val randomMage = characterFactory.create(mage) as Mage
-        randomMage.currentMp shouldBe mage.maxMp
-        if (randomMage.canUseMp(randomCost)) {
-            randomMage.currentMp shouldNotBe mage.maxMp
-            randomMage.currentMp shouldBeGreaterThanOrEqualTo 0
-        } else {
-            randomMage.currentMp shouldBe mage.maxMp
-        }
-    }
-}
-
 internal suspend fun differentCharacterInequalityCheck(
     characterFactory: CharacterTestingFactory,
 ) {
     val queue = characterFactory.queue
     val factories: List<CharacterTestingFactory> =
         listOf(
-            BlackMageTestingFactory(queue),
-            WhiteMageTestingFactory(queue),
             EngineerTestingFactory(queue),
             KnightTestingFactory(queue),
-            ThiefTestingFactory(queue)
+            ThiefTestingFactory(queue),
         )
-    checkAll(MageData.validGenerator) { mageData ->
-        val characterData = CharacterData(
-            mageData.name,
-            mageData.maxHp,
-            mageData.defense
-        )
-        val randomComparedCharacter =
-            if (characterFactory.isBlackMageFactory() || characterFactory.isWhiteMageFactory()) {
-                characterFactory.create(mageData)
-            } else {
-                characterFactory.create(characterData)
-            }
+    checkAll(CharacterData.validGenerator) { data ->
+        val randomComparedCharacter = data.process(characterFactory)
         for (factory in factories) {
             if (characterFactory == factory) {
                 continue
             } else {
-                val differentCharacter =
-                    if (factory.isBlackMageFactory() || factory.isWhiteMageFactory()) {
-                        factory.create(mageData)
-                    } else {
-                        factory.create(characterData)
-                    }
+                val differentCharacter = data.process(factory)
 
                 randomComparedCharacter shouldNotBe differentCharacter
             }
         }
+        val someDummyValue = randomComparedCharacter.maxHp
+        val mageData = MageData(randomComparedCharacter.name, randomComparedCharacter.maxHp, someDummyValue, randomComparedCharacter.defense)
+        randomComparedCharacter shouldNotBe mageData.process(WhiteMageTestingFactory(queue))
+        randomComparedCharacter shouldNotBe mageData.process(BlackMageTestingFactory(queue))
     }
 }
 
 internal suspend fun validEquippableWeaponCheck(
-    characterGenerator: Arb<ModelData>,
-    weaponGenerator: Arb<ModelData>,
+    characterGenerator: Arb<PlayerCharacterData>,
+    weaponGenerator: Arb<WeaponData>,
     characterFactory: CharacterTestingFactory,
     weaponFactory: WeaponTestingFactory
 ) {
     checkAll(characterGenerator, weaponGenerator) { character, weapon ->
-        val randomWeapon = weaponFactory.create(weapon)
-        val randomCharacter = characterFactory.create(character) as PlayerCharacter
+        val randomWeapon = weapon.process(weaponFactory)
+        val randomCharacter = character.process(characterFactory)
         assertDoesNotThrow {
             randomCharacter.equip(randomWeapon)
         }
@@ -257,14 +171,14 @@ internal suspend fun validEquippableWeaponCheck(
 }
 
 internal suspend fun invalidEquippableWeaponCheck(
-    characterGenerator: Arb<ModelData>,
-    weaponGenerator: Arb<ModelData>,
+    characterGenerator: Arb<PlayerCharacterData>,
+    weaponGenerator: Arb<WeaponData>,
     characterFactory: CharacterTestingFactory,
     weaponFactory: WeaponTestingFactory
 ) {
     checkAll(characterGenerator, weaponGenerator) { character, weapon ->
-        val randomWeapon = weaponFactory.create(weapon)
-        val randomCharacter = characterFactory.create(character) as PlayerCharacter
+        val randomWeapon = weapon.process(weaponFactory)
+        val randomCharacter = character.process(characterFactory)
         assertThrows<InvalidWeaponException> {
             randomCharacter.equip(randomWeapon)
         }
@@ -273,8 +187,8 @@ internal suspend fun invalidEquippableWeaponCheck(
 
 internal suspend fun characterUnarmedActionCheck(characterFactory: CharacterTestingFactory) {
     checkAll(CharacterData.validGenerator) { character ->
-        val randomCharacter = characterFactory.create(character)
-        val randomCharacter2 = characterFactory.create(character)
+        val randomCharacter = character.process(characterFactory)
+        val randomCharacter2 = character.process(characterFactory)
         assertThrows<NoWeaponEquippedException> {
             randomCharacter.waitTurn()
         }
@@ -285,8 +199,8 @@ internal suspend fun characterUnarmedActionCheck(characterFactory: CharacterTest
 }
 
 internal suspend fun characterQueueJoinCheck(
-    generator1: Arb<ModelData>,
-    generator2: Arb<ModelData>,
+    generator1: Arb<PlayerCharacterData>,
+    generator2: Arb<WeaponData>,
     characterFactory: CharacterTestingFactory,
     weaponFactory: WeaponTestingFactory
 ) {
@@ -294,8 +208,8 @@ internal suspend fun characterQueueJoinCheck(
         generator1,
         generator2
     ) { character, weapon ->
-        val randomWeapon = weaponFactory.create(weapon)
-        val randomCharacter = characterFactory.create(character) as PlayerCharacter
+        val randomWeapon = weapon.process(weaponFactory)
+        val randomCharacter = character.process(characterFactory)
         randomCharacter.equip(randomWeapon)
         assertDoesNotThrow {
             randomCharacter.waitTurn()
@@ -304,8 +218,8 @@ internal suspend fun characterQueueJoinCheck(
 }
 
 internal suspend fun characterAttackTest(
-    testedCharacterGenerator: Arb<ModelData>,
-    weaponGenerator: Arb<ModelData>,
+    testedCharacterGenerator: Arb<PlayerCharacterData>,
+    weaponGenerator: Arb<WeaponData>,
     characterFactory: CharacterTestingFactory,
     weaponFactory: WeaponTestingFactory
 ) {
@@ -317,28 +231,24 @@ internal suspend fun characterAttackTest(
         weaponGenerator,
         EnemyData.validGenerator
     ) { thisCharacter, character, mage, weapon, enemy ->
-        val weaponDamage: Int = try {
-            (weapon as WeaponData).damage
-        } catch (e: java.lang.ClassCastException) {
-            (weapon as StaffData).damage
-        }
+        val thisRandomCharacter = thisCharacter.process(characterFactory)
+        val randomWeapon = weapon.process(weaponFactory)
+        val weaponDamage: Int = randomWeapon.damage
         assume {
             weaponDamage shouldBeGreaterThan mage.defense
             weaponDamage shouldBeGreaterThan character.defense
             weaponDamage shouldBeGreaterThan enemy.defense
         }
-        val thisRandomCharacter = characterFactory.create(thisCharacter) as PlayerCharacter
-        val randomWeapon = weaponFactory.create(weapon)
 
         thisRandomCharacter.equip(randomWeapon)
         val queue = characterFactory.queue
         val randomCharacters: List<GameCharacter> = listOf(
-            EnemyTestingFactory(queue).create(enemy),
-            EngineerTestingFactory(queue).create(character),
-            BlackMageTestingFactory(queue).create(mage),
-            KnightTestingFactory(queue).create(character),
-            ThiefTestingFactory(queue).create(character),
-            WhiteMageTestingFactory(queue).create(mage)
+            enemy.process(EnemyTestingFactory(queue)),
+            character.process(EngineerTestingFactory(queue)),
+            mage.process(BlackMageTestingFactory(queue)),
+            character.process(KnightTestingFactory(queue)),
+            character.process(ThiefTestingFactory(queue)),
+            mage.process(WhiteMageTestingFactory(queue))
         )
         for (gameCharacter in randomCharacters) {
             gameCharacter.currentHp shouldBe gameCharacter.maxHp

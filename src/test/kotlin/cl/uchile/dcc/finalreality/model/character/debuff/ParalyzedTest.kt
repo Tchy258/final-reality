@@ -62,20 +62,20 @@ class ParalyzedTest : FunSpec({
             testCharacter.isParalyzed() shouldBe true
             val testStaff = Staff("TestStaff", 10, 10, 20)
             mage.equip(testStaff)
-            mage.castBlackMagicSpell(Thunder(), testCharacter)
+            mage.cast(Thunder(), testCharacter)
             testCharacter.isParalyzed() shouldBe true
-            mage.castBlackMagicSpell(Thunder(), enemy2)
+            mage.cast(Thunder(), enemy2)
             enemy2.isParalyzed() shouldBe true
         }
         test("A non paralyzed target might be paralyzed") {
             // The given seed ensures the enemy will be burned on the third cast
             val testStaff = Staff("TestStaff", 10, 10, 20)
             mage.equip(testStaff)
-            mage.castBlackMagicSpell(Thunder(), enemy1)
+            mage.cast(Thunder(), enemy1)
             enemy1.isParalyzed() shouldNotBe true
-            mage.castBlackMagicSpell(Thunder(), enemy1)
+            mage.cast(Thunder(), enemy1)
             enemy1.isParalyzed() shouldNotBe true
-            mage.castBlackMagicSpell(Thunder(), enemy1)
+            mage.cast(Thunder(), enemy1)
             enemy1.isParalyzed() shouldBe true
         }
     }

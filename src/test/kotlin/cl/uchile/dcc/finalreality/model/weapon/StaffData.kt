@@ -1,6 +1,5 @@
 package cl.uchile.dcc.finalreality.model.weapon
 
-import cl.uchile.dcc.finalreality.model.ModelData
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.int
@@ -16,10 +15,14 @@ import io.kotest.property.arbitrary.string
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-internal data class StaffData(val name: String, val damage: Int, val weight: Int, val magicDamage: Int) : ModelData {
+internal data class StaffData(val name: String, val damage: Int, val weight: Int, val magicDamage: Int) : WeaponData {
 
     override val validGenerator: Arb<StaffData> = StaffData.validGenerator
     override val arbitraryGenerator: Arb<StaffData> = StaffData.arbitraryGenerator
+
+    override fun process(factory: WeaponTestingFactory): Staff {
+        return factory.createMagicalWeapon(this)
+    }
     companion object {
         val validGenerator: Arb<StaffData> = arbitrary {
             val name = Arb.string().bind()

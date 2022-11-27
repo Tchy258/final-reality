@@ -48,7 +48,7 @@ class EnemyTest : FunSpec({
     }
     context("Two enemies with different parameters should:") {
         test("Not be equal") {
-            enemyInequalityCheck(EnemyTestingFactory(queue))
+            enemyInequalityCheck()
             enemy1 shouldNotBe enemy3
             enemy2 shouldNotBe enemy4
         }
@@ -99,7 +99,7 @@ class EnemyTest : FunSpec({
             queue.poll() shouldBe enemy3
         }
         test("Be able to attack other characters") {
-            enemyAttackTest(queue)
+            enemyAttackTest()
             val randomCharacters: List<GameCharacter> = listOf(
                 enemy2,
                 Engineer("TestCharacter", 20, 5, queue),

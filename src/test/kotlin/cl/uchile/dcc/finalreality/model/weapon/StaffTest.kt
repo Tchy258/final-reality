@@ -10,14 +10,14 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMa
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.EngineerTestingFactory
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.KnightTestingFactory
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.ThiefTestingFactory
-import cl.uchile.dcc.finalreality.model.differentWeaponInequalityCheck
+import cl.uchile.dcc.finalreality.model.differentStaffInequalityCheck
 import cl.uchile.dcc.finalreality.model.invalidEquippableWeaponCheck
-import cl.uchile.dcc.finalreality.model.staffEqualityCheck
 import cl.uchile.dcc.finalreality.model.staffInequalityCheck
-import cl.uchile.dcc.finalreality.model.staffNotNullCheck
-import cl.uchile.dcc.finalreality.model.staffSelfEqualityCheck
 import cl.uchile.dcc.finalreality.model.staffValidStatsCheck
 import cl.uchile.dcc.finalreality.model.validEquippableWeaponCheck
+import cl.uchile.dcc.finalreality.model.weaponEqualityCheck
+import cl.uchile.dcc.finalreality.model.weaponNotNullCheck
+import cl.uchile.dcc.finalreality.model.weaponSelfEqualityCheck
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -55,7 +55,7 @@ class StaffTest : FunSpec({
     }
     context("Two staffs with the same parameters should:") {
         test("Be equal") {
-            staffEqualityCheck()
+            weaponEqualityCheck(thisData, thisFactory)
             testWeapon1 shouldBe testWeapon2
         }
         test("Have the same hashcode") {
@@ -70,18 +70,18 @@ class StaffTest : FunSpec({
     }
     context("Any Staff should:") {
         test("Not be null") {
-            staffNotNullCheck()
+            weaponNotNullCheck(thisData, thisFactory)
             testWeapon1 shouldNotBe null
             testWeapon2 shouldNotBe null
             testWeapon3 shouldNotBe null
         }
         test("Be equal to itself") {
-            staffSelfEqualityCheck()
+            weaponSelfEqualityCheck(thisData, thisFactory)
             testWeapon1 shouldBe testWeapon1
             testWeapon2 shouldBe testWeapon2
         }
         test("Not be equal to other weapons even with same parameters") {
-            differentWeaponInequalityCheck(thisFactory)
+            differentStaffInequalityCheck()
         }
         test("Have valid stats") {
             staffValidStatsCheck()
