@@ -19,9 +19,6 @@ import cl.uchile.dcc.finalreality.model.magic.whitemagic.Poison
  */
 class Poisoned(private var finalDamage: Int) : Debuff {
     constructor() : this(0)
-    fun setDebuffDamage(finalDamage: Int) {
-        this.finalDamage = finalDamage
-    }
     private var turnLimit = 5
     override fun rollEffect(character: GameCharacter): Boolean {
         character.receiveMagicDamage(finalDamage)
