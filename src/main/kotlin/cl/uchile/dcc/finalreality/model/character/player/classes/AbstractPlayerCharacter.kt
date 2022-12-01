@@ -7,7 +7,6 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes
 
-import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.AbstractCharacter
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
@@ -36,9 +35,6 @@ abstract class AbstractPlayerCharacter(
 ) : AbstractCharacter(name, maxHp, defense, turnsQueue),
     PlayerCharacter {
     private lateinit var _equippedWeapon: Weapon
-    override fun takeTurn(game: GameController): PlayerCharacter {
-        return this
-    }
     override val equippedWeapon: Weapon
         get() = _equippedWeapon
     /**
@@ -75,5 +71,9 @@ abstract class AbstractPlayerCharacter(
         } else {
             throw NoWeaponEquippedException(this.name)
         }
+    }
+
+    override fun isPlayerCharacter(): Boolean {
+        return true
     }
 }

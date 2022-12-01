@@ -38,6 +38,8 @@ class WhiteMage(
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
+
+
     override fun equip(weapon: Weapon) {
         weapon.equipToWhiteMage(this)
     }
@@ -48,7 +50,7 @@ class WhiteMage(
             val debuff: Debuff?
             return if (wasCast) {
                 val hpBefore = target.currentHp
-                debuff = spell.castWhiteMagic((this.equippedWeapon as Staff).magicDamage, target)
+                debuff = spell.castWhiteMagic(this.currentMagicDamage, target)
                 Pair(target.currentHp - hpBefore, debuff)
             } else {
                 Pair(-1, null)
@@ -60,6 +62,7 @@ class WhiteMage(
 
     fun equipStaff(staff: Staff) {
         this.setWeapon(staff)
+        this.currentMagicDamage = staff.magicDamage
     }
     override fun equals(other: Any?) = when {
         this === other -> true

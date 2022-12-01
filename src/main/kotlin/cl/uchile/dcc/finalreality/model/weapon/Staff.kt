@@ -29,7 +29,7 @@ class Staff(
     weight: Int,
     magicDamage: Int
 ) : AbstractWeapon(name, damage, weight) {
-    override val magicDamage: Int = Require.Stat(magicDamage, "Magic damage ") atLeast 0
+    val magicDamage: Int = Require.Stat(magicDamage, "Magic damage ") atLeast 0
     override fun equipToBlackMage(character: BlackMage) {
         character.equipStaff(this)
     }

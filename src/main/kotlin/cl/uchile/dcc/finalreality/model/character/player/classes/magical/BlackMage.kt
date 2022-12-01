@@ -40,9 +40,7 @@ class BlackMage(
     defense: Int,
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
-    /**
-     * Boolean value to check magicDamage calculations
-     */
+
 
     override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff?> {
         if (hasWeaponEquipped()) {
@@ -51,7 +49,7 @@ class BlackMage(
             var hpNow = hpBefore
             var debuff: Debuff? = null
             if (wasCast) {
-                debuff = spell.castBlackMagic(this.equippedWeapon.magicDamage, target)
+                debuff = spell.castBlackMagic(this.currentMagicDamage, target)
                 hpNow = target.currentHp
             }
             return if (wasCast) {
@@ -69,9 +67,11 @@ class BlackMage(
     }
     fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
+        this.currentMagicDamage = 1
     }
     fun equipStaff(staff: Staff) {
         this.setWeapon(staff)
+        this.currentMagicDamage = staff.magicDamage
     }
 
     override fun equals(other: Any?) = when {

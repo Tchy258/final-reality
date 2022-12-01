@@ -83,8 +83,9 @@ interface GameCharacter {
     fun rollEffects(): Boolean
 
     /**
-     * Function used to take turns on the GameController
-     * @return the next player character that has to take the turn
+     * Returns true if this character is a player character
      */
-    fun takeTurn(game: GameController): PlayerCharacter
+    fun isPlayerCharacter(): Boolean {
+        return false
+    }
 }

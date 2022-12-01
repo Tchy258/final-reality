@@ -33,6 +33,12 @@ abstract class AbstractMage(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractPlayerCharacter(name, maxHp, defense, turnsQueue),
     Mage {
+
+    /**
+     * This variable changes whenever a staff is equipped
+     */
+    protected var currentMagicDamage = 0
+
     override val maxMp: Int = Require.Stat(maxMp, "Max MP") atLeast 1
     private var _currentMp: Int = maxMp
         set(value) {
