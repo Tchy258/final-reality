@@ -12,6 +12,7 @@ import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 import cl.uchile.dcc.finalreality.model.character.debuff.Poisoned
+import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 
 /**
  * This represents a character from the game.
@@ -83,6 +84,7 @@ interface GameCharacter {
 
     /**
      * Function used to take turns on the GameController
+     * @return the next player character that has to take the turn
      */
-    fun takeTurn(game: GameController)
+    fun takeTurn(game: GameController): PlayerCharacter
 }

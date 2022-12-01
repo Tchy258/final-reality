@@ -27,7 +27,10 @@ interface Weapon {
     val name: String
     val damage: Int
     val weight: Int
-
+    /**
+     * Returns 1 or this weapon's magic damage if it's a staff
+     */
+    val magicDamage: Int
     /**
      * Equips this [Weapon] to a [BlackMage].
      * By default, it throws an [InvalidWeaponException].

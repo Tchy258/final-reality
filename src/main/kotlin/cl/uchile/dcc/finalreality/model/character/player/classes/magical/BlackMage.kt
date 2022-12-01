@@ -7,7 +7,6 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
-import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
@@ -44,10 +43,7 @@ class BlackMage(
     /**
      * Boolean value to check magicDamage calculations
      */
-    private var _hasStaff: Boolean = false
-    override fun takeTurn(game: GameController) {
-        game.playerBlackMageTurn(this)
-    }
+
     override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff?> {
         if (hasWeaponEquipped()) {
             val wasCast: Boolean = canUseMp(spell.cost)
@@ -55,12 +51,8 @@ class BlackMage(
             var hpNow = hpBefore
             var debuff: Debuff? = null
             if (wasCast) {
-                if (_hasStaff) {
-                    debuff = spell.castBlackMagic((this.equippedWeapon as Staff).magicDamage, target)
-                    hpNow = target.currentHp
-                } else {
-                    spell.castBlackMagic(0, target)
-                }
+                debuff = spell.castBlackMagic(this.equippedWeapon.magicDamage, target)
+                hpNow = target.currentHp
             }
             return if (wasCast) {
                 Pair(hpBefore - hpNow, debuff)
@@ -77,11 +69,9 @@ class BlackMage(
     }
     fun equipKnife(knife: Knife) {
         this.setWeapon(knife)
-        _hasStaff = false
     }
     fun equipStaff(staff: Staff) {
         this.setWeapon(staff)
-        _hasStaff = true
     }
 
     override fun equals(other: Any?) = when {

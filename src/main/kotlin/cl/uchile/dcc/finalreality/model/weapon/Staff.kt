@@ -18,7 +18,7 @@ import java.util.Objects
  * @param name the name of the weapon.
  * @param damage the base damage done by the weapon.
  * @param weight the weight of the weapon.
- * @property magicDamage the magicDamage of the staff.
+ * @param magicDamage the magicDamage of the staff.
  *
  * @constructor Creates a new staff.
  * @author <a href="https://www.github.com/Tchy258">Tchy258</a>
@@ -29,7 +29,7 @@ class Staff(
     weight: Int,
     magicDamage: Int
 ) : AbstractWeapon(name, damage, weight) {
-    val magicDamage: Int = Require.Stat(magicDamage, "Magic damage ") atLeast 0
+    override val magicDamage: Int = Require.Stat(magicDamage, "Magic damage ") atLeast 0
     override fun equipToBlackMage(character: BlackMage) {
         character.equipStaff(this)
     }

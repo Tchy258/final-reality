@@ -36,8 +36,8 @@ abstract class AbstractPlayerCharacter(
 ) : AbstractCharacter(name, maxHp, defense, turnsQueue),
     PlayerCharacter {
     private lateinit var _equippedWeapon: Weapon
-    override fun takeTurn(game: GameController) {
-        game.playerCharacterTurn(this)
+    override fun takeTurn(game: GameController): PlayerCharacter {
+        return this
     }
     override val equippedWeapon: Weapon
         get() = _equippedWeapon

@@ -2,6 +2,7 @@ package cl.uchile.dcc.finalreality.controller
 
 import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.Mage
@@ -27,7 +28,6 @@ import java.util.InputMismatchException
 import java.util.Scanner
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.random.Random
-import kotlin.reflect.KFunction1
 
 /**
  * Class that controls and changes the state of the game
@@ -43,14 +43,27 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
     private val playerCharacters = mutableListOf<PlayerCharacter>()
     private val enemyCharacters = mutableListOf<Enemy>()
     private var gameIsOver = false
+    private var enemyVictory = false
+    val playerInventory
+        get() = PlayerCharacter.getInventory()
 
-    /**
-     * Changes the source that this GameController uses to take commands
-     * @param source a source of input
-     */
-    fun changeInputSource(source: Scanner) {
-        input = source
-    }
+    private val enemyNames: List<String> = listOf(
+        "Goblin",
+        "Zu",
+        "Cockatrice",
+        "Hooded Stabber",
+        "Green Smelly",
+        "Bomb",
+        "Running Cactus",
+        "Slayer",
+        "Basilisk",
+        "Zombie",
+        "Mutant",
+        "Were-wolf",
+        "Vampire",
+        "Ogre",
+        "Red Fox"
+    )
 
     /**
      * This block initializes the game
@@ -124,17 +137,8 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         playerCharacters[4].equip(
             Staff("BasicStaff", 30, 20, 30)
         )
-        for (i in 1..6) {
-            enemyCharacters.add(
-                Enemy(
-                    "Enemy$i",
-                    Random.nextInt(60, 100),
-                    Random.nextInt(15, 45),
-                    Random.nextInt(300, 600),
-                    Random.nextInt(5, 20),
-                    turnsQueue
-                )
-            )
+        for (i in 1..Random.nextInt(1,6)) {
+            generateEnemy()
         }
         for (character in playerCharacters) {
             character.waitTurn()
@@ -142,287 +146,85 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         for (enemy in enemyCharacters) {
             enemy.waitTurn()
         }
-        nextTurn()
     }
 
     /**
-     * Function called immediately after the init block
+     * Function called to take turns and update the game state
+     * @return the next non-enemy character that can act and use a turn
      */
-    tailrec fun nextTurn() {
-        if (!gameIsOver) {
-            if (turnsQueue.isEmpty()) {
-                Thread.sleep(2000)
-                return nextTurn()
-            }
-            print(this)
-            val character: GameCharacter = turnsQueue.poll()
-            character.rollEffects()
-            if (character.currentHp == 0) {
-                println("${character.name} has died to an adverse effect!")
-                return nextTurn()
-            } else {
-                character.takeTurn(this)
-            }
-            var playerDead = true
-            for (playerCharacter in playerCharacters) {
-                playerDead = playerDead && (playerCharacter.currentHp == 0)
-            }
-            if (playerDead) {
-                onEnemyWin()
-                return
-            }
-            var enemyDead = true
-            for (enemy in enemyCharacters) {
-                enemyDead = enemyDead && (enemy.currentHp == 0)
-            }
-            if (enemyDead) {
-                onPlayerWin()
-            }
-            return nextTurn()
+    tailrec fun update(): PlayerCharacter {
+        if (turnsQueue.isEmpty()) {
+            Thread.sleep(2000)
+            return update()
+        }
+        print(this)
+        val character: GameCharacter = turnsQueue.peek()
+        val canAct = character.rollEffects()
+        return if (canAct) {
+            character.takeTurn(this)
         } else {
-            return
+            advanceTurn(character)
+            update()
         }
     }
     /**
-     * To generate new enemies when the user has defeated all enemies
-     * and wishes to continue playing
+     * To generate a new enemy and add it to the enemies' side
      */
-    fun generateMoreEnemies() {
-        enemyCharacters.clear()
-        for (i in 1..6) {
-            enemyCharacters.add(
-                Enemy(
-                    "Enemy$i",
-                    Random.nextInt(60, 100),
-                    Random.nextInt(15, 45),
-                    Random.nextInt(300, 600),
-                    Random.nextInt(5, 20),
-                    turnsQueue
-                )
-            )
-        }
-        for (enemy in enemyCharacters) {
-            enemy.waitTurn()
-        }
+    fun generateEnemy() {
+        val newEnemy = Enemy(
+            enemyNames[Random.nextInt(0,enemyNames.size)],
+            Random.nextInt(60, 100),
+            Random.nextInt(15, 45),
+            Random.nextInt(300, 600),
+            Random.nextInt(5, 20),
+            turnsQueue
+        )
+        enemyCharacters.add(newEnemy)
+        newEnemy.waitTurn()
     }
 
     /**
      * Issue an attack command from [attacker] to [target]
      * @param attacker the character that attacks
      * @param target the character that receives the attack
-     *
+     * @return the amount of damage dealt
      */
-    fun attack(attacker: GameCharacter, target: GameCharacter) {
+    fun attack(attacker: GameCharacter, target: GameCharacter): Int {
+        var damage = 0
         if (!attacker.isParalyzed()) {
-            val damage = attacker.attack(target)
-            println("${attacker.name} attacks ${target.name} dealing $damage health points of damage!")
-            if (target.currentHp == 0) {
-                println("${target.name} has been defeated")
-            }
-        } else {
-            println("${attacker.name} is paralyzed, couldn't attack")
+            damage = attacker.attack(target)
         }
-        attacker.waitTurn()
+        advanceTurn(attacker)
+        return damage
     }
 
     /**
-     * Function to look for a weapon in the inventory and choose to equip it
-     * @param oldWeapon the character's currently equipped weapon
-     * @return the weapon to be equipped
+     * Function to look swap a character's weapon
+     * @param character the character who wants to swap weapons
      */
-    fun swapWeapon(oldWeapon: Weapon): Weapon {
-        val inventory = PlayerCharacter.getInventory()
-        for (i in inventory.indices) {
-            println("$i " + inventory[i])
-        }
-        var answer: Int
-        println("Which weapon should this character equip? (0 to ${inventory.size - 1}, -1 to keep current weapon) ")
-        do {
-            try {
-                answer = input.nextInt()
-                if (answer < -1 || answer >= inventory.size) {
-                    println("Please choose a valid option")
-                }
-            } catch (e: InputMismatchException) {
-                answer = -2
-                println("Please choose a valid option")
-            }
-        } while (answer >= inventory.size || answer < -1)
-
-        return if (answer == -1) {
-            oldWeapon
-        } else {
-            inventory[answer]
-        }
+    fun equipWeapon(character: PlayerCharacter, weapon: Weapon) {
+        character.equip(weapon)
     }
 
     /**
      * Issues a cast command to the [attacker] unto a [target]
-     * @return whether the attacker executed the spell (T) or didn't have enough mana (F)
+     * @return a pair with the damage dealt and debuff if any
      */
-    fun useMagic(spell: Magic, attacker: Mage, target: GameCharacter): Boolean {
-        val hpBefore = target.currentHp
-        val (damage, debuff) = attacker.cast(spell, target)
-        if (damage != -1 || hpBefore != target.currentHp) {
-            if (damage == 0) {
-                println("${attacker.name} casts ${spell::class.simpleName!!} on ${target.name}!")
-            } else if (target.currentHp < hpBefore) {
-                println("${attacker.name} casts ${spell::class.simpleName!!} on ${target.name} dealing $damage health points of damage!")
-            } else if (target.currentHp > hpBefore) {
-                println("${attacker.name} casts ${spell::class.simpleName!!} on ${target.name} healing $damage health points!")
-            }
-            if (debuff != null) {
-                println("${target.name} was $debuff !")
-            }
-        } else {
-            println("${attacker.name} can't cast ${spell::class.simpleName!!}, insufficient Mp")
-        }
-        return damage != -1
+    fun useMagic(spell: Magic, attacker: Mage, target: GameCharacter): Pair<Int, Debuff?> {
+        return attacker.cast(spell, target)
     }
 
-    /**
-     * Handler for non-magical player characters' turns
-     * @param character the character taking a turn
-     */
-    fun playerCharacterTurn(character: PlayerCharacter) {
-        println("${character.name}'s turn!")
-        println("Choose an action: ")
-        println("1 or 3 Attack")
-        println("2 Swap Weapon")
-        characterActionSelection(character)
-        val target = targetSelection(character, true, ::playerCharacterTurn)
-        if (target == Knight("", 1, 1, turnsQueue)) return
-        attack(character, target)
+    fun advanceTurn(character: GameCharacter) {
+        turnsQueue.poll()
+        waitTurn(character)
     }
 
-    /**
-     * Handler to choose an action when it's the user's turn
-     * @return a value that represents the action to execute
-     */
-    fun characterActionSelection(character: PlayerCharacter): Int {
-        var answer: Int = try {
-            input.nextInt()
-        } catch (e: InputMismatchException) {
-            -2
-        }
-        while (answer != 1 && answer != 3) {
-            if (answer == 2) {
-                val newWeapon = swapWeapon(character.equippedWeapon)
-                if (newWeapon != character.equippedWeapon) {
-                    println("${character.name} equipped ${newWeapon.name}")
-                }
-            } else {
-                println("Please choose a valid option")
-            }
-            println("Choose an action (1, 2, 3)")
-            answer = try {
-                input.nextInt()
-            } catch (e: InputMismatchException) {
-                -2
-            }
-        }
-        return answer
+    fun waitTurn(character: GameCharacter) {
+        if (character.currentHp!=0) character.waitTurn()
     }
-
     /**
-     * Function to select a GameCharacter to attack or cast a spell unto
-     * @param character the character that is choosing a target
-     * @param callerFun the original turn handling function the [character] came from
-     * @return the chosen target character
+     * Function to make enemies attack
      */
-    fun targetSelection(
-        character: PlayerCharacter,
-        selectEnemies: Boolean,
-        callerFun: KFunction1<PlayerCharacter, Unit>
-    ): GameCharacter {
-        println("Choose a target: ")
-        if (selectEnemies) {
-            for (i in 1..enemyCharacters.size) {
-                println("$i ${enemyCharacters[i - 1].name}")
-            }
-        } else {
-            for (i in 1..playerCharacters.size) {
-                println("$i ${playerCharacters[i - 1].name}")
-            }
-        }
-        println("(Input -1 to go back)")
-        var target: Int = try {
-            input.nextInt()
-        } catch (e: InputMismatchException) {
-            -2
-        }
-        val upperLimit = if (selectEnemies) enemyCharacters.size else playerCharacters.size
-        while (target < 1 || target > upperLimit) {
-            if (target == -1) {
-                callerFun(character)
-                return Knight("Dummy", 1, 1, turnsQueue)
-            } else {
-                println("Please choose a valid target")
-            }
-            target = try {
-                input.nextInt()
-            } catch (e: InputMismatchException) {
-                -2
-            }
-        }
-        return if (selectEnemies) {
-            enemyCharacters[target - 1]
-        } else {
-            playerCharacters[target - 1]
-        }
-    }
-
-    /**
-     * Handler function for mage characters' turns
-     * @param character the mage taking this turn
-     */
-    fun playerBlackMageTurn(character: PlayerCharacter) {
-        println("${character.name}'s turn!")
-        println("Choose an action: ")
-        println("1 Attack")
-        println("2 Swap Weapon")
-        println("3 Cast Magic")
-        val action = characterActionSelection(character)
-        var spell: Magic = Fire() // Dummy value
-        if (action == 3) {
-            spell = selectBlackMagic()
-        }
-        println("Target enemies or allies? [E/a]")
-        val selectEnemies = input.next().lowercase() != "a"
-        val target = targetSelection(character, selectEnemies, ::playerBlackMageTurn)
-        if (target == Knight("Dummy", 1, 1, turnsQueue)) return
-        if (action == 1) {
-            attack(character, target)
-        } else if (action == 3) {
-            useMagic(spell, character as BlackMage, target)
-        }
-    }
-
-    /**
-     * Handler function for mage characters' turns
-     * @param character the mage taking this turn
-     */
-    fun playerWhiteMageTurn(character: PlayerCharacter) {
-        println("${character.name}'s turn!")
-        println("Choose an action: ")
-        println("1 Attack")
-        println("2 Swap Weapon")
-        println("3 Cast Magic")
-        val action = characterActionSelection(character)
-        var spell: Magic = Cure() // Dummy value
-        if (action == 3) {
-            spell = selectWhiteMagic()
-        }
-        println("Target enemies or allies? [E/a]")
-        val selectEnemies = input.next().lowercase() != "a"
-        val target = targetSelection(character, selectEnemies, ::playerWhiteMageTurn)
-        if (target == Knight("Dummy", 1, 1, turnsQueue)) return
-        if (action == 1) {
-            attack(character, target)
-        } else if (action == 3) {
-            useMagic(spell, character as WhiteMage, target)
-        }
-    }
     fun enemyTurn(character: Enemy) {
         var attackDone = false
         while (!attackDone) {
@@ -474,43 +276,36 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         }
     }
 
-    /**
-     * Function to make enemies attack
-     */
 
     /**
      * Function to handle the user's victory, it gives the user a new weapon and
      * asks them if they want to continue playing
+     * @param nextBattle whether the user wants to create another battle
      */
-    fun onPlayerWin() {
-        val k = Random.nextInt(0, 5)
-        val j = Random.nextInt(0, 5)
-        val prefix: String = when (j) {
-            0 -> "Ancient"
-            1 -> "Good Quality"
-            2 -> "Mystic"
-            3 -> "Enchanted"
-            else -> "Blessed"
-        }
-        val damage = min(300, Random.nextInt(30, 60) * (j + 1))
-        val weight = max(15, Random.nextInt(20, 40) / (j + 1))
-        val magicDamage = min(200, Random.nextInt(30, 60) * (j + 1))
-        val newWeapon: Weapon = when (k) {
-            0 -> Axe("$prefix Axe", damage, weight)
-            1 -> Bow("$prefix Bow", damage, weight)
-            2 -> Knife("$prefix Knife", damage, weight)
-            3 -> Sword("$prefix Sword", damage, weight)
-            else -> Staff("$prefix Staff", damage, weight, magicDamage)
-        }
-        PlayerCharacter.addWeaponToInventory(newWeapon)
-        println("Obtained $newWeapon!")
-        println("Continue to the next fight? [y/N]")
-        val answer: String? = input.next()
-        if (answer != null) {
-            if (answer.lowercase() == "y") {
-                generateMoreEnemies()
-                nextTurn()
+    fun onPlayerWin(nextBattle: Boolean) {
+        //println("Continue to the next fight? [y/N]")
+        if (nextBattle) {
+            val k = Random.nextInt(0, 5)
+            val j = Random.nextInt(0, 5)
+            val prefix: String = when (j) {
+                0 -> "Ancient"
+                1 -> "Good Quality"
+                2 -> "Mystic"
+                3 -> "Enchanted"
+                else -> "Blessed"
             }
+            val damage = min(300, Random.nextInt(30, 60) * (j + 1))
+            val weight = max(15, Random.nextInt(20, 40) / (j + 1))
+            val magicDamage = min(200, Random.nextInt(30, 60) * (j + 1))
+            val newWeapon: Weapon = when (k) {
+                0 -> Axe("$prefix Axe", damage, weight)
+                1 -> Bow("$prefix Bow", damage, weight)
+                2 -> Knife("$prefix Knife", damage, weight)
+                3 -> Sword("$prefix Sword", damage, weight)
+                else -> Staff("$prefix Staff", damage, weight, magicDamage)
+            }
+            PlayerCharacter.addWeaponToInventory(newWeapon)
+            //println("Obtained $newWeapon!")
         } else {
             gameIsOver = true
             return
@@ -521,14 +316,36 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
      * Function to handle enemy victory
      */
     fun onEnemyWin() {
-        gameIsOver = true
+        //println("Your party has been defeated")
+        enemyVictory = true
     }
 
     /**
-     * Function to check the game state
+     * Function to check whether the game has finished
      */
-    fun isGameOver(): Boolean {
-        return gameIsOver
+    fun isGameOver() {
+        val playerDead = oneSideDead(playerCharacters)
+        if (playerDead) {
+            gameIsOver = true
+            enemyVictory = true
+        }
+        val enemyDead = oneSideDead(enemyCharacters)
+        if (enemyDead) {
+            gameIsOver  = true
+        }
+    }
+
+    /**
+     * Checks if all the characters from any side (enemy or player)
+     * have their hp set to 0 (i.e. are dead)
+     * @return whether the enemy/player's side died
+     */
+    private fun oneSideDead(side: MutableList<out GameCharacter>): Boolean {
+        var sideDead = true
+        for (character in side) {
+            sideDead = sideDead && character.currentHp == 0
+        }
+        return sideDead
     }
 
     override fun toString(): String {

@@ -43,9 +43,6 @@ class WhiteMage(
         weapon.equipToWhiteMage(this)
     }
 
-    override fun takeTurn(game: GameController) {
-        game.playerWhiteMageTurn(this)
-    }
 
     override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff?> {
         if (hasWeaponEquipped()) {

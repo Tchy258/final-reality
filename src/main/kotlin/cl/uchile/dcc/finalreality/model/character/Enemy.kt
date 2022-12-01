@@ -9,6 +9,7 @@ package cl.uchile.dcc.finalreality.model.character
 
 import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.exceptions.Require
+import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.Executors
@@ -60,8 +61,9 @@ class Enemy(
         )
     }
 
-    override fun takeTurn(game: GameController) {
+    override fun takeTurn(game: GameController): PlayerCharacter {
         game.enemyTurn(this)
+        return game.update()
     }
     override fun attack(anotherCharacter: GameCharacter): Int {
         val hpBefore = anotherCharacter.currentHp
