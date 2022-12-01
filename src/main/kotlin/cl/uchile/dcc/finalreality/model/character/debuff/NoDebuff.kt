@@ -6,7 +6,7 @@ import cl.uchile.dcc.finalreality.model.character.GameCharacter
  * Class used to represent a null debuff that does nothing
  */
 
-class NoDebuff: Debuff {
+class NoDebuff : Debuff {
     override fun rollEffect(character: GameCharacter): Boolean {
         return true
     }

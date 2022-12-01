@@ -7,12 +7,11 @@
  */
 package cl.uchile.dcc.finalreality.model.character
 
-import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 import cl.uchile.dcc.finalreality.model.character.debuff.Poisoned
-import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
+import cl.uchile.dcc.finalreality.model.magic.Magic
 
 /**
  * This represents a character from the game.
@@ -83,9 +82,25 @@ interface GameCharacter {
     fun rollEffects(): Boolean
 
     /**
-     * Returns true if this character is a player character
+     * Function used to tell the controller how to handle this character's turn
+     * @return if this character is a non-magical player character
      */
     fun isPlayerCharacter(): Boolean {
         return false
+    }
+    /**
+     * Function used to tell the controller how to handle this character's turn
+     * @return if this character is a magical player character
+     */
+    fun isMage(): Boolean {
+        return false
+    }
+
+    /**
+     * Function to get a list with the spells this character can use
+     * @return a list with the spells
+     */
+    fun getSpells(): List<Magic> {
+        return listOf()
     }
 }

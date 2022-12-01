@@ -11,6 +11,9 @@ import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.magic.Magic
+import cl.uchile.dcc.finalreality.model.magic.whitemagic.Cure
+import cl.uchile.dcc.finalreality.model.magic.whitemagic.Paralysis
+import cl.uchile.dcc.finalreality.model.magic.whitemagic.Poison
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Weapon
 import java.util.Objects
@@ -39,7 +42,6 @@ class WhiteMage(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
 
-
     override fun equip(weapon: Weapon) {
         weapon.equipToWhiteMage(this)
     }
@@ -63,6 +65,14 @@ class WhiteMage(
     fun equipStaff(staff: Staff) {
         this.setWeapon(staff)
         this.currentMagicDamage = staff.magicDamage
+    }
+
+    override fun getSpells(): List<Magic> {
+        return listOf(
+            Cure(),
+            Paralysis(),
+            Poison()
+        )
     }
     override fun equals(other: Any?) = when {
         this === other -> true

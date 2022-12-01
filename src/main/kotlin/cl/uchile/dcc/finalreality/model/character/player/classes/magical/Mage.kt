@@ -18,9 +18,9 @@ interface Mage : PlayerCharacter {
     /**
      * Attempts to cast a spell
      * @return the amount of damage dealt and adverse effect, -1 if cast is unsuccessful,
-     * and null if no debuff was dealt
+     * and a NoDebuff object if no debuff was dealt
      */
-    fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff?>
+    fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff>
 
     /**
      * Checks whether a spell with a [spellCost] can be cast and deducts mp
@@ -34,4 +34,6 @@ interface Mage : PlayerCharacter {
      * @param restoration the amount of mp restored
      */
     fun restoreMp(restoration: Int)
+
+    override fun isMage(): Boolean = true
 }

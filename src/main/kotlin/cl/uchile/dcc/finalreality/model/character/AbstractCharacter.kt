@@ -10,6 +10,7 @@ package cl.uchile.dcc.finalreality.model.character
 import cl.uchile.dcc.finalreality.exceptions.Require
 import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 import cl.uchile.dcc.finalreality.model.character.debuff.Poisoned
 import java.lang.Integer.max
@@ -35,7 +36,7 @@ abstract class AbstractCharacter(
     private val turnsQueue: BlockingQueue<GameCharacter>,
 ) : GameCharacter {
 
-    private val statusEffects: MutableSet<Debuff> = mutableSetOf()
+    private val statusEffects: MutableSet<Debuff> = mutableSetOf(NoDebuff())
     protected lateinit var scheduledExecutor: ScheduledExecutorService
     override val maxHp = Require.Stat(maxHp, "Max Hp") atLeast 1
     override val defense = Require.Stat(defense, "Defense") atLeast 0

@@ -10,7 +10,10 @@ package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 import cl.uchile.dcc.finalreality.model.magic.Magic
+import cl.uchile.dcc.finalreality.model.magic.blackmagic.Fire
+import cl.uchile.dcc.finalreality.model.magic.blackmagic.Thunder
 import cl.uchile.dcc.finalreality.model.weapon.Knife
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Weapon
@@ -41,13 +44,12 @@ class BlackMage(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
 
-
-    override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff?> {
+    override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff> {
         if (hasWeaponEquipped()) {
             val wasCast: Boolean = canUseMp(spell.cost)
             val hpBefore = target.currentHp
             var hpNow = hpBefore
-            var debuff: Debuff? = null
+            var debuff: Debuff = NoDebuff()
             if (wasCast) {
                 debuff = spell.castBlackMagic(this.currentMagicDamage, target)
                 hpNow = target.currentHp
@@ -55,11 +57,18 @@ class BlackMage(
             return if (wasCast) {
                 Pair(hpBefore - hpNow, debuff)
             } else {
-                Pair(-1, null)
+                Pair(-1, debuff)
             }
         } else {
             throw(NoWeaponEquippedException(this.name))
         }
+    }
+
+    override fun getSpells(): List<Magic> {
+        return listOf(
+            Thunder(),
+            Fire()
+        )
     }
 
     override fun equip(weapon: Weapon) {

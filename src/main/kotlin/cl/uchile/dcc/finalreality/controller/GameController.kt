@@ -1,31 +1,12 @@
 package cl.uchile.dcc.finalreality.controller
 
+import cl.uchile.dcc.finalreality.controller.state.CharacterCreationState
+import cl.uchile.dcc.finalreality.controller.state.GameState
+import cl.uchile.dcc.finalreality.exceptions.IllegalActionException
 import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
-import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.Mage
-import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engineer
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
-import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
-import cl.uchile.dcc.finalreality.model.magic.Magic
-import cl.uchile.dcc.finalreality.model.magic.blackmagic.Fire
-import cl.uchile.dcc.finalreality.model.magic.blackmagic.Thunder
-import cl.uchile.dcc.finalreality.model.magic.whitemagic.Cure
-import cl.uchile.dcc.finalreality.model.magic.whitemagic.Paralysis
-import cl.uchile.dcc.finalreality.model.magic.whitemagic.Poison
-import cl.uchile.dcc.finalreality.model.weapon.Axe
-import cl.uchile.dcc.finalreality.model.weapon.Bow
-import cl.uchile.dcc.finalreality.model.weapon.Knife
-import cl.uchile.dcc.finalreality.model.weapon.Staff
-import cl.uchile.dcc.finalreality.model.weapon.Sword
-import cl.uchile.dcc.finalreality.model.weapon.Weapon
-import java.lang.Integer.max
-import java.lang.Integer.min
-import java.util.InputMismatchException
-import java.util.Scanner
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.random.Random
 
@@ -35,19 +16,30 @@ import kotlin.random.Random
  * @property turnsQueue the game's turns queue
  * @property playerCharacters the game's active player characters
  * @property enemyCharacters the game's active enemy characters
- * @property input the input source to take commands and change state
+ * @property playerInventory the player characters' weapon inventory as an immutable list
  * @property gameIsOver indicator of the game's end
+ * @property activeCharacterIndex the index of the current character's turn
+ * @property enemyNameList a list of names to assign to the enemies
+ * @property playerWin whether the player has won (if game is over)
  */
-class GameController(private var input: Scanner = Scanner(System.`in`)) {
+class GameController {
+    /**
+     * This block initializes the game generating a random number of enemies
+     */
+    init {
+        val enemyAmount = Random.nextInt(1, 6)
+        generateEnemy(enemyAmount)
+    }
     private val turnsQueue = LinkedBlockingQueue<GameCharacter>()
     private val playerCharacters = mutableListOf<PlayerCharacter>()
     private val enemyCharacters = mutableListOf<Enemy>()
     private var gameIsOver = false
-    private var enemyVictory = false
-    val playerInventory
+    private var realState: GameState = CharacterCreationState(this)
+    val state: GameState
+        get() = realState
+    private val playerInventory
         get() = PlayerCharacter.getInventory()
-
-    private val enemyNames: List<String> = listOf(
+    private val enemyNameList: List<String> = listOf(
         "Goblin",
         "Zu",
         "Cockatrice",
@@ -62,217 +54,267 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         "Were-wolf",
         "Vampire",
         "Ogre",
-        "Red Fox"
+        "Red Panda"
     )
+    private var playerWin = false
 
     /**
-     * This block initializes the game
+     * Function to check whether the player won,
+     * this function only makes sense if gameIsOver is true
      */
-    init {
-        println("Please name your characters\n")
-        println("Engineer: ")
-        val engineerName = input.next()
-        playerCharacters.add(
-            Engineer(
-                engineerName,
-                Random.nextInt(300, 500),
-                Random.nextInt(20, 40),
-                turnsQueue
-            )
-        )
-        playerCharacters[0].equip(
-            Axe("BasicAxe", 60, 40)
-        )
-        println("Knight: ")
-        val knightName = input.next()
-        playerCharacters.add(
-            Knight(
-                knightName,
-                Random.nextInt(400, 600),
-                Random.nextInt(30, 45),
-                turnsQueue
-            )
-        )
-        playerCharacters[1].equip(
-            Sword("BasicSword", 50, 30)
-        )
-        println("Thief: ")
-        val thiefName = input.next()
-        playerCharacters.add(
-            Thief(
-                thiefName,
-                Random.nextInt(200, 400),
-                Random.nextInt(15, 25),
-                turnsQueue
-            )
-        )
-        playerCharacters[2].equip(
-            Bow("BasicBow", 40, 20)
-        )
-        println("BlackMage: ")
-        val blackMageName = input.next()
-        playerCharacters.add(
-            BlackMage(
-                blackMageName,
-                Random.nextInt(200, 400),
-                Random.nextInt(300, 500),
-                Random.nextInt(10, 20),
-                turnsQueue
-            )
-        )
-        playerCharacters[3].equip(
-            Knife("BasicKnife", 40, 20)
-        )
-        println("WhiteMage: ")
-        val whiteMageName = input.next()
-        playerCharacters.add(
-            WhiteMage(
-                whiteMageName,
-                Random.nextInt(200, 400),
-                Random.nextInt(300, 500),
-                Random.nextInt(10, 20),
-                turnsQueue
-            )
-        )
-        playerCharacters[4].equip(
-            Staff("BasicStaff", 30, 20, 30)
-        )
-        for (i in 1..Random.nextInt(1, 6)) {
-            generateEnemy()
-        }
-        for (character in playerCharacters) {
-            character.waitTurn()
-        }
-        for (enemy in enemyCharacters) {
-            enemy.waitTurn()
-        }
+    fun isPlayerWinner(): Boolean {
+        if (state.isPlayerDefeated() || state.isEnemyDefeated()) return playerWin
+        else throw IllegalActionException("ask if the player won", state::class.simpleName!!)
     }
 
     /**
-     * Function called to take turns and update the game state
-     * @return the next non-enemy character that can act and use a turn
+     * A -1 value implies there's no active character that can take a turn
+     * either due to not having checked the queue for the first time or a character
+     * being paralyzed
      */
-    tailrec fun update(): PlayerCharacter {
-        if (turnsQueue.isEmpty()) {
-            Thread.sleep(2000)
-            return update()
-        }
-        print(this)
-        val character: GameCharacter = turnsQueue.peek()
-        val canAct = character.rollEffects()
-        return if (canAct) {
-            character.takeTurn(this)
+    private var activeCharacterIndex: Int = -1
+
+    /**
+     * Function to get the index of the character that has to take a turn
+     * @return the character's index or -1 if no active character
+     */
+    fun getCurrentCharacter(): Int = activeCharacterIndex
+
+    fun setState(state: GameState) {
+        this.realState = state
+    }
+
+    /**
+     * Function to get the weapons in the inventory
+     * @return A list of triples with the weapon's name, damage and weight
+     */
+    fun getInventory(): List<Triple<String, Int, Int>> {
+        if (state.isNonMagicalPlayerTurn() || state.isMagicalPlayerTurn()) {
+            val viewData = mutableListOf<Triple<String, Int, Int>>()
+            for (weapon in playerInventory) {
+                val data = Triple(weapon.name, weapon.damage, weapon.weight)
+                viewData.add(data)
+            }
+            state.toWeaponEquip()
+            return viewData.toList()
         } else {
-            advanceTurn(character)
-            update()
+            throw IllegalActionException("check the inventory", state::class.simpleName!!)
         }
     }
+
+    /**
+     * Attempts to equip a weapon from the inventory with the specified [weaponId] to the
+     * character with the specified [characterId]
+     * @return whether the weapon was successfully equipped or not
+     */
+    fun equipWeapon(characterId: Int, weaponId: Int): Boolean {
+        return state.equipWeapon(playerCharacters[characterId], playerInventory[weaponId])
+    }
+
+    /**
+     * Function to get enemy names
+     * @return the names of the enemies participating in this battle
+     */
+    fun getEnemyNames(): List<String> {
+        val list = mutableListOf<String>()
+        for (enemy in enemyCharacters) {
+            list.add(enemy.name)
+        }
+        return list.toList()
+    }
+    /**
+     * Creates a new engineer and adds it to the player characters list
+     */
+    fun createEngineer(name: String) {
+        playerCharacters.add(
+            state.createEngineer(name, turnsQueue)
+        )
+    }
+    /**
+     * Creates a new knight
+     */
+    fun createKnight(name: String) {
+        playerCharacters.add(
+            state.createKnight(name, turnsQueue)
+        )
+    }
+    /**
+     * Creates a new thief
+     */
+    fun createThief(name: String) {
+        playerCharacters.add(
+            state.createThief(name, turnsQueue)
+        )
+    }
+    /**
+     * Creates a new white mage
+     */
+    fun createWhiteMage(name: String) {
+        playerCharacters.add(
+            state.createWhiteMage(name, turnsQueue)
+        )
+    }
+    /**
+     * Creates a new black mage
+     */
+    fun createBlackMage(name: String) {
+        playerCharacters.add(
+            state.createBlackMage(name, turnsQueue)
+        )
+    }
+    /**
+     * Function to get player Hp values
+     * @return a list of pairs containing the current and maxHp of each character in the
+     * same order they are present on the [playerCharacters] list
+     */
+    fun getCharacterHp(): List<Pair<Int, Int>> {
+        val hpList: MutableList<Pair<Int, Int>> = mutableListOf()
+        for (character in playerCharacters) {
+            val pair = Pair(character.currentHp, character.maxHp)
+            hpList.add(pair)
+        }
+        return hpList.toList()
+    }
+
+    /**
+     * Function to get enemy Hp values
+     * @return a list of pairs containing the current and maxHp of each character in the
+     * same order they are present on the [enemyCharacters] list
+     */
+    fun getEnemyHp(): List<Pair<Int, Int>> {
+        val hpList: MutableList<Pair<Int, Int>> = mutableListOf()
+        for (character in enemyCharacters) {
+            val pair = Pair(character.currentHp, character.maxHp)
+            hpList.add(pair)
+        }
+        return hpList.toList()
+    }
+
+    /**
+     * Function to get the active character's spells
+     * @return a list of triples with spell's name, it's cost and possible effect name
+     */
+    fun getAvailableSpells(): List<Triple<String, Int, String>> {
+        if (state.isMagicalPlayerTurn()) {
+            val spells = playerCharacters[activeCharacterIndex].getSpells()
+            val viewData = mutableListOf<Triple<String, Int, String>>()
+            for (spell in spells) {
+                val info = Triple(spell::class.simpleName!!, spell.cost, spell.debuff::class.simpleName!!)
+                viewData.add(info)
+            }
+            return viewData.toList()
+        } else {
+            throw IllegalActionException("check the available spells", state::class.simpleName!!)
+        }
+    }
+    /**
+     * Function called to take turns
+     */
+    fun nextTurn() {
+        val character: GameCharacter = state.nextTurn(turnsQueue)
+        val canAct = character.rollEffects()
+        if (canAct) {
+            activeCharacterIndex = playerCharacters.indexOf(character)
+            if (character.isMage()) {
+                state.toMagicalPlayerTurn()
+            } else if (character.isPlayerCharacter()) {
+                state.toNonMagicalPlayerTurn()
+            } else {
+                state.toEnemyTurn()
+            }
+        }
+        state.toEndCheck()
+        activeCharacterIndex = -1
+    }
+
     /**
      * To generate a new enemy and add it to the enemies' side
      */
-    fun generateEnemy() {
-        val newEnemy = Enemy(
-            enemyNames[Random.nextInt(0, enemyNames.size)],
-            Random.nextInt(60, 100),
-            Random.nextInt(15, 45),
-            Random.nextInt(300, 600),
-            Random.nextInt(5, 20),
-            turnsQueue
-        )
-        enemyCharacters.add(newEnemy)
-        newEnemy.waitTurn()
+    fun generateEnemy(amount: Int) {
+        if (state.isEnemyGeneration() || state.isCharacterCreation()) {
+            for (i in 1..amount) {
+                val newEnemy = Enemy(
+                    enemyNameList[Random.nextInt(0, enemyNameList.size)],
+                    Random.nextInt(60, 100),
+                    Random.nextInt(15, 45),
+                    Random.nextInt(300, 600),
+                    Random.nextInt(5, 20),
+                    turnsQueue
+                )
+                enemyCharacters.add(newEnemy)
+                newEnemy.waitTurn()
+            }
+        } else throw IllegalActionException("generate enemies", state::class.simpleName!!)
     }
-
     /**
-     * Issue an attack command from [attacker] to [target]
-     * @param attacker the character that attacks
-     * @param target the character that receives the attack
-     * @return the amount of damage dealt
+     * Public function to issue an attack
+     * @param id1 the index of the player character on the player character list
+     * @param id2 the index of the enemy character on the enemy character list
      */
-    fun attack(attacker: GameCharacter, target: GameCharacter): Int {
-        var damage = 0
-        if (!attacker.isParalyzed()) {
-            damage = attacker.attack(target)
-        }
-        advanceTurn(attacker)
+    fun attack(id1: Int, id2: Int): Int {
+        val damage = state.attack(playerCharacters[id1], enemyCharacters[id2])
+        advanceTurn(playerCharacters[id1])
         return damage
     }
-
     /**
-     * Function to look swap a character's weapon
-     * @param character the character who wants to swap weapons
-     */
-    fun equipWeapon(character: PlayerCharacter, weapon: Weapon) {
-        character.equip(weapon)
-    }
-
-    /**
-     * Issues a cast command to the [attacker] unto a [target]
+     * Issues a cast command to the caster given by [casterId] unto a target character
+     * @param casterId index of the caster
+     * @param spellId index of the spell on the caster's spell list
+     * @param enemyTarget whether this spell targets enemies or allies
      * @return a pair with the damage dealt and debuff if any
      */
-    fun useMagic(spell: Magic, attacker: Mage, target: GameCharacter): Pair<Int, Debuff?> {
-        return attacker.cast(spell, target)
+    fun useMagic(casterId: Int, spellId: Int, targetId: Int, enemyTarget: Boolean): Pair<Int, String> {
+        val attacker = playerCharacters[casterId] as Mage
+        val spellList = attacker.getSpells()
+        val target = if (enemyTarget) enemyCharacters[targetId] else playerCharacters[targetId]
+        val (damage, debuff) = state.useMagic(attacker, spellList[spellId], target)
+        advanceTurn(attacker)
+        return Pair(damage, debuff::class.simpleName!!)
     }
 
-    fun advanceTurn(character: GameCharacter) {
+    /**
+     * Function to end any turn
+     * @param character the character whose turn is ending
+     */
+    private fun advanceTurn(character: GameCharacter) {
         turnsQueue.poll()
         waitTurn(character)
+        state.toEndCheck()
     }
 
-    fun waitTurn(character: GameCharacter) {
+    /**
+     * Function to end a character's turn
+     * @param characterId the index of the character in the [playerCharacters] list
+     */
+    fun endTurn(characterId: Int) {
+        val character = playerCharacters[characterId]
+        advanceTurn(character)
+    }
+
+    /**
+     * Function to make a character wait their turn only if they're
+     * still alive
+     * @param character the character that wishes to rejoin the turns queue
+     */
+    private fun waitTurn(character: GameCharacter) {
         if (character.currentHp != 0) character.waitTurn()
     }
     /**
      * Function to make enemies attack
      */
-    fun enemyTurn(character: Enemy) {
-        var attackDone = false
-        while (!attackDone) {
-            val k = Random.nextInt(0, 5)
-            if (playerCharacters[k].currentHp != 0) {
-                attack(character, playerCharacters[k])
-                attackDone = true
+    fun enemyTurn(character: GameCharacter) {
+        if (state.isEnemyTurn()) {
+            var attackDone = false
+            while (!attackDone) {
+                val k = Random.nextInt(0, 5)
+                if (playerCharacters[k].currentHp != 0) {
+                    state.enemyAttack(character, playerCharacters[k])
+                    attackDone = true
+                }
             }
-        }
-    }
-    /**
-     * Handler function to choose a black magic spell
-     */
-    fun selectBlackMagic(): Magic {
-        println("Choose a spell: ")
-        println("1 Thunder")
-        println("2 Fire")
-        val answer: Int = try {
-            input.nextInt()
-        } catch (e: InputMismatchException) {
-            println("Invalid input, thunder chosen by default")
-            1
-        }
-        return if (answer == 1) {
-            Thunder()
+            advanceTurn(character)
         } else {
-            Fire()
-        }
-    }
-
-    /**
-     * Handler function to choose a white magic spell
-     */
-    fun selectWhiteMagic(): Magic {
-        println("Choose a spell: ")
-        println("1 Cure")
-        println("2 Poison")
-        println("3 Paralysis")
-        val answer: Int = try {
-            input.nextInt()
-        } catch (e: InputMismatchException) {
-            println("Invalid input, cure chosen by default")
-            1
-        }
-        return when (answer) {
-            1 -> Cure()
-            2 -> Poison()
-            else -> Paralysis()
+            throw IllegalActionException("make an enemy attack", state::class.simpleName!!)
         }
     }
 
@@ -282,55 +324,38 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
      * @param nextBattle whether the user wants to create another battle
      */
     fun onPlayerWin(nextBattle: Boolean) {
-        // println("Continue to the next fight? [y/N]")
-        if (nextBattle) {
-            val k = Random.nextInt(0, 5)
-            val j = Random.nextInt(0, 5)
-            val prefix: String = when (j) {
-                0 -> "Ancient"
-                1 -> "Good Quality"
-                2 -> "Mystic"
-                3 -> "Enchanted"
-                else -> "Blessed"
-            }
-            val damage = min(300, Random.nextInt(30, 60) * (j + 1))
-            val weight = max(15, Random.nextInt(20, 40) / (j + 1))
-            val magicDamage = min(200, Random.nextInt(30, 60) * (j + 1))
-            val newWeapon: Weapon = when (k) {
-                0 -> Axe("$prefix Axe", damage, weight)
-                1 -> Bow("$prefix Bow", damage, weight)
-                2 -> Knife("$prefix Knife", damage, weight)
-                3 -> Sword("$prefix Sword", damage, weight)
-                else -> Staff("$prefix Staff", damage, weight, magicDamage)
-            }
-            PlayerCharacter.addWeaponToInventory(newWeapon)
-            // println("Obtained $newWeapon!")
-        } else {
-            gameIsOver = true
-            return
-        }
+        state.onPlayerWin(nextBattle)
     }
 
     /**
      * Function to handle enemy victory
+     * @param nextGame whether the user wants to play again
      */
-    fun onEnemyWin() {
-        // println("Your party has been defeated")
-        enemyVictory = true
+    fun onEnemyWin(nextGame: Boolean) {
+        state.onEnemyWin(nextGame)
     }
 
     /**
      * Function to check whether the game has finished
      */
-    fun isGameOver() {
-        val playerDead = oneSideDead(playerCharacters)
-        if (playerDead) {
-            gameIsOver = true
-            enemyVictory = true
-        }
-        val enemyDead = oneSideDead(enemyCharacters)
-        if (enemyDead) {
-            gameIsOver = true
+    fun isGameOver(): Boolean {
+        if (state.isEndCheck()) {
+            val playerDead = oneSideDead(playerCharacters)
+            if (playerDead) {
+                gameIsOver = true
+                state.toPlayerDefeated()
+                playerWin = false
+            }
+            val enemyDead = oneSideDead(enemyCharacters)
+            if (enemyDead) {
+                gameIsOver = true
+                state.toEnemyDefeated()
+                playerWin = true
+            }
+            if (!gameIsOver) state.toTurnWait()
+            return gameIsOver
+        } else {
+            throw IllegalActionException("check the game's end", state::class.simpleName!!)
         }
     }
 
@@ -339,7 +364,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
      * have their hp set to 0 (i.e. are dead)
      * @return whether the enemy/player's side died
      */
-    private fun oneSideDead(side: MutableList<out GameCharacter>): Boolean {
+    private fun oneSideDead(side: List<GameCharacter>): Boolean {
         var sideDead = true
         for (character in side) {
             sideDead = sideDead && character.currentHp == 0

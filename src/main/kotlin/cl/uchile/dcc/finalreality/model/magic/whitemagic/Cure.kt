@@ -9,7 +9,6 @@ package cl.uchile.dcc.finalreality.model.magic.whitemagic
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
-import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 import kotlin.math.ceil
 
 /**
