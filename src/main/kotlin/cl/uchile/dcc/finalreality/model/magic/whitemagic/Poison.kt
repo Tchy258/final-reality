@@ -20,6 +20,8 @@ import kotlin.math.ceil
 class Poison : WhiteMagic {
     override val cost: Int
         get() = 40
+    override val debuff: Debuff
+        get() = Poisoned()
 
     override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
         val finalDamage = ceil(magicDamage.toDouble() / 3).toInt()

@@ -9,6 +9,7 @@ package cl.uchile.dcc.finalreality.model.magic.blackmagic
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 
 /**
@@ -21,11 +22,13 @@ import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 class Thunder : BlackMagic {
     override val cost: Int
         get() = 15
-    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff? {
-        var activated: Debuff? = null
+    override val debuff: Debuff
+        get() = Paralyzed()
+    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
+        var activated: Debuff = NoDebuff()
         val k: Double = RNGSeeder.seed.nextDouble()
         if (k <= 0.3) {
-            activated = Paralyzed()
+            activated = debuff
             spellTarget.addDebuff(activated)
         }
         spellTarget.receiveMagicDamage(magicDamage)

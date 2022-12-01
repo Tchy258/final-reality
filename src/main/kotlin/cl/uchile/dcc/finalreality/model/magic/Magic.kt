@@ -9,33 +9,38 @@ package cl.uchile.dcc.finalreality.model.magic
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 
 /**
  * Generic interface to represent any type of magic
  *
  * @property cost the spell's mana points cost
+ * @property debuff the spell's possible adverse effect
  *
  * @author <a href="https://github.com/Tchy258">Tchy258</a>
  */
 
 interface Magic {
     val cost: Int
+    val debuff: Debuff
+        get() = NoDebuff()
+
     /**
      * Cast this magic spell onto a [spellTarget] with a [magicDamage] value,
      * applying a [Debuff] if applicable
-     * @return the spell's adverse effect or null if it didn't activate it
+     * @return the spell's adverse effect
      */
-    fun cast(magicDamage: Int, spellTarget: GameCharacter): Debuff?
+    fun cast(magicDamage: Int, spellTarget: GameCharacter): Debuff
     /**
      * Cast this black magic spell onto a [spellTarget] with a [magicDamage] value,
      * applying a [Debuff] if applicable
-     * @return the spell's adverse effect or null if it didn't activate it
+     * @return the spell's adverse effect
      */
-    fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff?
+    fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff
     /**
      * Cast this white magic spell onto a [spellTarget] with a [magicDamage] value,
      * applying a [Debuff] if applicable
      * @return the spell's adverse effect or null if it didn't activate it
      */
-    fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff?
+    fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff
 }

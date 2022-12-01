@@ -17,12 +17,14 @@ import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
 class Paralysis : WhiteMagic {
+    override val debuff: Debuff
+        get() = Paralyzed()
     override val cost: Int
         get() = 25
 
     override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
         spellTarget.addDebuff(Paralyzed())
-        return Paralyzed()
+        return debuff
     }
 
     override fun equals(other: Any?): Boolean {

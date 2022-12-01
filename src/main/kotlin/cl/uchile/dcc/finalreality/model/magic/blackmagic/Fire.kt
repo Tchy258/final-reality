@@ -10,6 +10,7 @@ package cl.uchile.dcc.finalreality.model.magic.blackmagic
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 import kotlin.math.ceil
 
 /**
@@ -22,8 +23,10 @@ import kotlin.math.ceil
 class Fire : BlackMagic {
     override val cost: Int
         get() = 15
-    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff? {
-        var activated: Debuff? = null
+    override val debuff: Debuff
+        get() = Burned()
+    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
+        var activated: Debuff = NoDebuff()
         val k: Double = RNGSeeder.seed.nextDouble()
         val finalDamage = ceil(magicDamage.toDouble() / 3f).toInt()
         if (k <= 0.2) {

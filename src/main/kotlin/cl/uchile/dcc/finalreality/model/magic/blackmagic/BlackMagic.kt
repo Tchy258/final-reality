@@ -19,7 +19,7 @@ import cl.uchile.dcc.finalreality.model.magic.Magic
  */
 
 interface BlackMagic : Magic {
-    override fun cast(magicDamage: Int, spellTarget: GameCharacter): Debuff? = castBlackMagic(magicDamage, spellTarget)
-    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff?
-    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff? = throw InvalidSpellCastException("BlackMage", this::class.simpleName!!)
+    override fun cast(magicDamage: Int, spellTarget: GameCharacter): Debuff = castBlackMagic(magicDamage, spellTarget)
+    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff
+    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff = throw InvalidSpellCastException("BlackMage", this::class.simpleName!!)
 }
