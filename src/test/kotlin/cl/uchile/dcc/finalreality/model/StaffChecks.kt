@@ -31,7 +31,7 @@ internal suspend fun staffValidStatsCheck() {
 }
 internal suspend fun staffInequalityCheck() {
     checkAll(StaffData.validGenerator, StaffData.validGenerator) { weapon1, weapon2 ->
-        assume (
+        assume(
             weapon1.name != weapon2.name ||
                 weapon1.damage != weapon2.damage ||
                 weapon1.weight != weapon2.weight ||

@@ -34,7 +34,7 @@ internal suspend fun weaponSelfEqualityCheck(generator: Arb<WeaponData>, weaponF
 
 internal suspend fun weaponInequalityCheck(weaponFactory: WeaponTestingFactory) {
     checkAll(NonMagicalWeaponData.validGenerator, NonMagicalWeaponData.validGenerator) { weapon1, weapon2 ->
-        assume (
+        assume(
             weapon1.name != weapon2.name ||
                 weapon1.damage != weapon2.damage ||
                 weapon1.weight != weapon2.weight

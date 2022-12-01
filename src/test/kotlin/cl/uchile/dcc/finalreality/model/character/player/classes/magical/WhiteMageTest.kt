@@ -17,7 +17,6 @@ import cl.uchile.dcc.finalreality.model.invalidEquippableWeaponCheck
 import cl.uchile.dcc.finalreality.model.mageInequalityCheck
 import cl.uchile.dcc.finalreality.model.mageUnarmedActionCheck
 import cl.uchile.dcc.finalreality.model.mageValidStatCheck
-import cl.uchile.dcc.finalreality.model.magic.blackmagic.Thunder
 import cl.uchile.dcc.finalreality.model.magic.whitemagic.Cure
 import cl.uchile.dcc.finalreality.model.magic.whitemagic.Paralysis
 import cl.uchile.dcc.finalreality.model.magic.whitemagic.Poison

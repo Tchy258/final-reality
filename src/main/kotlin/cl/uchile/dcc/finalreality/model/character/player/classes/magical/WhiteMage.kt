@@ -7,7 +7,6 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
-import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
@@ -42,7 +41,6 @@ class WhiteMage(
     override fun equip(weapon: Weapon) {
         weapon.equipToWhiteMage(this)
     }
-
 
     override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff?> {
         if (hasWeaponEquipped()) {

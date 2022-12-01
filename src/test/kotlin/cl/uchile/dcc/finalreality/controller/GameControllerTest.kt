@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import java.util.Scanner
 
-class GameControllerTest: FunSpec ({
+class GameControllerTest : FunSpec({
     lateinit var game: GameController
 
     context("When a GameController is created, it should") {

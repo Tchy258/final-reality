@@ -137,7 +137,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         playerCharacters[4].equip(
             Staff("BasicStaff", 30, 20, 30)
         )
-        for (i in 1..Random.nextInt(1,6)) {
+        for (i in 1..Random.nextInt(1, 6)) {
             generateEnemy()
         }
         for (character in playerCharacters) {
@@ -172,7 +172,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
      */
     fun generateEnemy() {
         val newEnemy = Enemy(
-            enemyNames[Random.nextInt(0,enemyNames.size)],
+            enemyNames[Random.nextInt(0, enemyNames.size)],
             Random.nextInt(60, 100),
             Random.nextInt(15, 45),
             Random.nextInt(300, 600),
@@ -220,7 +220,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
     }
 
     fun waitTurn(character: GameCharacter) {
-        if (character.currentHp!=0) character.waitTurn()
+        if (character.currentHp != 0) character.waitTurn()
     }
     /**
      * Function to make enemies attack
@@ -276,14 +276,13 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         }
     }
 
-
     /**
      * Function to handle the user's victory, it gives the user a new weapon and
      * asks them if they want to continue playing
      * @param nextBattle whether the user wants to create another battle
      */
     fun onPlayerWin(nextBattle: Boolean) {
-        //println("Continue to the next fight? [y/N]")
+        // println("Continue to the next fight? [y/N]")
         if (nextBattle) {
             val k = Random.nextInt(0, 5)
             val j = Random.nextInt(0, 5)
@@ -305,7 +304,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
                 else -> Staff("$prefix Staff", damage, weight, magicDamage)
             }
             PlayerCharacter.addWeaponToInventory(newWeapon)
-            //println("Obtained $newWeapon!")
+            // println("Obtained $newWeapon!")
         } else {
             gameIsOver = true
             return
@@ -316,7 +315,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
      * Function to handle enemy victory
      */
     fun onEnemyWin() {
-        //println("Your party has been defeated")
+        // println("Your party has been defeated")
         enemyVictory = true
     }
 
@@ -331,7 +330,7 @@ class GameController(private var input: Scanner = Scanner(System.`in`)) {
         }
         val enemyDead = oneSideDead(enemyCharacters)
         if (enemyDead) {
-            gameIsOver  = true
+            gameIsOver = true
         }
     }
 

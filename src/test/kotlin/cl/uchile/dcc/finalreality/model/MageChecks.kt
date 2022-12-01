@@ -82,7 +82,7 @@ internal suspend fun differentMageInequalityCheck(
         val differentMage = data.process(oppositeFactory)
         val character = CharacterData(randomComparedCharacter.name, randomComparedCharacter.maxHp, randomComparedCharacter.defense)
         val dummyValue = randomComparedCharacter.maxMp
-        val enemy = EnemyData(character.name,dummyValue,dummyValue,character.maxHp,character.defense)
+        val enemy = EnemyData(character.name, dummyValue, dummyValue, character.maxHp, character.defense)
         randomComparedCharacter shouldNotBe differentMage
         randomComparedCharacter shouldNotBe character.process(EngineerTestingFactory(queue))
         randomComparedCharacter shouldNotBe character.process(ThiefTestingFactory(queue))
@@ -252,7 +252,7 @@ internal suspend fun insufficientMpSpellCastCheck(spell: Magic, generator: Arb<M
         val randomMage2 = mage.process(factory)
         val randomStaff = staff.process(StaffTestingFactory())
         randomMage.equip(randomStaff)
-        randomMage.cast(spell,randomMage2) shouldBe Pair(-1,null)
+        randomMage.cast(spell, randomMage2) shouldBe Pair(-1, null)
     }
 }
 
