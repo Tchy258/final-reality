@@ -17,7 +17,11 @@ import cl.uchile.dcc.finalreality.model.magic.blackmagic.Fire
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-class Burned(private val finalDamage: Int) : Debuff {
+class Burned(private var finalDamage: Int) : Debuff {
+    constructor() : this(0)
+    fun setFinalDamage(finalDamage: Int) {
+        this.finalDamage = finalDamage
+    }
     private var turnLimit: Int = 5
     override fun rollEffect(character: GameCharacter): Boolean {
         character.receiveMagicDamage(finalDamage)
