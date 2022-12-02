@@ -7,6 +7,10 @@ import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.Mage
+import cl.uchile.dcc.finalreality.model.weapon.Bow
+import cl.uchile.dcc.finalreality.model.weapon.Knife
+import cl.uchile.dcc.finalreality.model.weapon.Staff
+import cl.uchile.dcc.finalreality.model.weapon.Sword
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.random.Random
 
@@ -27,15 +31,16 @@ class GameController {
      * This block initializes the game generating a random number of enemies
      */
     init {
-        val enemyAmount = Random.nextInt(1, 6)
+        val enemyAmount = ControllerRNGSeed.seed.nextInt(1, 6)
         generateEnemy(enemyAmount)
     }
+
     private val turnsQueue = LinkedBlockingQueue<GameCharacter>()
     private val playerCharacters = mutableListOf<PlayerCharacter>()
     private val enemyCharacters = mutableListOf<Enemy>()
     private var gameIsOver = false
     private var realState: GameState = CharacterCreationState(this)
-    val state: GameState
+    val gameState: GameState
         get() = realState
     private val playerInventory
         get() = PlayerCharacter.getInventory()
@@ -63,8 +68,8 @@ class GameController {
      * this function only makes sense if gameIsOver is true
      */
     fun isPlayerWinner(): Boolean {
-        if (state.isPlayerDefeated() || state.isEnemyDefeated()) return playerWin
-        else throw IllegalActionException("ask if the player won", state::class.simpleName!!)
+        if (gameState.isPlayerDefeated() || gameState.isEnemyDefeated()) return playerWin
+        else throw IllegalActionException("ask if the player won", gameState::class.simpleName!!)
     }
 
     /**
@@ -89,16 +94,16 @@ class GameController {
      * @return A list of triples with the weapon's name, damage and weight
      */
     fun getInventory(): List<Triple<String, Int, Int>> {
-        if (state.isNonMagicalPlayerTurn() || state.isMagicalPlayerTurn()) {
+        if (gameState.isNonMagicalPlayerTurn() || gameState.isMagicalPlayerTurn()) {
             val viewData = mutableListOf<Triple<String, Int, Int>>()
             for (weapon in playerInventory) {
                 val data = Triple(weapon.name, weapon.damage, weapon.weight)
                 viewData.add(data)
             }
-            state.toWeaponEquip()
+            gameState.toWeaponEquip()
             return viewData.toList()
         } else {
-            throw IllegalActionException("check the inventory", state::class.simpleName!!)
+            throw IllegalActionException("check the inventory", gameState::class.simpleName!!)
         }
     }
 
@@ -108,7 +113,7 @@ class GameController {
      * @return whether the weapon was successfully equipped or not
      */
     fun equipWeapon(characterId: Int, weaponId: Int): Boolean {
-        return state.equipWeapon(playerCharacters[characterId], playerInventory[weaponId])
+        return gameState.equipWeapon(playerCharacters[characterId], playerInventory[weaponId])
     }
 
     /**
@@ -122,45 +127,89 @@ class GameController {
         }
         return list.toList()
     }
+
     /**
      * Creates a new engineer and adds it to the player characters list
+     *
+     * @return whether the engineer was created or not
      */
-    fun createEngineer(name: String) {
-        playerCharacters.add(
-            state.createEngineer(name, turnsQueue)
-        )
+    fun createEngineer(name: String): Boolean {
+        return if (playerCharacters.size < 5) {
+            val character = gameState.createEngineer(name, turnsQueue)
+            val weapon = Bow("BasicBow",30,25)
+            character.equip(weapon)
+            playerCharacters.add(
+                character
+            )
+            true
+        } else {
+            false
+        }
     }
+
     /**
      * Creates a new knight
      */
-    fun createKnight(name: String) {
-        playerCharacters.add(
-            state.createKnight(name, turnsQueue)
-        )
-    }
+    fun createKnight(name: String): Boolean {
+        return if (playerCharacters.size < 5) {
+            val character = gameState.createKnight(name, turnsQueue)
+            val weapon = Sword("BasicSword",40,30)
+            character.equip(weapon)
+            playerCharacters.add(
+                character
+            )
+            true
+        } else {
+            false
+        }
+}
     /**
      * Creates a new thief
      */
-    fun createThief(name: String) {
-        playerCharacters.add(
-            state.createThief(name, turnsQueue)
-        )
+    fun createThief(name: String): Boolean {
+        return if (playerCharacters.size < 5) {
+            val character = gameState.createThief(name, turnsQueue)
+            val weapon = Knife("BasicKnife",30,22)
+            character.equip(weapon)
+            playerCharacters.add(
+                character
+            )
+            true
+        } else {
+            false
+        }
     }
     /**
      * Creates a new white mage
      */
-    fun createWhiteMage(name: String) {
-        playerCharacters.add(
-            state.createWhiteMage(name, turnsQueue)
-        )
+    fun createWhiteMage(name: String): Boolean {
+        return if (playerCharacters.size < 5) {
+            val character = gameState.createWhiteMage(name, turnsQueue)
+            val weapon = Staff("BasicWand",8,21,25)
+            character.equip(weapon)
+            playerCharacters.add(
+                character
+            )
+            true
+        } else {
+            false
+        }
     }
     /**
      * Creates a new black mage
      */
-    fun createBlackMage(name: String) {
-        playerCharacters.add(
-            state.createBlackMage(name, turnsQueue)
-        )
+    fun createBlackMage(name: String): Boolean {
+        return if (playerCharacters.size < 5) {
+            val character = gameState.createBlackMage(name, turnsQueue)
+            val weapon = Staff("BasicStaff",10,24,30)
+            character.equip(weapon)
+            playerCharacters.add(
+                character
+            )
+            true
+        } else {
+            false
+        }
     }
     /**
      * Function to get player Hp values
@@ -195,7 +244,7 @@ class GameController {
      * @return a list of triples with spell's name, it's cost and possible effect name
      */
     fun getAvailableSpells(): List<Triple<String, Int, String>> {
-        if (state.isMagicalPlayerTurn()) {
+        if (gameState.isMagicalPlayerTurn()) {
             val spells = playerCharacters[activeCharacterIndex].getSpells()
             val viewData = mutableListOf<Triple<String, Int, String>>()
             for (spell in spells) {
@@ -204,26 +253,38 @@ class GameController {
             }
             return viewData.toList()
         } else {
-            throw IllegalActionException("check the available spells", state::class.simpleName!!)
+            throw IllegalActionException("check the available spells", gameState::class.simpleName!!)
+        }
+    }
+    fun startBattle(): Boolean {
+        return if(gameState.isCharacterCreation() || gameState.isEnemyGeneration()) {
+            if (playerCharacters.size == 5) {
+                gameState.toTurnWait()
+                true
+            } else {
+                false
+            }
+        } else {
+            false
         }
     }
     /**
      * Function called to take turns
      */
     fun nextTurn() {
-        val character: GameCharacter = state.nextTurn(turnsQueue)
+        val character: GameCharacter = gameState.nextTurn(turnsQueue)
         val canAct = character.rollEffects()
         if (canAct) {
             activeCharacterIndex = playerCharacters.indexOf(character)
             if (character.isMage()) {
-                state.toMagicalPlayerTurn()
+                gameState.toMagicalPlayerTurn()
             } else if (character.isPlayerCharacter()) {
-                state.toNonMagicalPlayerTurn()
+                gameState.toNonMagicalPlayerTurn()
             } else {
-                state.toEnemyTurn()
+                gameState.toEnemyTurn()
             }
         }
-        state.toEndCheck()
+        gameState.toEndCheck()
         activeCharacterIndex = -1
     }
 
@@ -231,20 +292,21 @@ class GameController {
      * To generate a new enemy and add it to the enemies' side
      */
     fun generateEnemy(amount: Int) {
-        if (state.isEnemyGeneration() || state.isCharacterCreation()) {
+        if (gameState.isEnemyGeneration() || gameState.isCharacterCreation()) {
+            enemyCharacters.clear()
             for (i in 1..amount) {
                 val newEnemy = Enemy(
-                    enemyNameList[Random.nextInt(0, enemyNameList.size)],
-                    Random.nextInt(60, 100),
-                    Random.nextInt(15, 45),
-                    Random.nextInt(300, 600),
-                    Random.nextInt(5, 20),
+                    enemyNameList[ControllerRNGSeed.seed.nextInt(0, enemyNameList.size)],
+                    ControllerRNGSeed.seed.nextInt(60, 100),
+                    ControllerRNGSeed.seed.nextInt(15, 45),
+                    ControllerRNGSeed.seed.nextInt(300, 600),
+                    ControllerRNGSeed.seed.nextInt(5, 20),
                     turnsQueue
                 )
                 enemyCharacters.add(newEnemy)
                 newEnemy.waitTurn()
             }
-        } else throw IllegalActionException("generate enemies", state::class.simpleName!!)
+        } else throw IllegalActionException("generate enemies", gameState::class.simpleName!!)
     }
     /**
      * Public function to issue an attack
@@ -252,7 +314,7 @@ class GameController {
      * @param id2 the index of the enemy character on the enemy character list
      */
     fun attack(id1: Int, id2: Int): Int {
-        val damage = state.attack(playerCharacters[id1], enemyCharacters[id2])
+        val damage = gameState.attack(playerCharacters[id1], enemyCharacters[id2])
         advanceTurn(playerCharacters[id1])
         return damage
     }
@@ -267,7 +329,7 @@ class GameController {
         val attacker = playerCharacters[casterId] as Mage
         val spellList = attacker.getSpells()
         val target = if (enemyTarget) enemyCharacters[targetId] else playerCharacters[targetId]
-        val (damage, debuff) = state.useMagic(attacker, spellList[spellId], target)
+        val (damage, debuff) = gameState.useMagic(attacker, spellList[spellId], target)
         advanceTurn(attacker)
         return Pair(damage, debuff::class.simpleName!!)
     }
@@ -279,7 +341,7 @@ class GameController {
     private fun advanceTurn(character: GameCharacter) {
         turnsQueue.poll()
         waitTurn(character)
-        state.toEndCheck()
+        gameState.toEndCheck()
     }
 
     /**
@@ -303,18 +365,18 @@ class GameController {
      * Function to make enemies attack
      */
     fun enemyTurn(character: GameCharacter) {
-        if (state.isEnemyTurn()) {
+        if (gameState.isEnemyTurn()) {
             var attackDone = false
             while (!attackDone) {
                 val k = Random.nextInt(0, 5)
                 if (playerCharacters[k].currentHp != 0) {
-                    state.enemyAttack(character, playerCharacters[k])
+                    gameState.enemyAttack(character, playerCharacters[k])
                     attackDone = true
                 }
             }
             advanceTurn(character)
         } else {
-            throw IllegalActionException("make an enemy attack", state::class.simpleName!!)
+            throw IllegalActionException("make an enemy attack", gameState::class.simpleName!!)
         }
     }
 
@@ -324,7 +386,7 @@ class GameController {
      * @param nextBattle whether the user wants to create another battle
      */
     fun onPlayerWin(nextBattle: Boolean) {
-        state.onPlayerWin(nextBattle)
+        gameState.onPlayerWin(nextBattle)
     }
 
     /**
@@ -332,30 +394,30 @@ class GameController {
      * @param nextGame whether the user wants to play again
      */
     fun onEnemyWin(nextGame: Boolean) {
-        state.onEnemyWin(nextGame)
+        gameState.onEnemyWin(nextGame)
     }
 
     /**
      * Function to check whether the game has finished
      */
     fun isGameOver(): Boolean {
-        if (state.isEndCheck()) {
+        if (gameState.isEndCheck()) {
             val playerDead = oneSideDead(playerCharacters)
             if (playerDead) {
                 gameIsOver = true
-                state.toPlayerDefeated()
+                gameState.toPlayerDefeated()
                 playerWin = false
             }
             val enemyDead = oneSideDead(enemyCharacters)
             if (enemyDead) {
                 gameIsOver = true
-                state.toEnemyDefeated()
+                gameState.toEnemyDefeated()
                 playerWin = true
             }
-            if (!gameIsOver) state.toTurnWait()
+            if (!gameIsOver) gameState.toTurnWait()
             return gameIsOver
         } else {
-            throw IllegalActionException("check the game's end", state::class.simpleName!!)
+            throw IllegalActionException("check the game's end", gameState::class.simpleName!!)
         }
     }
 
