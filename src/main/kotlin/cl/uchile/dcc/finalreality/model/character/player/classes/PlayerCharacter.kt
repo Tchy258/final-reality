@@ -8,6 +8,7 @@
 package cl.uchile.dcc.finalreality.model.character.player.classes
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.weapon.Axe
 import cl.uchile.dcc.finalreality.model.weapon.Weapon
 
 /**
@@ -34,7 +35,9 @@ interface PlayerCharacter : GameCharacter {
         /**
          * The weapon inventory shared by all instances of PlayerCharacter
          */
-        private val weaponInventory: MutableList<Weapon> = mutableListOf()
+        private val weaponInventory: MutableList<Weapon> = mutableListOf(
+            Axe("BasicAxe",60,40)
+        )
 
         /**
          * Getter for the weapon inventory shared by PlayerCharacters
