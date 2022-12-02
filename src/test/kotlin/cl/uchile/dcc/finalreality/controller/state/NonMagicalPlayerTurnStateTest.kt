@@ -17,8 +17,8 @@ class NonMagicalPlayerTurnStateTest : FunSpec({
     val thisState = MagicalPlayerTurnState(dummyController)
 
     val validTransitions: List<(GameState) -> Unit> = listOf(
-      endCheckTransition,
-      weaponEquipTransition
+        endCheckTransition,
+        weaponEquipTransition
     )
     val thisQuestion = GameState::isNonMagicalPlayerTurn
     val otherQuestions = stateQuestions.toMutableList()
@@ -28,15 +28,15 @@ class NonMagicalPlayerTurnStateTest : FunSpec({
     val predicate = Predicate { transition: (GameState) -> Unit -> validTransitions.contains(transition) }
     invalidTransitions.removeIf(predicate)
     context("A NonMagicalPlayerTurnState should") {
-      test("Be able to do valid transitions") {
-          validTransitionCheck(thisState, validTransitions)
-      }
-      test("Be unable to do invalid transitions") {
-          invalidTransitionCheck(thisState, invalidTransitions)
-      }
-      test("Answer correctly when asked who they are") {
-          falseQuestionsCheck(thisState, otherQuestions)
-          thisQuestion(thisState) shouldBe true
-      }
+        test("Be able to do valid transitions") {
+            validTransitionCheck(thisState, validTransitions)
+        }
+        test("Be unable to do invalid transitions") {
+            invalidTransitionCheck(thisState, invalidTransitions)
+        }
+        test("Answer correctly when asked who they are") {
+            falseQuestionsCheck(thisState, otherQuestions)
+            thisQuestion(thisState) shouldBe true
+        }
     }
 })

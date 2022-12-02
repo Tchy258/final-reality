@@ -136,7 +136,7 @@ class GameController {
     fun createEngineer(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createEngineer(name, turnsQueue)
-            val weapon = Bow("BasicBow",30,25)
+            val weapon = Bow("BasicBow", 30, 25)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -153,7 +153,7 @@ class GameController {
     fun createKnight(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createKnight(name, turnsQueue)
-            val weapon = Sword("BasicSword",40,30)
+            val weapon = Sword("BasicSword", 40, 30)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -162,14 +162,14 @@ class GameController {
         } else {
             false
         }
-}
+    }
     /**
      * Creates a new thief
      */
     fun createThief(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createThief(name, turnsQueue)
-            val weapon = Knife("BasicKnife",30,22)
+            val weapon = Knife("BasicKnife", 30, 22)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -185,7 +185,7 @@ class GameController {
     fun createWhiteMage(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createWhiteMage(name, turnsQueue)
-            val weapon = Staff("BasicWand",8,21,25)
+            val weapon = Staff("BasicWand", 8, 21, 25)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -201,7 +201,7 @@ class GameController {
     fun createBlackMage(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createBlackMage(name, turnsQueue)
-            val weapon = Staff("BasicStaff",10,24,30)
+            val weapon = Staff("BasicStaff", 10, 24, 30)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -257,7 +257,7 @@ class GameController {
         }
     }
     fun startBattle(): Boolean {
-        return if(gameState.isCharacterCreation() || gameState.isEnemyGeneration()) {
+        return if (gameState.isCharacterCreation() || gameState.isEnemyGeneration()) {
             if (playerCharacters.size == 5) {
                 gameState.toTurnWait()
                 true

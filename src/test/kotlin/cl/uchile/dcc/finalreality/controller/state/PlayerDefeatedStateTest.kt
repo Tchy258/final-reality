@@ -2,13 +2,11 @@ package cl.uchile.dcc.finalreality.controller.state
 
 import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.controller.characterCreationTransition
-import cl.uchile.dcc.finalreality.controller.endCheckTransition
 import cl.uchile.dcc.finalreality.controller.falseQuestionsCheck
 import cl.uchile.dcc.finalreality.controller.invalidTransitionCheck
 import cl.uchile.dcc.finalreality.controller.stateQuestions
 import cl.uchile.dcc.finalreality.controller.stateTransitions
 import cl.uchile.dcc.finalreality.controller.validTransitionCheck
-import cl.uchile.dcc.finalreality.controller.weaponEquipTransition
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import java.util.function.Predicate

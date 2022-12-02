@@ -36,7 +36,7 @@ interface PlayerCharacter : GameCharacter {
          * The weapon inventory shared by all instances of PlayerCharacter
          */
         private val weaponInventory: MutableList<Weapon> = mutableListOf(
-            Axe("BasicAxe",60,40)
+            Axe("BasicAxe", 60, 40)
         )
 
         /**

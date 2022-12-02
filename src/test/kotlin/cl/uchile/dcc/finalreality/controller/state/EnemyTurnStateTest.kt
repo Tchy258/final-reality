@@ -2,7 +2,6 @@ package cl.uchile.dcc.finalreality.controller.state
 
 import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.controller.endCheckTransition
-import cl.uchile.dcc.finalreality.controller.enemyGenerationTransition
 import cl.uchile.dcc.finalreality.controller.falseQuestionsCheck
 import cl.uchile.dcc.finalreality.controller.invalidTransitionCheck
 import cl.uchile.dcc.finalreality.controller.stateQuestions
