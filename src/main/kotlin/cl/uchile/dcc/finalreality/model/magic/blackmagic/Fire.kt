@@ -27,7 +27,7 @@ class Fire : BlackMagic {
         get() = Burned()
     override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
         var activated: Debuff = NoDebuff()
-        val k: Double = RNGSeeder.seed.nextDouble()
+        val k: Double = MagicRNGSeeder.seed.nextDouble()
         val finalDamage = ceil(magicDamage.toDouble() / 3f).toInt()
         if (k <= 0.2) {
             activated = Burned(finalDamage)

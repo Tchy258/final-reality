@@ -26,7 +26,7 @@ class Thunder : BlackMagic {
         get() = Paralyzed()
     override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
         var activated: Debuff = NoDebuff()
-        val k: Double = RNGSeeder.seed.nextDouble()
+        val k: Double = MagicRNGSeeder.seed.nextDouble()
         if (k <= 0.3) {
             activated = debuff
             spellTarget.addDebuff(activated)

@@ -15,7 +15,7 @@ import kotlin.random.Random
  * @property seed the adverse effect landing chance RNG seed
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-object RNGSeeder {
+object MagicRNGSeeder {
     /**
      * Changes the adverse effect RNGSeed
      */
