@@ -11,20 +11,22 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import java.util.function.Predicate
 
-class CharacterCreationStateTest : FunSpec({
+class EnemyGenerationStateTest : FunSpec({
     val dummyController = GameController()
-    val thisState = CharacterCreationState(dummyController)
+    val thisState = EnemyGenerationState(dummyController)
 
     val validTransitions: List<(GameState) -> Unit> = listOf(
         turnWaitTransition
     )
-    val thisQuestion = GameState::isCharacterCreation
+
+    val thisQuestion = GameState::isEnemyGeneration
     val otherQuestions = stateQuestions.toMutableList()
     otherQuestions.remove(thisQuestion)
+
     val invalidTransitions: MutableList<(GameState) -> Unit> = stateTransitions.toMutableList()
-    val transitionPredicate = Predicate { transition: (GameState) -> Unit -> validTransitions.contains(transition) }
-    invalidTransitions.removeIf(transitionPredicate)
-    context("A CharacterCreationState should") {
+    val predicate = Predicate { transition: (GameState) -> Unit -> validTransitions.contains(transition) }
+    invalidTransitions.removeIf(predicate)
+    context("An EnemyGenerationState should") {
         test("Be able to do valid transitions") {
             validTransitionCheck(thisState, validTransitions)
         }
