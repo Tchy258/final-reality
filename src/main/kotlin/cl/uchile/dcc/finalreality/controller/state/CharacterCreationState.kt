@@ -1,5 +1,6 @@
 package cl.uchile.dcc.finalreality.controller.state
 
+import cl.uchile.dcc.finalreality.controller.ControllerRNGSeed
 import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
@@ -8,7 +9,6 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Engine
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
 import java.util.concurrent.LinkedBlockingQueue
-import kotlin.random.Random
 
 /**
  * This represents the initial game state, where the user creates
@@ -28,8 +28,8 @@ class CharacterCreationState(override val controller: GameController) : GameStat
     override fun createEngineer(name: String, queue: LinkedBlockingQueue<GameCharacter>): Engineer {
         return Engineer(
             name,
-            Random.nextInt(300, 500),
-            Random.nextInt(20, 50),
+            ControllerRNGSeed.seed.nextInt(300, 500),
+            ControllerRNGSeed.seed.nextInt(20, 50),
             queue
         )
     }
@@ -39,8 +39,8 @@ class CharacterCreationState(override val controller: GameController) : GameStat
     override fun createKnight(name: String, queue: LinkedBlockingQueue<GameCharacter>): Knight {
         return Knight(
             name,
-            Random.nextInt(400, 600),
-            Random.nextInt(30, 60),
+            ControllerRNGSeed.seed.nextInt(400, 600),
+            ControllerRNGSeed.seed.nextInt(30, 60),
             queue
         )
     }
@@ -50,8 +50,8 @@ class CharacterCreationState(override val controller: GameController) : GameStat
     override fun createThief(name: String, queue: LinkedBlockingQueue<GameCharacter>): Thief {
         return Thief(
             name,
-            Random.nextInt(300, 400),
-            Random.nextInt(15, 45),
+            ControllerRNGSeed.seed.nextInt(300, 400),
+            ControllerRNGSeed.seed.nextInt(15, 45),
             queue
         )
     }
@@ -61,9 +61,9 @@ class CharacterCreationState(override val controller: GameController) : GameStat
     override fun createWhiteMage(name: String, queue: LinkedBlockingQueue<GameCharacter>): WhiteMage {
         return WhiteMage(
             name,
-            Random.nextInt(200, 400),
-            Random.nextInt(100, 200),
-            Random.nextInt(10, 30),
+            ControllerRNGSeed.seed.nextInt(200, 400),
+            ControllerRNGSeed.seed.nextInt(100, 200),
+            ControllerRNGSeed.seed.nextInt(10, 30),
             queue
         )
     }
@@ -73,9 +73,9 @@ class CharacterCreationState(override val controller: GameController) : GameStat
     override fun createBlackMage(name: String, queue: LinkedBlockingQueue<GameCharacter>): BlackMage {
         return BlackMage(
             name,
-            Random.nextInt(200, 400),
-            Random.nextInt(100, 200),
-            Random.nextInt(10, 30),
+            ControllerRNGSeed.seed.nextInt(200, 400),
+            ControllerRNGSeed.seed.nextInt(100, 200),
+            ControllerRNGSeed.seed.nextInt(10, 30),
             queue
         )
     }
