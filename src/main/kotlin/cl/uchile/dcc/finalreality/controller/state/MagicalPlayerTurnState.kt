@@ -16,7 +16,9 @@ class MagicalPlayerTurnState(override val controller: GameController) : Abstract
     override fun toWeaponEquip() {
         controller.setState(WeaponEquipState(controller, this))
     }
-
+    override fun toEndCheck() {
+        controller.setState(EndCheckState(controller))
+    }
     override fun useMagic(attacker: Mage, spell: Magic, target: GameCharacter): Pair<Int, Debuff> {
         return attacker.cast(spell, target)
     }

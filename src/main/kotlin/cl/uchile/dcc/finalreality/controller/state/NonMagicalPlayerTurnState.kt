@@ -12,4 +12,7 @@ class NonMagicalPlayerTurnState(override val controller: GameController) : Abstr
     override fun toWeaponEquip() {
         controller.setState(WeaponEquipState(controller, this))
     }
+    override fun toEndCheck() {
+        controller.setState(EndCheckState(controller))
+    }
 }
