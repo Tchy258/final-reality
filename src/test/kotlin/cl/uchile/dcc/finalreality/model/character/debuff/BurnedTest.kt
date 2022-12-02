@@ -6,7 +6,7 @@ import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.magic.blackmagic.Fire
-import cl.uchile.dcc.finalreality.model.magic.blackmagic.RNGSeeder
+import cl.uchile.dcc.finalreality.model.magic.blackmagic.MagicRNGSeeder
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Sword
 import io.kotest.core.spec.style.FunSpec
@@ -35,7 +35,7 @@ class BurnedTest : FunSpec({
         enemy1 = Enemy("TestEnemy1", 20, 10, 100, 2, queue)
         enemy2 = Enemy("TestEnemy2", 20, 10, 100, 2, queue)
         enemy2.addDebuff(burnEffect3)
-        RNGSeeder.setSeed(10)
+        MagicRNGSeeder.setSeed(10)
     }
     context("Burned adverse effects should") {
         test("Have a string representation") {

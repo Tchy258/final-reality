@@ -4,7 +4,7 @@ import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
-import cl.uchile.dcc.finalreality.model.magic.blackmagic.RNGSeeder
+import cl.uchile.dcc.finalreality.model.magic.blackmagic.MagicRNGSeeder
 import cl.uchile.dcc.finalreality.model.magic.blackmagic.Thunder
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Sword
@@ -34,7 +34,7 @@ class ParalyzedTest : FunSpec({
         enemy1 = Enemy("TestEnemy", 15, 30, 100, 10, queue)
         enemy2 = Enemy("TestEnemy2", 20, 10, 100, 2, queue)
         enemy2.addDebuff(paralyzed3)
-        RNGSeeder.setSeed(6)
+        MagicRNGSeeder.setSeed(6)
     }
     context("Paralyzed adverse effect should") {
         test("Be equal to themselves and any other instance of Paralyzed") {

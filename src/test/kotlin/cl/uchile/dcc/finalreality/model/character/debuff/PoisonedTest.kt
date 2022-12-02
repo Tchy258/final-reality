@@ -5,7 +5,7 @@ import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.WhiteMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
-import cl.uchile.dcc.finalreality.model.magic.blackmagic.RNGSeeder
+import cl.uchile.dcc.finalreality.model.magic.blackmagic.MagicRNGSeeder
 import cl.uchile.dcc.finalreality.model.magic.whitemagic.Poison
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Sword
@@ -35,7 +35,7 @@ class PoisonedTest : FunSpec({
         enemy1 = Enemy("TestEnemy1", 20, 10, 100, 2, queue)
         enemy2 = Enemy("TestEnemy2", 20, 10, 100, 2, queue)
         enemy2.addDebuff(poisonEffect3)
-        RNGSeeder.setSeed(10)
+        MagicRNGSeeder.setSeed(10)
     }
     context("Poisoned adverse effects should") {
         test("Have a string representation") {
