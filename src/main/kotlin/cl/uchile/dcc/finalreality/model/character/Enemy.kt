@@ -61,10 +61,6 @@ class Enemy(
         )
     }
 
-    override fun takeTurn(game: GameController): PlayerCharacter {
-        game.enemyTurn(this)
-        return game.update()
-    }
     override fun attack(anotherCharacter: GameCharacter): Int {
         val hpBefore = anotherCharacter.currentHp
         anotherCharacter.receiveAttack(this.damage)

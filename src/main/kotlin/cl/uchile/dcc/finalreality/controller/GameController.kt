@@ -286,10 +286,12 @@ class GameController {
                 gameState.toNonMagicalPlayerTurn()
             } else {
                 gameState.toEnemyTurn()
+                enemyTurn(character)
             }
+        } else {
+            gameState.toEndCheck()
+            activeCharacterIndex = -1
         }
-        gameState.toEndCheck()
-        activeCharacterIndex = -1
     }
 
     /**
