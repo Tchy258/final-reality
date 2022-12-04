@@ -25,6 +25,10 @@ import kotlin.random.Random
  * @property activeCharacterIndex the index of the current character's turn
  * @property enemyNameList a list of names to assign to the enemies
  * @property playerWin whether the player has won (if game is over)
+ *
+ * @constructor Creates a new game controller
+ *
+ * @author <a href="https://github.com/Tchy258">Tchy258</a>
  */
 class GameController {
     /**

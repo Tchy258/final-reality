@@ -155,6 +155,11 @@ interface GameState {
         throw IllegalActionException("create a white mage", this::class.simpleName!!)
     }
 
+    /**
+     * Function to wait for the next turn
+     *
+     * @param queue the [GameCharacter]s' turns queue
+     */
     fun nextTurn(queue: LinkedBlockingQueue<GameCharacter>): GameCharacter {
         throw IllegalActionException("get a character from the queue", this::class.simpleName!!)
     }
