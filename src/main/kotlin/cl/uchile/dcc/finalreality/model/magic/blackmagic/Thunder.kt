@@ -19,19 +19,17 @@ import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-class Thunder : BlackMagic {
-    override val cost: Int
-        get() = 15
-    override val debuff: Debuff
-        get() = Paralyzed()
-    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
+class Thunder(private val mageMagicDamage: Int) : BlackMagic {
+    override val cost: Int = 15
+    override val debuff: Debuff = Paralyzed()
+    override fun castBlackMagic(spellTarget: GameCharacter): Debuff {
         var activated: Debuff = NoDebuff()
         val k: Double = MagicRNGSeeder.seed.nextDouble()
         if (k <= 0.3) {
             activated = debuff
             spellTarget.addDebuff(activated)
         }
-        spellTarget.receiveMagicDamage(magicDamage)
+        spellTarget.receiveMagicDamage(mageMagicDamage)
         return activated
     }
 

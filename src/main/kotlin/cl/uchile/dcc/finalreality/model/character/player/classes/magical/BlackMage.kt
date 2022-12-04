@@ -51,7 +51,7 @@ class BlackMage(
             var hpNow = hpBefore
             var debuff: Debuff = NoDebuff()
             if (wasCast) {
-                debuff = spell.castBlackMagic(this.currentMagicDamage, target)
+                debuff = spell.castBlackMagic(target)
                 hpNow = target.currentHp
             }
             return if (wasCast) {
@@ -66,8 +66,8 @@ class BlackMage(
 
     override fun getSpells(): List<Magic> {
         return listOf(
-            Thunder(),
-            Fire()
+            Thunder(currentMagicDamage),
+            Fire(currentMagicDamage)
         )
     }
 

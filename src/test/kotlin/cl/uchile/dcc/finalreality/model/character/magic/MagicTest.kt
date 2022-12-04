@@ -27,12 +27,12 @@ class MagicTest : FunSpec({
     lateinit var cure2: Cure
 
     beforeEach {
-        thunder1 = Thunder()
-        thunder2 = Thunder()
-        fire1 = Fire()
-        fire2 = Fire()
-        poison1 = Poison()
-        poison2 = Poison()
+        thunder1 = Thunder(20)
+        thunder2 = Thunder(20)
+        fire1 = Fire(10)
+        fire2 = Fire(10)
+        poison1 = Poison(5)
+        poison2 = Poison(5)
         paralysis1 = Paralysis()
         paralysis2 = Paralysis()
         cure1 = Cure()
@@ -66,9 +66,7 @@ class MagicTest : FunSpec({
             )
             for (i in spells.indices) {
                 for (j in i + 1 until spells.size) {
-                    if (i != j) {
-                        spells[i] shouldNotBe spells[j]
-                    }
+                    spells[i] shouldNotBe spells[j]
                 }
             }
         }

@@ -17,15 +17,14 @@ import kotlin.math.ceil
  * @property cost the cost of this spell, which is always `40`
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-class Poison : WhiteMagic {
+class Poison(mageMagicDamage: Int) : WhiteMagic {
     override val cost: Int
         get() = 40
+    private var finalDamage = ceil(mageMagicDamage.toDouble() / 3).toInt()
     override val debuff: Debuff
-        get() = Poisoned()
+        get() = Poisoned(finalDamage)
 
-    override fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
-        val finalDamage = ceil(magicDamage.toDouble() / 3).toInt()
-        val debuff = Poisoned(finalDamage)
+    override fun castWhiteMagic(spellTarget: GameCharacter): Debuff {
         spellTarget.addDebuff(debuff)
         return debuff
     }

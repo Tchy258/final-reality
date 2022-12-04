@@ -10,6 +10,7 @@ package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 import cl.uchile.dcc.finalreality.model.magic.Magic
 import cl.uchile.dcc.finalreality.model.magic.whitemagic.Cure
 import cl.uchile.dcc.finalreality.model.magic.whitemagic.Paralysis
@@ -46,16 +47,16 @@ class WhiteMage(
         weapon.equipToWhiteMage(this)
     }
 
-    override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff?> {
+    override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff> {
         if (hasWeaponEquipped()) {
             val wasCast: Boolean = canUseMp(spell.cost)
-            val debuff: Debuff?
+            var debuff: Debuff = NoDebuff()
             return if (wasCast) {
                 val hpBefore = target.currentHp
-                debuff = spell.castWhiteMagic(this.currentMagicDamage, target)
+                debuff = spell.castWhiteMagic(target)
                 Pair(target.currentHp - hpBefore, debuff)
             } else {
-                Pair(-1, null)
+                Pair(-1, debuff)
             }
         } else {
             throw NoWeaponEquippedException(this.name)
@@ -71,7 +72,7 @@ class WhiteMage(
         return listOf(
             Cure(),
             Paralysis(),
-            Poison()
+            Poison(currentMagicDamage)
         )
     }
     override fun equals(other: Any?) = when {

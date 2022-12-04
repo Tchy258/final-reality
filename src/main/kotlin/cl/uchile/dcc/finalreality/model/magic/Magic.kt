@@ -23,24 +23,22 @@ import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 interface Magic {
     val cost: Int
     val debuff: Debuff
-        get() = NoDebuff()
-
     /**
-     * Cast this magic spell onto a [spellTarget] with a [magicDamage] value,
+     * Cast this magic spell onto a [spellTarget],
      * applying a [Debuff] if applicable
      * @return the spell's adverse effect
      */
-    fun cast(magicDamage: Int, spellTarget: GameCharacter): Debuff
+    fun cast(spellTarget: GameCharacter): Debuff
     /**
-     * Cast this black magic spell onto a [spellTarget] with a [magicDamage] value,
+     * Cast this black magic spell onto a [spellTarget],
      * applying a [Debuff] if applicable
      * @return the spell's adverse effect
      */
-    fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff
+    fun castBlackMagic(spellTarget: GameCharacter): Debuff
     /**
-     * Cast this white magic spell onto a [spellTarget] with a [magicDamage] value,
+     * Cast this white magic spell onto a [spellTarget],
      * applying a [Debuff] if applicable
      * @return the spell's adverse effect or null if it didn't activate it
      */
-    fun castWhiteMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff
+    fun castWhiteMagic(spellTarget: GameCharacter): Debuff
 }

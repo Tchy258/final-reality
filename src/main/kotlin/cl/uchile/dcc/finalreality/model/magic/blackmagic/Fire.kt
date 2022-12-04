@@ -12,6 +12,7 @@ import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 import kotlin.math.ceil
+import kotlin.properties.Delegates
 
 /**
  * This represents a Fire spell castable by a BlackMage.
@@ -20,21 +21,18 @@ import kotlin.math.ceil
  *
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
-class Fire : BlackMagic {
-    override val cost: Int
-        get() = 15
+class Fire(private val mageMagicDamage: Int) : BlackMagic {
+    override val cost: Int = 15
+    private val finalDamage = ceil(mageMagicDamage.toDouble() / 3f).toInt()
     override val debuff: Debuff
-        get() = Burned()
-    override fun castBlackMagic(magicDamage: Int, spellTarget: GameCharacter): Debuff {
-        var activated: Debuff = NoDebuff()
+        get() = Burned(finalDamage)
+    override fun castBlackMagic(spellTarget: GameCharacter): Debuff {
         val k: Double = MagicRNGSeeder.seed.nextDouble()
-        val finalDamage = ceil(magicDamage.toDouble() / 3f).toInt()
-        if (k <= 0.2) {
-            activated = Burned(finalDamage)
-            spellTarget.addDebuff(activated)
-        }
-        spellTarget.receiveMagicDamage(magicDamage)
-        return activated
+        spellTarget.receiveMagicDamage(mageMagicDamage)
+        return if (k <= 0.2) {
+            spellTarget.addDebuff(debuff)
+            debuff
+        } else NoDebuff()
     }
 
     override fun toString(): String {
