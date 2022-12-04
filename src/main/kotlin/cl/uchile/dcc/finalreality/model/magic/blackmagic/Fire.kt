@@ -12,7 +12,6 @@ import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 import kotlin.math.ceil
-import kotlin.properties.Delegates
 
 /**
  * This represents a Fire spell castable by a BlackMage.

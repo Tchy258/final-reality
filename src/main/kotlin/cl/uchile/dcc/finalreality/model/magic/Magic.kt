@@ -9,7 +9,6 @@ package cl.uchile.dcc.finalreality.model.magic
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
-import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 
 /**
  * Generic interface to represent any type of magic

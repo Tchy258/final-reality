@@ -7,9 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.character
 
-import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.exceptions.Require
-import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import java.util.Objects
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.Executors
