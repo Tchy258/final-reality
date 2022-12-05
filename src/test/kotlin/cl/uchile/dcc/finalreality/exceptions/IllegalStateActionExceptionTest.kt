@@ -7,12 +7,12 @@ import org.junit.jupiter.api.assertThrows
 
 class IllegalActionExceptionTest : FunSpec({
     val prefix = "Tried to "
-    val mid = " while on the state "
+    val mid = " while on the "
 
     test("An IllegalActionException can be thrown with a message") {
         checkAll<String, String> { action, someStateName ->
-            assertThrows<IllegalActionException> {
-                throw IllegalActionException(
+            assertThrows<IllegalStateActionException> {
+                throw IllegalStateActionException(
                     action,
                     someStateName
                 )

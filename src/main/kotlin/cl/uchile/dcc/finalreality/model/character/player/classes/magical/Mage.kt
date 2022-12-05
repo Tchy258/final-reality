@@ -10,18 +10,23 @@ import cl.uchile.dcc.finalreality.model.magic.Magic
  *
  * @property maxMp the mage's maximum magic points.
  * @property currentMp The current MP of the mage.
+ * @property activeSpell the mage's current active spell
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
 interface Mage : PlayerCharacter {
     val maxMp: Int
     val currentMp: Int
+    val activeSpell: Magic
     /**
      * Attempts to cast a spell
      * @return the amount of damage dealt and adverse effect, -1 if cast is unsuccessful,
      * and a NoDebuff object if no debuff was dealt
      */
-    fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff>
-
+    fun cast(target: GameCharacter): Pair<Int, Debuff>
+    /**
+     * Sets [spell] as this mage's current active spell
+     */
+    fun setSpell(spell: Magic)
     /**
      * Checks whether a spell with a [spellCost] can be cast and deducts mp
      * if it has to
@@ -35,5 +40,9 @@ interface Mage : PlayerCharacter {
      */
     fun restoreMp(restoration: Int)
 
+    /**
+     * Returns this mage's current magic damage
+     */
+    fun getMagicDamage(): Int
     override fun isMage(): Boolean = true
 }

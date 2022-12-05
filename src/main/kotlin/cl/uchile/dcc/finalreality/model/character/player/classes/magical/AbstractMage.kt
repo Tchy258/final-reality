@@ -10,6 +10,7 @@ package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 import cl.uchile.dcc.finalreality.exceptions.Require
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.AbstractPlayerCharacter
+import cl.uchile.dcc.finalreality.model.magic.Magic
 import java.util.concurrent.BlockingQueue
 
 /**
@@ -38,6 +39,18 @@ abstract class AbstractMage(
      * This variable changes whenever a staff is equipped
      */
     protected var currentMagicDamage = 0
+
+    override val activeSpell: Magic
+        get() = _spell
+
+    private lateinit var _spell: Magic
+    protected fun hasActiveSpell(): Boolean {
+        return ::_spell.isInitialized
+    }
+    override fun setSpell(spell: Magic) {
+        _spell = spell
+    }
+    override fun getMagicDamage() = currentMagicDamage
 
     override val maxMp: Int = Require.Stat(maxMp, "Max MP") atLeast 1
     private var _currentMp: Int = maxMp

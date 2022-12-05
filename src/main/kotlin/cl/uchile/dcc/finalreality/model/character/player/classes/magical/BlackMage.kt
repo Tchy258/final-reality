@@ -7,6 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.exceptions.NoActiveSpellException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
@@ -44,14 +45,15 @@ class BlackMage(
     turnsQueue: BlockingQueue<GameCharacter>
 ) : AbstractMage(name, maxHp, maxMp, defense, turnsQueue) {
 
-    override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff> {
+    override fun cast(target: GameCharacter): Pair<Int, Debuff> {
         if (hasWeaponEquipped()) {
-            val wasCast: Boolean = canUseMp(spell.cost)
+            if (!hasActiveSpell()) throw NoActiveSpellException(name)
+            val wasCast: Boolean = canUseMp(activeSpell.cost)
             val hpBefore = target.currentHp
             var hpNow = hpBefore
             var debuff: Debuff = NoDebuff()
             if (wasCast) {
-                debuff = spell.castBlackMagic(target)
+                debuff = activeSpell.castBlackMagic(target)
                 hpNow = target.currentHp
             }
             return if (wasCast) {

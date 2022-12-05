@@ -7,6 +7,7 @@
  */
 package cl.uchile.dcc.finalreality.model.character.player.classes.magical
 
+import cl.uchile.dcc.finalreality.exceptions.NoActiveSpellException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
@@ -47,13 +48,14 @@ class WhiteMage(
         weapon.equipToWhiteMage(this)
     }
 
-    override fun cast(spell: Magic, target: GameCharacter): Pair<Int, Debuff> {
+    override fun cast(target: GameCharacter): Pair<Int, Debuff> {
         if (hasWeaponEquipped()) {
-            val wasCast: Boolean = canUseMp(spell.cost)
+            if (!hasActiveSpell()) throw NoActiveSpellException(name)
+            val wasCast: Boolean = canUseMp(activeSpell.cost)
             var debuff: Debuff = NoDebuff()
             return if (wasCast) {
                 val hpBefore = target.currentHp
-                debuff = spell.castWhiteMagic(target)
+                debuff = activeSpell.castWhiteMagic(target)
                 Pair(target.currentHp - hpBefore, debuff)
             } else {
                 Pair(-1, debuff)
