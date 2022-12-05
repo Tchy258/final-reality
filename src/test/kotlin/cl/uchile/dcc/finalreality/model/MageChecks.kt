@@ -141,11 +141,11 @@ internal suspend fun blackMagicStaffCastTest(queue: LinkedBlockingQueue<GameChar
             randomBlackMage.setSpell(Thunder(randomBlackMage.getMagicDamage()))
             randomBlackMage.cast(gameCharacter)
             gameCharacter.currentHp shouldBeLessThanOrEqual gameCharacter.maxHp
-            gameCharacter.currentHp shouldBe Integer.max((hpBefore - randomStaff.magicDamage), 0)
+            gameCharacter.currentHp shouldBe max((hpBefore - randomStaff.magicDamage), 0)
             hpBefore = gameCharacter.currentHp
             randomBlackMage.setSpell(Fire(randomBlackMage.getMagicDamage()))
             randomBlackMage.cast(gameCharacter)
-            gameCharacter.currentHp shouldBe Integer.max((hpBefore - randomStaff.magicDamage), 0)
+            gameCharacter.currentHp shouldBe max((hpBefore - randomStaff.magicDamage), 0)
         }
     }
 }

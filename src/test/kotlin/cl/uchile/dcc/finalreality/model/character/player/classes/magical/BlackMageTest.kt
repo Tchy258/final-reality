@@ -24,6 +24,7 @@ import cl.uchile.dcc.finalreality.model.magic.blackmagic.Fire
 import cl.uchile.dcc.finalreality.model.magic.blackmagic.Thunder
 import cl.uchile.dcc.finalreality.model.mpDecreaseCheck
 import cl.uchile.dcc.finalreality.model.mpIncreaseCheck
+import cl.uchile.dcc.finalreality.model.noActiveSpellCheck
 import cl.uchile.dcc.finalreality.model.notNullCheck
 import cl.uchile.dcc.finalreality.model.selfEqualityCheck
 import cl.uchile.dcc.finalreality.model.validEquippableWeaponCheck
@@ -41,6 +42,7 @@ import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
+import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.concurrent.LinkedBlockingQueue
@@ -213,6 +215,33 @@ class BlackMageTest : FunSpec({
                 )
             }
         }
+        test("Be able to show its equipped weapon's magic damage") {
+            checkAll(thisData, NonMagicalWeaponData.validGenerator, staffData) {
+                mage, knife, staff ->
+                val randomBlackMage = mage.process(thisFactory)
+                val randomKnife = knife.process(KnifeTestingFactory())
+                val randomStaff = staff.process(StaffTestingFactory())
+                randomBlackMage.equip(randomKnife)
+                randomBlackMage.getMagicDamage() shouldBe 1
+                randomBlackMage.equip(randomStaff)
+                randomBlackMage.getMagicDamage() shouldBe randomStaff.magicDamage
+            }
+        }
+        test("Be able to show a list of its magic spells") {
+            checkAll(
+                thisData,
+                staffData
+            ) { mage, staff ->
+                val randomBlackMage = mage.process(thisFactory)
+                val randomStaff = staff.process(StaffTestingFactory())
+                randomBlackMage.equip(randomStaff)
+                val expected = listOf(
+                    Thunder(randomBlackMage.getMagicDamage()),
+                    Fire(randomBlackMage.getMagicDamage())
+                )
+                randomBlackMage.getSpells() shouldBe expected
+            }
+        }
         test("Be able to cast black magic spells") {
             blackMagicStaffCastTest(queue)
             blackMagicNoStaffCastTest(queue)
@@ -220,6 +249,9 @@ class BlackMageTest : FunSpec({
         test("Be unable to cast spells with insufficient mp") {
             insufficientMpSpellCastCheck({ value: Int -> Thunder(value) }, thisData, thisFactory)
             insufficientMpSpellCastCheck({ value: Int -> Fire(value) }, thisData, thisFactory)
+        }
+        test("Be unable to use magic without setting an active spell first") {
+            noActiveSpellCheck(thisFactory)
         }
         test("Be unable to cast white magic spells") {
             blackMageUnusableSpellCastCheck(queue)

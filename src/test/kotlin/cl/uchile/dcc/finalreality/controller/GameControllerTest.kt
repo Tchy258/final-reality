@@ -6,8 +6,10 @@ import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import kotlin.random.Random
 import org.junit.jupiter.api.assertThrows
+import java.lang.Integer.min
+import kotlin.math.ceil
+import kotlin.random.Random
 
 class GameControllerTest : FunSpec({
     lateinit var game: GameController
@@ -110,21 +112,68 @@ class GameControllerTest : FunSpec({
             }
             test("Give a turn to a character") {
                 var characterIndex = game.getCurrentCharacter()
-                while(characterIndex==-1) {
+                while (characterIndex == -1) {
                     game.nextTurn()
                     characterIndex = game.getCurrentCharacter()
-                    if(characterIndex!= -1) break;
+                    if (characterIndex != -1) break
                     game.isGameOver()
                 }
                 characterIndex shouldNotBe -1
                 characterIndex shouldBeGreaterThanOrEqual 0
                 characterIndex shouldBeLessThan 5
+                // With this seed, this character is always the WhiteMage
             }
             test("Allow said character to check the inventory") {
-                val expected = listOf<Triple<String,Int,Int>>(
-                    Triple("BasicAxe",60,40),
-                    Triple("BasicStaff (Currently equipped)",)
+                val expected = listOf(
+                    Triple("BasicAxe", 60, 40),
+                    Triple("BasicWand (Currently equipped)", 8, 21)
                 )
+                game.getInventory() shouldBe expected
+            }
+            test("Allow said character to equip a valid weapon") {
+                game.equipWeapon(0) shouldBe false
+                game.equipWeapon(1) shouldBe true
+            }
+            test("Allow this character to see its spells") {
+                val expected = listOf(
+                    Triple("Cure", 15, "NoDebuff"),
+                    Triple("Paralysis", 25, "Paralyzed"),
+                    Triple("Poison", 40, "Poisoned")
+                )
+                game.getAvailableSpells() shouldBe expected
+            }
+            test("Allow this character to cast a spell") {
+                val currentHp = game.getCharacterHp()
+                var target = 0
+                for (i in currentHp.indices) {
+                    if (currentHp[i].first < currentHp[i].second) {
+                        target = i
+                        break
+                    }
+                }
+                val possibleHealing = min(ceil((currentHp[target].second.toDouble() * 3 / 10f)).toInt(), currentHp[target].second - currentHp[target].first)
+                val expected = Pair(possibleHealing, "NoDebuff")
+                game.useMagic(0, target, false) shouldBe expected
+            }
+            test("Disallow this character from doing anything else before and end check is done") {
+                assertThrows<IllegalStateActionException> {
+                    game.useMagic(0, 0, false)
+                }
+                assertThrows<IllegalStateActionException> {
+                    game.attack(1)
+                }
+                game.isGameOver() shouldBe false
+                game.nextTurn()
+            }
+            test("Allow the next character available to attack") {
+                var characterIndex = game.getCurrentCharacter()
+                while (characterIndex == -1) {
+                    game.nextTurn()
+                    characterIndex = game.getCurrentCharacter()
+                    if (characterIndex != -1) break
+                    game.isGameOver()
+                }
+                game.attack(0)
             }
         }
     }

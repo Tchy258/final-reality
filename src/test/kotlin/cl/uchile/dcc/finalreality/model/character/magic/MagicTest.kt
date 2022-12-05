@@ -1,6 +1,5 @@
 package cl.uchile.dcc.finalreality.model.character.magic
 
-import cl.uchile.dcc.finalreality.model.magic.Magic
 import cl.uchile.dcc.finalreality.model.magic.blackmagic.Fire
 import cl.uchile.dcc.finalreality.model.magic.blackmagic.Thunder
 import cl.uchile.dcc.finalreality.model.magic.whitemagic.Cure
@@ -57,7 +56,7 @@ class MagicTest : FunSpec({
             cure2 shouldBe cure2
         }
         test("Not be equal to other spells") {
-            val spells = listOf<Magic>(
+            val spells = listOf(
                 thunder1,
                 fire1,
                 poison1,

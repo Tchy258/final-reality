@@ -22,6 +22,7 @@ import cl.uchile.dcc.finalreality.model.magic.whitemagic.Paralysis
 import cl.uchile.dcc.finalreality.model.magic.whitemagic.Poison
 import cl.uchile.dcc.finalreality.model.mpDecreaseCheck
 import cl.uchile.dcc.finalreality.model.mpIncreaseCheck
+import cl.uchile.dcc.finalreality.model.noActiveSpellCheck
 import cl.uchile.dcc.finalreality.model.notNullCheck
 import cl.uchile.dcc.finalreality.model.selfEqualityCheck
 import cl.uchile.dcc.finalreality.model.validEquippableWeaponCheck
@@ -41,6 +42,7 @@ import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
+import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.concurrent.LinkedBlockingQueue
@@ -206,6 +208,31 @@ class WhiteMageTest : FunSpec({
                 )
             }
         }
+        test("Be able to show its equipped weapon's magic damage") {
+            checkAll(thisData, staffData) {
+                mage, staff ->
+                val randomWhiteMage = mage.process(thisFactory)
+                val randomStaff = staff.process(StaffTestingFactory())
+                randomWhiteMage.equip(randomStaff)
+                randomWhiteMage.getMagicDamage() shouldBe randomStaff.magicDamage
+            }
+        }
+        test("Be able to show a list of its magic spells") {
+            checkAll(
+                thisData,
+                staffData
+            ) { mage, staff ->
+                val randomWhiteMage = mage.process(thisFactory)
+                val randomStaff = staff.process(StaffTestingFactory())
+                randomWhiteMage.equip(randomStaff)
+                val expected = listOf(
+                    Cure(),
+                    Paralysis(),
+                    Poison(randomWhiteMage.getMagicDamage())
+                )
+                randomWhiteMage.getSpells() shouldBe expected
+            }
+        }
         test("Be able to cast white magic spells") {
             whiteMagicCastTest(queue)
         }
@@ -213,6 +240,9 @@ class WhiteMageTest : FunSpec({
             insufficientMpSpellCastCheck({ _: Int -> Cure() }, thisData, thisFactory)
             insufficientMpSpellCastCheck({ value: Int -> Poison(value) }, thisData, thisFactory)
             insufficientMpSpellCastCheck({ _: Int -> Paralysis() }, thisData, thisFactory)
+        }
+        test("Be unable to use magic without setting an active spell first") {
+            noActiveSpellCheck(thisFactory)
         }
         test("Be unable to cast black magic spells") {
             whiteMageUnusableSpellCastCheck(queue)
