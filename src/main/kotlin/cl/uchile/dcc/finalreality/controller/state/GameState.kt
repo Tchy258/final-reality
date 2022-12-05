@@ -78,7 +78,7 @@ interface GameState {
      * @return whether the weapon could be equipped
      */
     fun equipWeapon(character: PlayerCharacter, weapon: Weapon): Boolean {
-        throw IllegalStateActionException("Equip a weapon", this::class.simpleName!!)
+        throw IllegalStateActionException("equip a weapon", this::class.simpleName!!)
     }
     /**
      * Issue an attack command from [attacker] to [target]
@@ -158,7 +158,7 @@ interface GameState {
      *
      */
     fun getMagicDamage(character: PlayerCharacter): Int {
-        throw IllegalStateActionException("get a magic weapon damage",this::class.simpleName!!)
+        throw IllegalStateActionException("get a magic weapon damage", this::class.simpleName!!)
     }
     /**
      * Function to wait for the next turn

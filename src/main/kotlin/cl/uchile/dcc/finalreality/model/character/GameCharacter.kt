@@ -11,7 +11,6 @@ import cl.uchile.dcc.finalreality.model.character.debuff.Burned
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
 import cl.uchile.dcc.finalreality.model.character.debuff.Paralyzed
 import cl.uchile.dcc.finalreality.model.character.debuff.Poisoned
-import cl.uchile.dcc.finalreality.model.magic.Magic
 
 /**
  * This represents a character from the game.
@@ -94,13 +93,5 @@ interface GameCharacter {
      */
     fun isMage(): Boolean {
         return false
-    }
-
-    /**
-     * Function to get a list with the spells this character can use
-     * @return a list with the spells
-     */
-    fun getSpells(): List<Magic> {
-        return listOf()
     }
 }

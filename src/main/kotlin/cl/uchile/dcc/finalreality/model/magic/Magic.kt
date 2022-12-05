@@ -23,12 +23,6 @@ interface Magic {
     val cost: Int
     val debuff: Debuff
     /**
-     * Cast this magic spell onto a [spellTarget],
-     * applying a [Debuff] if applicable
-     * @return the spell's adverse effect
-     */
-    fun cast(spellTarget: GameCharacter): Debuff
-    /**
      * Cast this black magic spell onto a [spellTarget],
      * applying a [Debuff] if applicable
      * @return the spell's adverse effect

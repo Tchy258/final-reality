@@ -18,7 +18,6 @@ import cl.uchile.dcc.finalreality.model.magic.Magic
  * @author <a href="https://www.github.com/tchy258">Tchy258</a>
  */
 interface WhiteMagic : Magic {
-    override fun cast(spellTarget: GameCharacter): Debuff = castWhiteMagic(spellTarget)
     override fun castWhiteMagic(spellTarget: GameCharacter): Debuff
     override fun castBlackMagic(spellTarget: GameCharacter): Debuff = throw InvalidSpellCastException("WhiteMage", this::class.simpleName!!)
 }

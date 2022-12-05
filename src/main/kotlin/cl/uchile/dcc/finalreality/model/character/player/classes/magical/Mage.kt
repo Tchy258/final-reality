@@ -39,7 +39,11 @@ interface Mage : PlayerCharacter {
      * @param restoration the amount of mp restored
      */
     fun restoreMp(restoration: Int)
-
+    /**
+     * Function to get a list with the spells this character can use
+     * @return a list with the spells
+     */
+    fun getSpells(): List<Magic>
     /**
      * Returns this mage's current magic damage
      */

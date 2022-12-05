@@ -21,6 +21,7 @@ class EnemyTurnState(override val controller: GameController) : GameState {
      * @return the amount of damage dealt
      */
     override fun enemyAttack(attacker: GameCharacter, target: GameCharacter): Int {
+        toEndCheck()
         return attacker.attack(target)
     }
 }

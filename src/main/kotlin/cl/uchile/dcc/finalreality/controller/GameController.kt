@@ -111,7 +111,7 @@ class GameController {
                 viewData.add(data)
             }
             val equippedWeapon = playerCharacters[activeCharacterIndex].equippedWeapon
-            viewData.add(Triple("${equippedWeapon.name} (Currently equipped)",equippedWeapon.damage,equippedWeapon.weight))
+            viewData.add(Triple("${equippedWeapon.name} (Currently equipped)", equippedWeapon.damage, equippedWeapon.weight))
             gameState.toWeaponEquip()
             return viewData.toList()
         } else {
@@ -128,11 +128,15 @@ class GameController {
 
     /**
      * Attempts to equip a weapon from the inventory with the specified [weaponId] to the
-     * character with the specified [characterId]
+     * character with the [activeCharacterIndex]
      * @return whether the weapon was successfully equipped or not
      */
-    fun equipWeapon(characterId: Int, weaponId: Int): Boolean {
-        return gameState.equipWeapon(playerCharacters[characterId], playerInventory[weaponId])
+    fun equipWeapon(weaponId: Int): Boolean {
+        return if (weaponId < playerInventory.size) {
+            gameState.equipWeapon(playerCharacters[activeCharacterIndex], playerInventory[weaponId])
+        } else {
+            gameState.equipWeapon(playerCharacters[activeCharacterIndex], playerCharacters[activeCharacterIndex].equippedWeapon)
+        }
     }
 
     /**
@@ -264,7 +268,7 @@ class GameController {
      */
     fun getAvailableSpells(): List<Triple<String, Int, String>> {
         if (gameState.isMagicalPlayerTurn()) {
-            val spells = playerCharacters[activeCharacterIndex].getSpells()
+            val spells = (playerCharacters[activeCharacterIndex] as Mage).getSpells()
             val viewData = mutableListOf<Triple<String, Int, String>>()
             for (spell in spells) {
                 val info = Triple(spell::class.simpleName!!, spell.cost, spell.debuff::class.simpleName!!)
@@ -336,23 +340,21 @@ class GameController {
     }
     /**
      * Public function to issue an attack
-     * @param id1 the index of the player character on the player character list
-     * @param id2 the index of the enemy character on the enemy character list
+     * @param enemyId the index of the enemy character on the enemy character list
      */
-    fun attack(id1: Int, id2: Int): Int {
-        val damage = gameState.attack(playerCharacters[id1], enemyCharacters[id2])
-        advanceTurn(playerCharacters[id1])
+    fun attack(enemyId: Int): Int {
+        val damage = gameState.attack(playerCharacters[activeCharacterIndex], enemyCharacters[enemyId])
+        advanceTurn(playerCharacters[activeCharacterIndex])
         return damage
     }
     /**
-     * Issues a cast command to the caster given by [casterId] unto a target character
-     * @param casterId index of the caster
+     * Issues a cast command to the caster given by [activeCharacterIndex] unto a target character
      * @param spellId index of the spell on the caster's spell list
      * @param enemyTarget whether this spell targets enemies or allies
      * @return a pair with the damage dealt and debuff if any
      */
-    fun useMagic(casterId: Int, spellId: Int, targetId: Int, enemyTarget: Boolean): Pair<Int, String> {
-        val attacker = playerCharacters[casterId] as Mage
+    fun useMagic(spellId: Int, targetId: Int, enemyTarget: Boolean): Pair<Int, String> {
+        val attacker = playerCharacters[activeCharacterIndex] as Mage
         val spellList = attacker.getSpells()
         val target = if (enemyTarget) enemyCharacters[targetId] else playerCharacters[targetId]
         attacker.setSpell(spellList[spellId])
@@ -368,16 +370,6 @@ class GameController {
     private fun advanceTurn(character: GameCharacter) {
         turnsQueue.poll()
         waitTurn(character)
-        gameState.toEndCheck()
-    }
-
-    /**
-     * Function to end a character's turn
-     * @param characterId the index of the character in the [playerCharacters] list
-     */
-    fun endTurn(characterId: Int) {
-        val character = playerCharacters[characterId]
-        advanceTurn(character)
     }
 
     /**
@@ -391,7 +383,7 @@ class GameController {
     /**
      * Function to make enemies attack
      */
-    fun enemyTurn(character: GameCharacter) {
+    private fun enemyTurn(character: GameCharacter) {
         if (gameState.isEnemyTurn()) {
             var attackDone = false
             while (!attackDone) {

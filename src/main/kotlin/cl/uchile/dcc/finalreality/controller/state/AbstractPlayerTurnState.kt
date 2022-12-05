@@ -14,7 +14,7 @@ abstract class AbstractPlayerTurnState : GameState {
         controller.setState(EndCheckState(controller))
     }
     override fun attack(attacker: GameCharacter, target: GameCharacter): Int {
-        controller.setState(EndCheckState(controller))
+        toEndCheck()
         return attacker.attack(target)
     }
 }
