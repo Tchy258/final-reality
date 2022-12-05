@@ -2,11 +2,13 @@ package cl.uchile.dcc.finalreality.model
 
 import cl.uchile.dcc.finalreality.exceptions.InvalidSpellCastException
 import cl.uchile.dcc.finalreality.exceptions.InvalidStatValueException
+import cl.uchile.dcc.finalreality.exceptions.NoActiveSpellException
 import cl.uchile.dcc.finalreality.exceptions.NoWeaponEquippedException
 import cl.uchile.dcc.finalreality.model.character.CharacterTestingFactory
 import cl.uchile.dcc.finalreality.model.character.EnemyData
 import cl.uchile.dcc.finalreality.model.character.EnemyTestingFactory
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
+import cl.uchile.dcc.finalreality.model.character.debuff.NoDebuff
 import cl.uchile.dcc.finalreality.model.character.player.classes.CharacterData
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMageTestingFactory
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.MageData
@@ -37,6 +39,7 @@ import io.kotest.property.assume
 import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.lang.Integer.max
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.ceil
 
@@ -101,7 +104,8 @@ internal suspend fun mageUnarmedActionCheck(characterFactory: CharacterTestingFa
         assertThrows<NoWeaponEquippedException> {
             // The concrete mage doesn't matter, even if it's the wrong spell color
             // the mage won't be able to cast unarmed
-            randomMage.cast(Thunder(), randomMage2)
+            randomMage.setSpell(Thunder(randomMage.getMagicDamage()))
+            randomMage.cast(randomMage2)
         }
         assertThrows<NoWeaponEquippedException> {
             randomMage.attack(randomMage2)
@@ -134,11 +138,13 @@ internal suspend fun blackMagicStaffCastTest(queue: LinkedBlockingQueue<GameChar
         )
         for (gameCharacter in randomCharacters) {
             var hpBefore = gameCharacter.currentHp
-            randomBlackMage.cast(Thunder(), gameCharacter)
+            randomBlackMage.setSpell(Thunder(randomBlackMage.getMagicDamage()))
+            randomBlackMage.cast(gameCharacter)
             gameCharacter.currentHp shouldBeLessThanOrEqual gameCharacter.maxHp
             gameCharacter.currentHp shouldBe Integer.max((hpBefore - randomStaff.magicDamage), 0)
             hpBefore = gameCharacter.currentHp
-            randomBlackMage.cast(Fire(), gameCharacter)
+            randomBlackMage.setSpell(Fire(randomBlackMage.getMagicDamage()))
+            randomBlackMage.cast(gameCharacter)
             gameCharacter.currentHp shouldBe Integer.max((hpBefore - randomStaff.magicDamage), 0)
         }
     }
@@ -168,10 +174,12 @@ internal suspend fun blackMagicNoStaffCastTest(queue: LinkedBlockingQueue<GameCh
             enemy.process(EnemyTestingFactory(queue))
         )
         for (gameCharacter in randomCharacters) {
-            randomBlackMage.cast(Thunder(), gameCharacter)
-            gameCharacter.currentHp shouldBe gameCharacter.maxHp
-            randomBlackMage.cast(Fire(), gameCharacter)
-            gameCharacter.currentHp shouldBe gameCharacter.maxHp
+            randomBlackMage.setSpell(Thunder(randomBlackMage.getMagicDamage()))
+            randomBlackMage.cast(gameCharacter)
+            gameCharacter.currentHp shouldBe max((gameCharacter.maxHp - 1), 0)
+            randomBlackMage.setSpell(Fire(randomBlackMage.getMagicDamage()))
+            randomBlackMage.cast(gameCharacter)
+            gameCharacter.currentHp shouldBe max((gameCharacter.maxHp - 2), 0)
         }
     }
 }
@@ -200,7 +208,8 @@ internal suspend fun whiteMagicCastTest(queue: LinkedBlockingQueue<GameCharacter
             enemy.process(EnemyTestingFactory(queue))
         )
         for (gameCharacter in randomCharacters) {
-            randomWhiteMage.cast(Poison(), gameCharacter)
+            randomWhiteMage.setSpell(Poison(randomWhiteMage.getMagicDamage()))
+            randomWhiteMage.cast(gameCharacter)
             gameCharacter.isPoisoned() shouldBe true
             if (gameCharacter == randomCharacters.last()) {
                 gameCharacter.attack(randomWhiteMage)
@@ -210,9 +219,11 @@ internal suspend fun whiteMagicCastTest(queue: LinkedBlockingQueue<GameCharacter
                 gameCharacter.receiveMagicDamage(ceil(gameCharacter.maxHp.toDouble() * 3 / 10f).toInt())
             }
             val hpBefore = gameCharacter.currentHp
-            randomWhiteMage.cast(Cure(), gameCharacter)
+            randomWhiteMage.setSpell(Cure())
+            randomWhiteMage.cast(gameCharacter)
             gameCharacter.currentHp shouldBe Integer.min((hpBefore + ceil(gameCharacter.maxHp.toDouble() * 3 / 10f).toInt()), gameCharacter.maxHp)
-            randomWhiteMage.cast(Paralysis(), gameCharacter)
+            randomWhiteMage.setSpell(Paralysis())
+            randomWhiteMage.cast(gameCharacter)
             gameCharacter.isParalyzed() shouldBe true
         }
     }
@@ -231,13 +242,14 @@ internal suspend fun blackMageUnusableSpellCastCheck(queue: LinkedBlockingQueue<
         val randomStaff = staff.process(StaffTestingFactory())
         val randomEnemy = enemy.process(EnemyTestingFactory(queue))
         randomBlackMage.equip(randomStaff)
+        randomBlackMage.setSpell(Cure())
         assertThrows<InvalidSpellCastException> {
-            randomBlackMage.cast(Cure(), randomEnemy)
+            randomBlackMage.cast(randomEnemy)
         }
     }
 }
 
-internal suspend fun insufficientMpSpellCastCheck(spell: Magic, generator: Arb<MageData>, factory: CharacterTestingFactory) {
+internal suspend fun insufficientMpSpellCastCheck(spell: (dmg: Int) -> Magic, generator: Arb<MageData>, factory: CharacterTestingFactory) {
     checkAll(
         // The upper limit of spell costs is a very tiny value compared to,
         // all the possible integers this test may try with
@@ -245,14 +257,15 @@ internal suspend fun insufficientMpSpellCastCheck(spell: Magic, generator: Arb<M
         generator,
         StaffData.validGenerator
     ) { mage, staff ->
-        assume {
-            mage.maxMp shouldBeLessThan spell.cost
-        }
         val randomMage = mage.process(factory)
         val randomMage2 = mage.process(factory)
         val randomStaff = staff.process(StaffTestingFactory())
         randomMage.equip(randomStaff)
-        randomMage.cast(spell, randomMage2) shouldBe Pair(-1, null)
+        randomMage.setSpell(spell(randomMage.getMagicDamage()))
+        assume {
+            mage.maxMp shouldBeLessThan randomMage.activeSpell.cost
+        }
+        randomMage.cast(randomMage2) shouldBe Pair(-1, NoDebuff())
     }
 }
 
@@ -269,8 +282,9 @@ internal suspend fun whiteMageUnusableSpellCastCheck(queue: LinkedBlockingQueue<
         val randomStaff = staff.process(StaffTestingFactory())
         val randomEnemy = enemy.process(EnemyTestingFactory(queue))
         randomWhiteMage.equip(randomStaff)
+        randomWhiteMage.setSpell(Thunder(randomWhiteMage.getMagicDamage()))
         assertThrows<InvalidSpellCastException> {
-            randomWhiteMage.cast(Thunder(), randomEnemy)
+            randomWhiteMage.cast(randomEnemy)
         }
     }
 }
@@ -310,6 +324,26 @@ internal suspend fun mpDecreaseCheck(characterFactory: CharacterTestingFactory) 
             randomMage.currentMp shouldBeGreaterThanOrEqualTo 0
         } else {
             randomMage.currentMp shouldBe mage.maxMp
+        }
+    }
+}
+
+internal suspend fun noActiveSpellCheck(characterFactory: CharacterTestingFactory) {
+    checkAll(
+        MageData.validGenerator,
+        EnemyData.validGenerator,
+        StaffData.validGenerator
+    ) { mage, enemy, staff ->
+        assume {
+            mage.maxMp shouldBeGreaterThanOrEqualTo 15
+        }
+        val queue = characterFactory.queue
+        val randomMage = mage.process(characterFactory)
+        val randomStaff = staff.process(StaffTestingFactory())
+        val randomEnemy = enemy.process(EnemyTestingFactory(queue))
+        randomMage.equip(randomStaff)
+        assertThrows<NoActiveSpellException> {
+            randomMage.cast(randomEnemy)
         }
     }
 }

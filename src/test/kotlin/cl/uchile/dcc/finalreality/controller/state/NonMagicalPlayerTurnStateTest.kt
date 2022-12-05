@@ -14,7 +14,7 @@ import java.util.function.Predicate
 
 class NonMagicalPlayerTurnStateTest : FunSpec({
     val dummyController = GameController()
-    val thisState = MagicalPlayerTurnState(dummyController)
+    val thisState = NonMagicalPlayerTurnState(dummyController)
 
     val validTransitions: List<(GameState) -> Unit> = listOf(
         endCheckTransition,

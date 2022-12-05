@@ -3,8 +3,8 @@ package cl.uchile.dcc.finalreality.controller.state
 import cl.uchile.dcc.finalreality.controller.GameController
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.debuff.Debuff
+import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.Mage
-import cl.uchile.dcc.finalreality.model.magic.Magic
 
 /**
  * This represents a player mage's turn, this state is necessary to
@@ -19,7 +19,12 @@ class MagicalPlayerTurnState(override val controller: GameController) : Abstract
     override fun toEndCheck() {
         controller.setState(EndCheckState(controller))
     }
-    override fun useMagic(attacker: Mage, spell: Magic, target: GameCharacter): Pair<Int, Debuff> {
-        return attacker.cast(spell, target)
+
+    override fun getMagicDamage(character: PlayerCharacter): Int {
+        character as Mage
+        return character.getMagicDamage()
+    }
+    override fun useMagic(attacker: Mage, target: GameCharacter): Pair<Int, Debuff> {
+        return attacker.cast(target)
     }
 }

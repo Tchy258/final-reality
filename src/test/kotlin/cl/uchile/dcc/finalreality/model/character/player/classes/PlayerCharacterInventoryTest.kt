@@ -50,22 +50,23 @@ class PlayerCharacterInventoryTest : FunSpec({
             character1.equip(newWeapon)
             character2.equip(duplicateBow)
             character3.equip(duplicateStaff)
-            inventory.size shouldBe 0
+            inventory.size shouldBe 1
+            inventory[0] shouldBe Axe("BasicAxe", 60, 40)
 
             character1.equip(weaponList[0])
             inventory = getInventory()
-            inventory.size shouldBe 1
-            inventory[0] shouldBe newWeapon
+            inventory.size shouldBe 2
+            inventory[1] shouldBe newWeapon
 
             character2.equip(weaponList[4])
             inventory = getInventory()
-            inventory.size shouldBe 2
-            inventory[1] shouldBe duplicateBow
+            inventory.size shouldBe 3
+            inventory[2] shouldBe duplicateBow
 
             character3.equip(weaponList[8])
             inventory = getInventory()
-            inventory.size shouldBe 3
-            inventory[2] shouldBe duplicateStaff
+            inventory.size shouldBe 4
+            inventory[3] shouldBe duplicateStaff
         }
         test("Be able to equip weapons from the inventory, removing them in the process") {
             addWeaponToInventory(weaponList[6])

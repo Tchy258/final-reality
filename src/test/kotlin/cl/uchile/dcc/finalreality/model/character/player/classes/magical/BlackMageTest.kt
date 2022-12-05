@@ -218,8 +218,8 @@ class BlackMageTest : FunSpec({
             blackMagicNoStaffCastTest(queue)
         }
         test("Be unable to cast spells with insufficient mp") {
-            insufficientMpSpellCastCheck(Thunder(), thisData, thisFactory)
-            insufficientMpSpellCastCheck(Fire(), thisData, thisFactory)
+            insufficientMpSpellCastCheck({ value: Int -> Thunder(value) }, thisData, thisFactory)
+            insufficientMpSpellCastCheck({ value: Int -> Fire(value) }, thisData, thisFactory)
         }
         test("Be unable to cast white magic spells") {
             blackMageUnusableSpellCastCheck(queue)

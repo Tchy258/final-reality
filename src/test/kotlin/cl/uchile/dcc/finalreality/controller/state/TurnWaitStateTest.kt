@@ -15,7 +15,7 @@ import java.util.function.Predicate
 
 class TurnWaitStateTest : FunSpec({
     val dummyController = GameController()
-    val thisState = MagicalPlayerTurnState(dummyController)
+    val thisState = TurnWaitState(dummyController)
 
     val validTransitions: List<(GameState) -> Unit> = listOf(
         enemyTurnTransition,

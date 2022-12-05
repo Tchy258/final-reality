@@ -13,7 +13,7 @@ import java.util.function.Predicate
 
 class PlayerDefeatedStateTest : FunSpec({
     val dummyController = GameController()
-    val thisState = MagicalPlayerTurnState(dummyController)
+    val thisState = PlayerDefeatedState(dummyController)
 
     val validTransitions: List<(GameState) -> Unit> = listOf(
         characterCreationTransition

@@ -32,7 +32,7 @@ class InvalidSpellCastExceptionTest : FunSpec({
             assertThrows<InvalidSpellCastException> {
                 throw InvalidSpellCastException(
                     randomWhiteMage::class.simpleName!!,
-                    Thunder()::class.simpleName!!
+                    Thunder(10)::class.simpleName!!
                 )
             }.message shouldBe prefix + "WhiteMage" + mid + "Thunder" + suffix
         }

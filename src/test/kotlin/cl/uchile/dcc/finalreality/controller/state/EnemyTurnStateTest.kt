@@ -13,7 +13,7 @@ import java.util.function.Predicate
 
 class EnemyTurnStateTest : FunSpec({
     val dummyController = GameController()
-    val thisState = EnemyDefeatedState(dummyController)
+    val thisState = EnemyTurnState(dummyController)
 
     val validTransitions: List<(GameState) -> Unit> = listOf(
         endCheckTransition

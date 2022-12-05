@@ -9,7 +9,7 @@ import org.junit.jupiter.api.assertThrows
 internal val characterCreationTransition = GameState::toCharacterCreation
 internal val endCheckTransition = GameState::toEndCheck
 internal val enemyDefeatedTransition = GameState::toEnemyDefeated
-internal val enemyGenerationTransition = GameState::toCharacterCreation
+internal val enemyGenerationTransition = GameState::toEnemyGeneration
 internal val enemyTurnTransition = GameState::toEnemyTurn
 internal val magicalPlayerTurnTransition = GameState::toMagicalPlayerTurn
 internal val nonMagicalPlayerTurnTransition = GameState::toNonMagicalPlayerTurn

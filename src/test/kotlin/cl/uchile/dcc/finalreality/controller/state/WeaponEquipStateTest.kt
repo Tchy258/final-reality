@@ -8,8 +8,10 @@ import cl.uchile.dcc.finalreality.controller.nonMagicalPlayerTurnTransition
 import cl.uchile.dcc.finalreality.controller.stateQuestions
 import cl.uchile.dcc.finalreality.controller.stateTransitions
 import cl.uchile.dcc.finalreality.controller.validTransitionCheck
+import cl.uchile.dcc.finalreality.exceptions.InconsistentReturnStateException
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.assertThrows
 import java.util.function.Predicate
 
 class WeaponEquipStateTest : FunSpec({
@@ -33,6 +35,8 @@ class WeaponEquipStateTest : FunSpec({
     val invalidTransitions2: MutableList<(GameState) -> Unit> = stateTransitions.toMutableList()
     val predicate2 = Predicate { transition: (GameState) -> Unit -> validTransitions2.contains(transition) }
     invalidTransitions2.removeIf(predicate2)
+    invalidTransitions2.removeIf(predicate1)
+    invalidTransitions1.removeIf(predicate2)
     context("A WeaponEquipState should") {
         test("Be able to do valid transitions") {
             validTransitionCheck(thisState1, validTransitions1)
@@ -41,6 +45,14 @@ class WeaponEquipStateTest : FunSpec({
         test("Be unable to do invalid transitions") {
             invalidTransitionCheck(thisState1, invalidTransitions1)
             invalidTransitionCheck(thisState2, invalidTransitions2)
+        }
+        test("Throw an exception when asked to transition to the wrong state") {
+            assertThrows<InconsistentReturnStateException> {
+                thisState1.toMagicalPlayerTurn()
+            }
+            assertThrows<InconsistentReturnStateException> {
+                thisState2.toNonMagicalPlayerTurn()
+            }
         }
         test("Answer correctly when asked who they are") {
             falseQuestionsCheck(thisState1, otherQuestions)

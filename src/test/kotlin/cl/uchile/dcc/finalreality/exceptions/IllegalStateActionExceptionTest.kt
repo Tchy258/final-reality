@@ -5,11 +5,11 @@ import io.kotest.matchers.shouldBe
 import io.kotest.property.checkAll
 import org.junit.jupiter.api.assertThrows
 
-class IllegalActionExceptionTest : FunSpec({
+class IllegalStateActionExceptionTest : FunSpec({
     val prefix = "Tried to "
     val mid = " while on the "
 
-    test("An IllegalActionException can be thrown with a message") {
+    test("An IllegalStateActionException can be thrown with a message") {
         checkAll<String, String> { action, someStateName ->
             assertThrows<IllegalStateActionException> {
                 throw IllegalStateActionException(

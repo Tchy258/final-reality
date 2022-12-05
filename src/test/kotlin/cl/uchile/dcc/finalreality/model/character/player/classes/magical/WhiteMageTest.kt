@@ -210,9 +210,9 @@ class WhiteMageTest : FunSpec({
             whiteMagicCastTest(queue)
         }
         test("Be unable to cast spells with insufficient mp") {
-            insufficientMpSpellCastCheck(Cure(), thisData, thisFactory)
-            insufficientMpSpellCastCheck(Poison(), thisData, thisFactory)
-            insufficientMpSpellCastCheck(Paralysis(), thisData, thisFactory)
+            insufficientMpSpellCastCheck({ _: Int -> Cure() }, thisData, thisFactory)
+            insufficientMpSpellCastCheck({ value: Int -> Poison(value) }, thisData, thisFactory)
+            insufficientMpSpellCastCheck({ _: Int -> Paralysis() }, thisData, thisFactory)
         }
         test("Be unable to cast black magic spells") {
             whiteMageUnusableSpellCastCheck(queue)

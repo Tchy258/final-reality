@@ -2,7 +2,7 @@ package cl.uchile.dcc.finalreality.controller
 
 import cl.uchile.dcc.finalreality.controller.state.CharacterCreationState
 import cl.uchile.dcc.finalreality.controller.state.GameState
-import cl.uchile.dcc.finalreality.exceptions.IllegalActionException
+import cl.uchile.dcc.finalreality.exceptions.IllegalStateActionException
 import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
@@ -31,41 +31,47 @@ import kotlin.random.Random
  * @author <a href="https://github.com/Tchy258">Tchy258</a>
  */
 class GameController {
+    private var realState: GameState
+    private val turnsQueue: LinkedBlockingQueue<GameCharacter>
+    private val playerCharacters: MutableList<PlayerCharacter>
+    private val enemyCharacters: MutableList<Enemy>
+    private var gameIsOver: Boolean
+    val gameState: GameState
+        get() = realState
+    private val playerInventory
+        get() = PlayerCharacter.getInventory()
+    private val enemyNameList: List<String>
+    private var playerWin: Boolean
     /**
      * This block initializes the game generating a random number of enemies
      */
     init {
         val enemyAmount = ControllerRNGSeed.seed.nextInt(1, 6)
+        realState = CharacterCreationState(this)
+        turnsQueue = LinkedBlockingQueue()
+        playerCharacters = mutableListOf()
+        enemyCharacters = mutableListOf()
+        gameIsOver = false
+        enemyNameList = listOf(
+            "Goblin",
+            "Zu",
+            "Cockatrice",
+            "Hooded Stabber",
+            "Green Smelly",
+            "Bomb",
+            "Running Cactus",
+            "Slayer",
+            "Basilisk",
+            "Zombie",
+            "Mutant",
+            "Were-wolf",
+            "Vampire",
+            "Ogre",
+            "Red Panda"
+        )
+        playerWin = false
         generateEnemy(enemyAmount)
     }
-
-    private val turnsQueue = LinkedBlockingQueue<GameCharacter>()
-    private val playerCharacters = mutableListOf<PlayerCharacter>()
-    private val enemyCharacters = mutableListOf<Enemy>()
-    private var gameIsOver = false
-    private var realState: GameState = CharacterCreationState(this)
-    val gameState: GameState
-        get() = realState
-    private val playerInventory
-        get() = PlayerCharacter.getInventory()
-    private val enemyNameList: List<String> = listOf(
-        "Goblin",
-        "Zu",
-        "Cockatrice",
-        "Hooded Stabber",
-        "Green Smelly",
-        "Bomb",
-        "Running Cactus",
-        "Slayer",
-        "Basilisk",
-        "Zombie",
-        "Mutant",
-        "Were-wolf",
-        "Vampire",
-        "Ogre",
-        "Red Panda"
-    )
-    private var playerWin = false
 
     /**
      * Function to check whether the player won,
@@ -73,7 +79,7 @@ class GameController {
      */
     fun isPlayerWinner(): Boolean {
         if (gameState.isPlayerDefeated() || gameState.isEnemyDefeated()) return playerWin
-        else throw IllegalActionException("ask if the player won", gameState::class.simpleName!!)
+        else throw IllegalStateActionException("ask if the player won", gameState::class.simpleName!!)
     }
 
     /**
@@ -104,11 +110,20 @@ class GameController {
                 val data = Triple(weapon.name, weapon.damage, weapon.weight)
                 viewData.add(data)
             }
+            val equippedWeapon = playerCharacters[activeCharacterIndex].equippedWeapon
+            viewData.add(Triple("${equippedWeapon.name} (Currently equipped)",equippedWeapon.damage,equippedWeapon.weight))
             gameState.toWeaponEquip()
             return viewData.toList()
         } else {
-            throw IllegalActionException("check the inventory", gameState::class.simpleName!!)
+            throw IllegalStateActionException("check the inventory", gameState::class.simpleName!!)
         }
+    }
+    /**
+     * Returns the equipped weapon's magic damage
+     * This function is only usable on magic character turns
+     */
+    fun getMagicDamage(): Int {
+        return gameState.getMagicDamage(playerCharacters[activeCharacterIndex])
     }
 
     /**
@@ -257,13 +272,19 @@ class GameController {
             }
             return viewData.toList()
         } else {
-            throw IllegalActionException("check the available spells", gameState::class.simpleName!!)
+            throw IllegalStateActionException("check the available spells", gameState::class.simpleName!!)
         }
     }
     fun startBattle(): Boolean {
         return if (gameState.isCharacterCreation() || gameState.isEnemyGeneration()) {
             if (playerCharacters.size == 5) {
                 gameState.toTurnWait()
+                for (character in playerCharacters) {
+                    character.waitTurn()
+                }
+                for (enemy in enemyCharacters) {
+                    enemy.waitTurn()
+                }
                 true
             } else {
                 false
@@ -310,9 +331,8 @@ class GameController {
                     turnsQueue
                 )
                 enemyCharacters.add(newEnemy)
-                newEnemy.waitTurn()
             }
-        } else throw IllegalActionException("generate enemies", gameState::class.simpleName!!)
+        } else throw IllegalStateActionException("generate enemies", gameState::class.simpleName!!)
     }
     /**
      * Public function to issue an attack
@@ -335,7 +355,8 @@ class GameController {
         val attacker = playerCharacters[casterId] as Mage
         val spellList = attacker.getSpells()
         val target = if (enemyTarget) enemyCharacters[targetId] else playerCharacters[targetId]
-        val (damage, debuff) = gameState.useMagic(attacker, spellList[spellId], target)
+        attacker.setSpell(spellList[spellId])
+        val (damage, debuff) = gameState.useMagic(attacker, target)
         advanceTurn(attacker)
         return Pair(damage, debuff::class.simpleName!!)
     }
@@ -382,7 +403,7 @@ class GameController {
             }
             advanceTurn(character)
         } else {
-            throw IllegalActionException("make an enemy attack", gameState::class.simpleName!!)
+            throw IllegalStateActionException("make an enemy attack", gameState::class.simpleName!!)
         }
     }
 
@@ -423,7 +444,7 @@ class GameController {
             if (!gameIsOver) gameState.toTurnWait()
             return gameIsOver
         } else {
-            throw IllegalActionException("check the game's end", gameState::class.simpleName!!)
+            throw IllegalStateActionException("check the game's end", gameState::class.simpleName!!)
         }
     }
 
