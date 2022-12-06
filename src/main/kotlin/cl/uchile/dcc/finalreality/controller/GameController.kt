@@ -452,26 +452,4 @@ class GameController {
         }
         return sideDead
     }
-
-    override fun toString(): String {
-        val builder: StringBuilder = StringBuilder()
-        builder.append("Enemies: ")
-        for (i in 0..9) {
-            builder.append(' ')
-        }
-        builder.append("Characters:\n")
-        for (i in 0..4) {
-            val enemy = enemyCharacters[i]
-            builder.append("${enemy.name} HP:${enemy.currentHp}/${enemy.maxHp} ")
-            for (j in 0..11) {
-                builder.append(' ')
-            }
-            val character = playerCharacters[i]
-            builder.append(character)
-            builder.append("\n")
-        }
-        builder.append("${enemyCharacters[5].name} HP:${enemyCharacters[5].currentHp}/${enemyCharacters[5].maxHp}")
-        builder.append("\n\n")
-        return builder.toString()
-    }
 }
