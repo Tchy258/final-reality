@@ -175,6 +175,7 @@ class GameControllerTest : FunSpec({
                 }
                 game.attack(0)
             }
+            // Do random actions until the game is done
         }
     }
 })
