@@ -155,7 +155,7 @@ class GameControllerTest : FunSpec({
                 val expected = Pair(possibleHealing, "NoDebuff")
                 game.useMagic(0, target, false) shouldBe expected
             }
-            test("Disallow this character from doing anything else before and end check is done") {
+            test("Disallow this character from doing anything else before an end check is done") {
                 assertThrows<IllegalStateActionException> {
                     game.useMagic(0, 0, false)
                 }
