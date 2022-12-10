@@ -2,8 +2,8 @@ package cl.uchile.dcc.finalreality.model.character.player.classes
 
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter.Inventory.addWeaponToInventory
-import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter.Inventory.discardWeaponFromInventory
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter.Inventory.getInventory
+import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter.Inventory.resetInventory
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.BlackMage
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Knight
 import cl.uchile.dcc.finalreality.model.character.player.classes.physical.Thief
@@ -41,6 +41,13 @@ class PlayerCharacterInventoryTest : FunSpec({
             Staff("TestStaff2", 0, 15, 30),
         )
     }
+    test("The PlayerCharacter inventory can have weapons added and be reset") {
+        getInventory() shouldBe listOf(Axe("BasicAxe", 80, 40))
+        addWeaponToInventory(Sword("TestSword", 10, 10))
+        getInventory() shouldBe listOf(Axe("BasicAxe", 80, 40), Sword("TestSword", 10, 10))
+        resetInventory()
+        getInventory() shouldBe listOf(Axe("BasicAxe", 80, 40))
+    }
     context("PlayerCharacters should:") {
         test("Be able to add recently acquired weapons to the inventory") {
             val newWeapon = Sword("New Sword", 20, 10)
@@ -51,7 +58,7 @@ class PlayerCharacterInventoryTest : FunSpec({
             character2.equip(duplicateBow)
             character3.equip(duplicateStaff)
             inventory.size shouldBe 1
-            inventory[0] shouldBe Axe("BasicAxe", 60, 40)
+            inventory[0] shouldBe Axe("BasicAxe", 80, 40)
 
             character1.equip(weaponList[0])
             inventory = getInventory()
@@ -71,17 +78,14 @@ class PlayerCharacterInventoryTest : FunSpec({
         test("Be able to equip weapons from the inventory, removing them in the process") {
             addWeaponToInventory(weaponList[6])
             var inventory = getInventory()
-            inventory.size shouldBe 1
+            inventory.size shouldBe 2
             character1.equip(inventory[0])
             inventory = getInventory()
-            inventory.size shouldBe 0
+            inventory.size shouldBe 1
         }
     }
     // Clear the inventory
     afterEach {
-        val inventory = getInventory()
-        for (weapon in inventory) {
-            discardWeaponFromInventory(weapon)
-        }
+        resetInventory()
     }
 })
