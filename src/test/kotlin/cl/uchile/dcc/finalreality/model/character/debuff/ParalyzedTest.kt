@@ -51,8 +51,10 @@ class ParalyzedTest : FunSpec({
     test("A paralyzed character should not be able to attack for 1 turn") {
         val sword = Sword("PowerfulSword", 1000, 20)
         testCharacter.equip(sword)
+        testCharacter.getDebuffs() shouldBe listOf("Paralyzed")
         testCharacter.isParalyzed() shouldBe true
         testCharacter.rollEffects()
+        testCharacter.getDebuffs() shouldBe listOf()
         testCharacter.isParalyzed() shouldNotBe true
         testCharacter.attack(enemy1)
         enemy1.currentHp shouldNotBe enemy1.maxHp
