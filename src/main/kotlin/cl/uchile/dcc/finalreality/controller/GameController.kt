@@ -7,11 +7,13 @@ import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.Mage
+import cl.uchile.dcc.finalreality.model.weapon.Axe
 import cl.uchile.dcc.finalreality.model.weapon.Bow
 import cl.uchile.dcc.finalreality.model.weapon.Knife
 import cl.uchile.dcc.finalreality.model.weapon.Staff
 import cl.uchile.dcc.finalreality.model.weapon.Sword
 import java.util.concurrent.LinkedBlockingQueue
+import kotlin.math.ceil
 import kotlin.random.Random
 
 /**
@@ -67,6 +69,7 @@ class GameController {
             "Were-wolf",
             "Vampire",
             "Ogre",
+            "Dragon",
             "Red Panda"
         )
         playerWin = false
@@ -83,9 +86,9 @@ class GameController {
     }
 
     /**
-     * A -1 value implies there's no active character that can take a turn
-     * either due to not having checked the queue for the first time or a character
-     * being paralyzed
+     * A -1 value implies there's no active player character that can take a turn
+     * either due to not having checked the queue for the first time, the character
+     * being paralyzed, the player turn has already finished, or it's an enemy's turn
      */
     private var activeCharacterIndex: Int = -1
 
@@ -95,13 +98,32 @@ class GameController {
      */
     fun getCurrentCharacter(): Int = activeCharacterIndex
 
+    /**
+     * Function to get any character's adverse effects applied (if any)
+     * @param index the index of the character whose effects are requested
+     * @param enemyEffects whether the adverse effects of an enemy are being requested or not
+     * @return a list of strings containing the character's adverse effects' string representation
+     */
+    fun getAdverseEffects(index: Int, enemyEffects: Boolean): List<String> {
+        val character = if (enemyEffects) {
+            enemyCharacters[index]
+        } else {
+            playerCharacters[index]
+        }
+        return character.getDebuffs()
+    }
+
+    /**
+     * Function to set the game's state
+     * @param state the new game state
+     */
     fun setState(state: GameState) {
         this.realState = state
     }
 
     /**
      * Function to get the weapons in the inventory
-     * @return A list of triples with the weapon's name, damage and weight
+     * @return A list of triples with the weapons' name, damage and weight
      */
     fun getInventory(): List<Triple<String, Int, Int>> {
         if (gameState.isNonMagicalPlayerTurn() || gameState.isMagicalPlayerTurn()) {
@@ -123,7 +145,11 @@ class GameController {
      * This function is only usable on magic character turns
      */
     fun getMagicDamage(): Int {
-        return gameState.getMagicDamage(playerCharacters[activeCharacterIndex])
+        if (gameState.isMagicalPlayerTurn()) {
+            return gameState.getMagicDamage(playerCharacters[activeCharacterIndex])
+        } else {
+            throw IllegalStateActionException("check a weapon's magic damage", gameState::class.simpleName!!)
+        }
     }
 
     /**
@@ -132,10 +158,20 @@ class GameController {
      * @return whether the weapon was successfully equipped or not
      */
     fun equipWeapon(weaponId: Int): Boolean {
-        return if (weaponId < playerInventory.size) {
-            gameState.equipWeapon(playerCharacters[activeCharacterIndex], playerInventory[weaponId])
+        if (gameState.isWeaponEquip()) {
+            return if (weaponId < playerInventory.size) {
+                gameState.equipWeapon(
+                    playerCharacters[activeCharacterIndex],
+                    playerInventory[weaponId]
+                )
+            } else {
+                gameState.equipWeapon(
+                    playerCharacters[activeCharacterIndex],
+                    playerCharacters[activeCharacterIndex].equippedWeapon
+                )
+            }
         } else {
-            gameState.equipWeapon(playerCharacters[activeCharacterIndex], playerCharacters[activeCharacterIndex].equippedWeapon)
+            throw IllegalStateActionException("equip a weapon", gameState::class.simpleName!!)
         }
     }
 
@@ -159,7 +195,7 @@ class GameController {
     fun createEngineer(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createEngineer(name, turnsQueue)
-            val weapon = Bow("BasicBow", 30, 25)
+            val weapon = Bow("BasicBow", 50, 25)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -176,7 +212,7 @@ class GameController {
     fun createKnight(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createKnight(name, turnsQueue)
-            val weapon = Sword("BasicSword", 40, 30)
+            val weapon = Sword("BasicSword", 60, 30)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -192,7 +228,7 @@ class GameController {
     fun createThief(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createThief(name, turnsQueue)
-            val weapon = Knife("BasicKnife", 30, 22)
+            val weapon = Knife("BasicKnife", 50, 22)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -208,7 +244,7 @@ class GameController {
     fun createWhiteMage(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createWhiteMage(name, turnsQueue)
-            val weapon = Staff("BasicWand", 8, 21, 25)
+            val weapon = Staff("BasicWand", 15, 21, 25)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -224,7 +260,7 @@ class GameController {
     fun createBlackMage(name: String): Boolean {
         return if (playerCharacters.size < 5) {
             val character = gameState.createBlackMage(name, turnsQueue)
-            val weapon = Staff("BasicStaff", 10, 24, 30)
+            val weapon = Staff("BasicStaff", 20, 24, 30)
             character.equip(weapon)
             playerCharacters.add(
                 character
@@ -279,6 +315,23 @@ class GameController {
             throw IllegalStateActionException("check the available spells", gameState::class.simpleName!!)
         }
     }
+
+    /**
+     * Function to get the player characters' active mp
+     * @return a pair containing the current and max Mp of the characters
+     */
+    fun getCharacterMp(): List<Pair<Int, Int>> {
+        val mpValues = mutableListOf<Pair<Int, Int>>()
+        for (character in playerCharacters) {
+            if (!character.isMage()) {
+                mpValues.add(Pair(0, 0))
+            } else {
+                character as Mage
+                mpValues.add(Pair(character.currentMp, character.maxMp))
+            }
+        }
+        return mpValues.toList()
+    }
     fun startBattle(): Boolean {
         return if (gameState.isCharacterCreation() || gameState.isEnemyGeneration()) {
             if (playerCharacters.size == 5) {
@@ -314,6 +367,7 @@ class GameController {
                 enemyTurn(character)
             }
         } else {
+            advanceTurn(character)
             gameState.toEndCheck()
             activeCharacterIndex = -1
         }
@@ -343,9 +397,15 @@ class GameController {
      * @param enemyId the index of the enemy character on the enemy character list
      */
     fun attack(enemyId: Int): Int {
-        val damage = gameState.attack(playerCharacters[activeCharacterIndex], enemyCharacters[enemyId])
-        advanceTurn(playerCharacters[activeCharacterIndex])
-        return damage
+        if (activeCharacterIndex != -1) {
+            val damage =
+                gameState.attack(playerCharacters[activeCharacterIndex], enemyCharacters[enemyId])
+            // Turn does not advance if the attack was not executed
+            if (damage != -1) advanceTurn(playerCharacters[activeCharacterIndex])
+            return damage
+        } else {
+            throw IllegalStateActionException("issue an attack command", this.gameState::class.simpleName!!)
+        }
     }
     /**
      * Issues a cast command to the caster given by [activeCharacterIndex] unto a target character
@@ -354,13 +414,17 @@ class GameController {
      * @return a pair with the damage dealt and debuff if any
      */
     fun useMagic(spellId: Int, targetId: Int, enemyTarget: Boolean): Pair<Int, String> {
-        val attacker = playerCharacters[activeCharacterIndex] as Mage
-        val spellList = attacker.getSpells()
-        val target = if (enemyTarget) enemyCharacters[targetId] else playerCharacters[targetId]
-        attacker.setSpell(spellList[spellId])
-        val (damage, debuff) = gameState.useMagic(attacker, target)
-        advanceTurn(attacker)
-        return Pair(damage, debuff::class.simpleName!!)
+        if (activeCharacterIndex != -1) {
+            val attacker = playerCharacters[activeCharacterIndex] as Mage
+            val spellList = attacker.getSpells()
+            val target = if (enemyTarget) enemyCharacters[targetId] else playerCharacters[targetId]
+            attacker.setSpell(spellList[spellId])
+            val (damage, debuff) = gameState.useMagic(attacker, target)
+            if (gameState.isEndCheck()) advanceTurn(attacker)
+            return Pair(damage, debuff::class.simpleName!!)
+        } else {
+            throw IllegalStateActionException("use magic", this.gameState::class.simpleName!!)
+        }
     }
 
     /**
@@ -370,6 +434,8 @@ class GameController {
     private fun advanceTurn(character: GameCharacter) {
         turnsQueue.poll()
         waitTurn(character)
+        // The character is not active anymore
+        activeCharacterIndex = -1
     }
 
     /**
@@ -400,12 +466,31 @@ class GameController {
     }
 
     /**
-     * Function to handle the user's victory, it gives the user a new weapon and
-     * asks them if they want to continue playing
+     * Function to handle the user's victory, it gives the user a new weapon and heals characters
+     * if they want to continue playing
      * @param nextBattle whether the user wants to create another battle
      */
     fun onPlayerWin(nextBattle: Boolean) {
         gameState.onPlayerWin(nextBattle)
+        if (nextBattle) {
+            gameIsOver = false
+            playerWin = false
+            turnsQueue.clear()
+            for (index in playerCharacters.indices) {
+                // We don't want to revive dead characters, or else
+                // the game could stretch for a bit too much
+                if (playerCharacters[index].currentHp != 0) {
+                    playerCharacters[index].receiveHealing(ceil(playerCharacters[index].maxHp / 10f).toInt())
+                    if (playerCharacters[index].isMage()) {
+                        val asMage = playerCharacters[index] as Mage
+                        (playerCharacters[index] as Mage).restoreMp(ceil(asMage.maxMp / 10f).toInt())
+                    }
+                }
+            }
+            val enemyAmount = ControllerRNGSeed.seed.nextInt(1, 6)
+            generateEnemy(enemyAmount)
+            startBattle()
+        }
     }
 
     /**
@@ -414,6 +499,20 @@ class GameController {
      */
     fun onEnemyWin(nextGame: Boolean) {
         gameState.onEnemyWin(nextGame)
+        if (nextGame) {
+            gameIsOver = false
+            playerWin = false
+            enemyCharacters.clear()
+            turnsQueue.clear()
+            playerCharacters.clear()
+            val inventory = PlayerCharacter.getInventory()
+            for (weapon in inventory) {
+                PlayerCharacter.discardWeaponFromInventory(weapon)
+            }
+            PlayerCharacter.addWeaponToInventory(Axe("BasicAxe", 80, 40))
+            val enemyAmount = ControllerRNGSeed.seed.nextInt(0, 6)
+            generateEnemy(enemyAmount)
+        }
     }
 
     /**

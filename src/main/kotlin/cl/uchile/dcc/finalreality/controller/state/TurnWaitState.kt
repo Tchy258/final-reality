@@ -22,6 +22,10 @@ class TurnWaitState(override val controller: GameController) : GameState {
     override fun toEnemyTurn() {
         controller.setState(EnemyTurnState(controller))
     }
+
+    override fun toEndCheck() {
+        controller.setState(EndCheckState(controller))
+    }
     override tailrec fun nextTurn(queue: LinkedBlockingQueue<GameCharacter>): GameCharacter {
         return if (!queue.isEmpty()) {
             queue.peek()

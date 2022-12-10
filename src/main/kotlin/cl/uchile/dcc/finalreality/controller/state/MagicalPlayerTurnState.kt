@@ -21,7 +21,10 @@ class MagicalPlayerTurnState(override val controller: GameController) : Abstract
         return character.getMagicDamage()
     }
     override fun useMagic(attacker: Mage, target: GameCharacter): Pair<Int, Debuff> {
-        toEndCheck()
-        return attacker.cast(target)
+        val result = attacker.cast(target)
+        if (result.first != -1) {
+            toEndCheck()
+        }
+        return result
     }
 }

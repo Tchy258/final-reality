@@ -170,8 +170,9 @@ interface GameState {
     }
 
     /**
-     * Function meant to be executed once the player wins, giving them a new weapon
-     * on their inventory if they choose to continue playing
+     * Function meant to be executed once the player wins, if they choose to continue playing,
+     * a new weapon will be added on their inventory and the player characters
+     * will restore 10% of their Hp and Mp
      * @param nextBattle whether the user wishes to proceed to the next battle
      */
     fun onPlayerWin(nextBattle: Boolean) {
