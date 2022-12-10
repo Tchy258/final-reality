@@ -236,8 +236,8 @@ class BlackMageTest : FunSpec({
                 val randomStaff = staff.process(StaffTestingFactory())
                 randomBlackMage.equip(randomStaff)
                 val expected = listOf(
-                    Thunder(randomBlackMage.getMagicDamage()),
-                    Fire(randomBlackMage.getMagicDamage())
+                    Fire(randomBlackMage.getMagicDamage()),
+                    Thunder(randomBlackMage.getMagicDamage())
                 )
                 randomBlackMage.getSpells() shouldBe expected
             }
