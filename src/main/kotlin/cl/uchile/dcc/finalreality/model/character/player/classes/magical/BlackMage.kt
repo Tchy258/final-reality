@@ -68,8 +68,8 @@ class BlackMage(
 
     override fun getSpells(): List<Magic> {
         return listOf(
-            Thunder(currentMagicDamage),
-            Fire(currentMagicDamage)
+            Fire(currentMagicDamage),
+            Thunder(currentMagicDamage)
         )
     }
 
