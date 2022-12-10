@@ -20,4 +20,8 @@ class NoDebuff : Debuff {
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }
+
+    override fun toString(): String {
+        return "NoDebuff"
+    }
 }
