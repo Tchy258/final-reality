@@ -1,12 +1,16 @@
 package cl.uchile.dcc.finalreality.controller.state
 
 import cl.uchile.dcc.finalreality.controller.GameController
+import cl.uchile.dcc.finalreality.controller.curriedActions
+import cl.uchile.dcc.finalreality.controller.equipWeaponAction
 import cl.uchile.dcc.finalreality.controller.falseQuestionsCheck
+import cl.uchile.dcc.finalreality.controller.invalidActionsCheck
 import cl.uchile.dcc.finalreality.controller.invalidTransitionCheck
 import cl.uchile.dcc.finalreality.controller.magicalPlayerTurnTransition
 import cl.uchile.dcc.finalreality.controller.nonMagicalPlayerTurnTransition
 import cl.uchile.dcc.finalreality.controller.stateQuestions
 import cl.uchile.dcc.finalreality.controller.stateTransitions
+import cl.uchile.dcc.finalreality.controller.validActionsCheck
 import cl.uchile.dcc.finalreality.controller.validTransitionCheck
 import cl.uchile.dcc.finalreality.exceptions.InconsistentReturnStateException
 import io.kotest.core.spec.style.FunSpec
@@ -24,6 +28,9 @@ class WeaponEquipStateTest : FunSpec({
     val validTransitions2: List<(GameState) -> Unit> = listOf(
         magicalPlayerTurnTransition
     )
+    val validActions: List<(GameState) -> Any> = listOf(
+        equipWeaponAction
+    )
     val thisQuestion = GameState::isWeaponEquip
     val otherQuestions = stateQuestions.toMutableList()
     otherQuestions.remove(thisQuestion)
@@ -37,6 +44,11 @@ class WeaponEquipStateTest : FunSpec({
     invalidTransitions2.removeIf(predicate2)
     invalidTransitions2.removeIf(predicate1)
     invalidTransitions1.removeIf(predicate2)
+
+    val invalidActions: MutableList<(GameState) -> Any> = curriedActions.toMutableList()
+    val actionPredicate = Predicate { action: (GameState) -> Any -> validActions.contains(action) }
+    invalidActions.removeIf(actionPredicate)
+
     context("A WeaponEquipState should") {
         test("Be able to do valid transitions") {
             validTransitionCheck(thisState1, validTransitions1)
@@ -57,6 +69,14 @@ class WeaponEquipStateTest : FunSpec({
         test("Answer correctly when asked who they are") {
             falseQuestionsCheck(thisState1, otherQuestions)
             thisQuestion(thisState1) shouldBe true
+        }
+        test("Do valid actions") {
+            validActionsCheck(thisState1, validActions)
+            validActionsCheck(thisState2, validActions)
+        }
+        test("Not do invalid actions") {
+            invalidActionsCheck(thisState1, invalidActions)
+            invalidActionsCheck(thisState2, invalidActions)
         }
     }
 })

@@ -1,8 +1,10 @@
 package cl.uchile.dcc.finalreality.controller.state
 
 import cl.uchile.dcc.finalreality.controller.GameController
+import cl.uchile.dcc.finalreality.controller.curriedActions
 import cl.uchile.dcc.finalreality.controller.enemyDefeatedTransition
 import cl.uchile.dcc.finalreality.controller.falseQuestionsCheck
+import cl.uchile.dcc.finalreality.controller.invalidActionsCheck
 import cl.uchile.dcc.finalreality.controller.invalidTransitionCheck
 import cl.uchile.dcc.finalreality.controller.playerDefeatedTransition
 import cl.uchile.dcc.finalreality.controller.stateQuestions
@@ -22,6 +24,7 @@ class EndCheckStateTest : FunSpec({
         playerDefeatedTransition,
         enemyDefeatedTransition
     )
+    val invalidActions = curriedActions
 
     val thisQuestion = GameState::isEndCheck
     val otherQuestions = stateQuestions.toMutableList()
@@ -30,16 +33,20 @@ class EndCheckStateTest : FunSpec({
     val invalidTransitions: MutableList<(GameState) -> Unit> = stateTransitions.toMutableList()
     val predicate = Predicate { transition: (GameState) -> Unit -> validTransitions.contains(transition) }
     invalidTransitions.removeIf(predicate)
+
     context("An EndCheckState should") {
-        test("Be able to do valid transitions") {
+        test("Do valid transitions") {
             validTransitionCheck(thisState, validTransitions)
         }
-        test("Be unable to do invalid transitions") {
+        test("Not do invalid transitions") {
             invalidTransitionCheck(thisState, invalidTransitions)
         }
         test("Answer correctly when asked who they are") {
             falseQuestionsCheck(thisState, otherQuestions)
             thisQuestion(thisState) shouldBe true
+        }
+        test("Not do invalid actions") {
+            invalidActionsCheck(thisState, invalidActions)
         }
     }
 })

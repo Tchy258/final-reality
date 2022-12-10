@@ -1,6 +1,7 @@
 package cl.uchile.dcc.finalreality.controller.state
 
 import cl.uchile.dcc.finalreality.controller.GameController
+import cl.uchile.dcc.finalreality.controller.endCheckTransition
 import cl.uchile.dcc.finalreality.controller.enemyTurnTransition
 import cl.uchile.dcc.finalreality.controller.falseQuestionsCheck
 import cl.uchile.dcc.finalreality.controller.invalidTransitionCheck
@@ -20,7 +21,8 @@ class TurnWaitStateTest : FunSpec({
     val validTransitions: List<(GameState) -> Unit> = listOf(
         enemyTurnTransition,
         nonMagicalPlayerTurnTransition,
-        magicalPlayerTurnTransition
+        magicalPlayerTurnTransition,
+        endCheckTransition
     )
     val thisQuestion = GameState::isTurnWait
     val otherQuestions = stateQuestions.toMutableList()
