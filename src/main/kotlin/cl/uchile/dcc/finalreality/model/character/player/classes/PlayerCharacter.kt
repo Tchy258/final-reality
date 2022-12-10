@@ -36,7 +36,7 @@ interface PlayerCharacter : GameCharacter {
          * The weapon inventory shared by all instances of PlayerCharacter
          */
         private val weaponInventory: MutableList<Weapon> = mutableListOf(
-            Axe("BasicAxe", 60, 40)
+            Axe("BasicAxe", 80, 40)
         )
 
         /**
@@ -67,6 +67,14 @@ interface PlayerCharacter : GameCharacter {
         @JvmStatic
         fun discardWeaponFromInventory(weapon: Weapon): Boolean {
             return weaponInventory.remove(weapon)
+        }
+        /**
+         * Resets the inventory to its starting state
+         */
+        @JvmStatic
+        fun resetInventory() {
+            weaponInventory.clear()
+            weaponInventory.add(Axe("BasicAxe", 80, 40))
         }
     }
 }
