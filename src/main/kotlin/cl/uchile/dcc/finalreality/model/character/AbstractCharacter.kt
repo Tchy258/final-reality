@@ -47,6 +47,14 @@ abstract class AbstractCharacter(
     override val currentHp: Int
         get() = _currentHp
 
+    override fun getDebuffs(): List<String> {
+        val list = mutableListOf<String>()
+        for (debuff in statusEffects) {
+            list.add(debuff.toString())
+        }
+        list.remove("NoDebuff")
+        return list.toList()
+    }
     override fun addDebuff(debuff: Debuff) {
         statusEffects.add(debuff)
     }
@@ -98,6 +106,7 @@ abstract class AbstractCharacter(
         for (debuff in statusEffects) {
             canAttack = canAttack && debuff.rollEffect(this)
         }
+        canAttack = canAttack && currentHp != 0
         return canAttack
     }
     /**

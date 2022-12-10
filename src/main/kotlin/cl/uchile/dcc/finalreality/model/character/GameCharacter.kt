@@ -63,6 +63,11 @@ interface GameCharacter {
     fun removeDebuff(debuff: Debuff)
 
     /**
+     * Function to get the string representation of all
+     * the debuffs applied on this character
+     */
+    fun getDebuffs(): List<String>
+    /**
      * @return whether the character is [Burned]
      */
     fun isBurned(): Boolean
