@@ -7,7 +7,6 @@ import cl.uchile.dcc.finalreality.model.character.Enemy
 import cl.uchile.dcc.finalreality.model.character.GameCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.PlayerCharacter
 import cl.uchile.dcc.finalreality.model.character.player.classes.magical.Mage
-import cl.uchile.dcc.finalreality.model.weapon.Axe
 import cl.uchile.dcc.finalreality.model.weapon.Bow
 import cl.uchile.dcc.finalreality.model.weapon.Knife
 import cl.uchile.dcc.finalreality.model.weapon.Staff
@@ -505,11 +504,7 @@ class GameController {
             enemyCharacters.clear()
             turnsQueue.clear()
             playerCharacters.clear()
-            val inventory = PlayerCharacter.getInventory()
-            for (weapon in inventory) {
-                PlayerCharacter.discardWeaponFromInventory(weapon)
-            }
-            PlayerCharacter.addWeaponToInventory(Axe("BasicAxe", 80, 40))
+            PlayerCharacter.resetInventory()
             val enemyAmount = ControllerRNGSeed.seed.nextInt(0, 6)
             generateEnemy(enemyAmount)
         }
