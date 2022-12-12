@@ -19,8 +19,7 @@ enemies controlled by the computer.
 Execution instructions
 --------------
 
-At present only the tests can be executed, to do this, open the project in Intellij, click on the
-gradle tab to the right, and then go to *final-reality-kt > Tasks > verification* and double-click on either test or check
+Run the Main.kt file located on *src>main>kotlin>Main.kt* on Intellij to try the game.
 
 First revision
 --------------
@@ -59,3 +58,12 @@ Second revision
 This time only tests were made, since the double dispatch implementation was already done beforehand.\
 Most of the tests are property based tests which tests many possible semi-random values including some edge cases like empty strings, zeroes, or very big absolute values of numbers (both positive and negative). \
 However, most of the tests are done with data that "makes sense", like only trying positive values on character and weapon stats if these stats themselves are not being tested.
+
+Third revision
+---------------------
+This one has been the toughest yet, this time all the remaining game elements were implemented, such as spells, debuffs (this is the name I'll use to refer to adverse effects from now on) and all the logic behind them.\
+The spells were implemented using the strategy pattern and the debuffs were implemented using both observer and null object patterns. The debuffs are subscribers to the characters through the spells, and the characters notify them to activate their effect. Since not every spell has an effect, a "NoDebuff" effect was implemented, this is the null object and it's always a part of the mutable set of subscribers each character has, this effect does absolutely nothing.\
+However the hardest part of this work was the implementation of all the game logic that acts in the background, this logic was implemented using the state pattern, trying to ensure all the game flow "made sense" and not have (too many) edge cases was a nightmare, I even caught logic bugs while playing the game myself.\
+As a personal touch I also added the feature of getting new weapons on the player's inventory each time the player wins a battle, these weapons have standardized names with an underlying multiplier that's not so hard to figure out (it does have a limit tough, we wouldn't want to make the game too easy in the long run).
+The player's characters also restore 10% of their hp and mp (if applicable) each time the player wins a battle.\
+I did the best I could with exception handling overall, however I didn't have enough time to properly test the Main program thoroughly, so providing unexpected user input could still make the program crash with an exception.
