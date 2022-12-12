@@ -51,7 +51,7 @@ class WhiteMage(
     override fun cast(target: GameCharacter): Pair<Int, Debuff> {
         if (hasWeaponEquipped()) {
             if (!hasActiveSpell()) throw NoActiveSpellException(name)
-            if (target.currentHp==0) return Pair(-1,NoDebuff())
+            if (target.currentHp == 0) return Pair(-1, NoDebuff())
             val wasCast: Boolean = canUseMp(activeSpell.cost)
             var debuff: Debuff = NoDebuff()
             return if (wasCast) {

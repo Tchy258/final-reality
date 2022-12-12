@@ -95,7 +95,7 @@ fun actionSelect(stdin: Scanner, magician: Boolean): Int {
         } catch (e: InputMismatchException) {
             -1
         }
-        if (!magician && action==2) action=-1
+        if (!magician && action == 2) action = -1
         if (action == -1) println("Action Invalid. Please input a valid action")
     }
     return action
